@@ -12,6 +12,7 @@ import { Branding } from 'app/core/components/Branding/Branding';
 import { HorizontalGroup, LinkButton } from '@grafana/ui';
 import { LoginLayout, InnerBox } from './LoginLayout';
 import config from 'app/core/config';
+import { useTranslation } from 'react-i18next';
 
 const forgottenPasswordStyles = css`
   padding: 0;
@@ -20,6 +21,7 @@ const forgottenPasswordStyles = css`
 
 export const LoginPage: FC = () => {
   document.title = Branding.AppTitle;
+  const { t } = useTranslation();
   return (
     <LoginLayout>
       <LoginCtrl>
@@ -54,7 +56,7 @@ export const LoginPage: FC = () => {
                             variant="link"
                             href={`${config.appSubUrl}/user/password/send-reset-email`}
                           >
-                            Forgot your password?
+                            {t('Forgot your password?')}
                           </LinkButton>
                         </HorizontalGroup>
                       ) : (

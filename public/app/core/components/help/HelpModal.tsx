@@ -1,8 +1,11 @@
 import React from 'react';
 import { appEvents } from 'app/core/core';
 import { Icon } from '@grafana/ui';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-export class HelpModal extends React.PureComponent {
+interface Props extends WithTranslation {}
+
+class HelpModal extends React.PureComponent<Props> {
   static tabIndex = 0;
   static shortcuts = {
     Global: [
@@ -26,7 +29,7 @@ export class HelpModal extends React.PureComponent {
     'Focused Panel': [
       { keys: ['e'], description: 'Toggle panel edit view' },
       { keys: ['v'], description: 'Toggle panel fullscreen view' },
-      { keys: ['p', 's'], description: 'Open Panel Share Modal' },
+      { keys: ['p', 's'], description: 'Toggle panel fullscreen view' },
       { keys: ['p', 'd'], description: 'Duplicate Panel' },
       { keys: ['p', 'r'], description: 'Remove Panel' },
       { keys: ['p', 'l'], description: 'Toggle panel legend' },
@@ -54,7 +57,7 @@ export class HelpModal extends React.PureComponent {
         <div className="modal-header">
           <h2 className="modal-header-title">
             <Icon name="keyboard" size="lg" />
-            <span className="p-l-1">Shortcuts</span>
+            <span className="p-l-1">{this.props.t('Shortcuts')}</span>
           </h2>
           <a className="modal-header-close" onClick={this.dismiss}>
             <Icon name="times" style={{ margin: '3px 0 0 0' }} />
@@ -64,7 +67,7 @@ export class HelpModal extends React.PureComponent {
         <div className="modal-content help-modal">
           <p className="small" style={{ position: 'absolute', top: '13px', right: '44px' }}>
             <span className="shortcut-table-key">mod</span> =
-            <span className="muted"> CTRL on windows or linux and CMD key on Mac</span>
+            <span className="muted"> {this.props.t('CTRL on windows or linux and CMD key on Mac')}</span>
           </p>
 
           {Object.entries(HelpModal.shortcuts).map(([category, shortcuts], i) => (
@@ -85,7 +88,7 @@ export class HelpModal extends React.PureComponent {
                           </span>
                         ))}
                       </td>
-                      <td className="shortcut-table-description">{shortcut.description}</td>
+                      <td className="shortcut-table-description">{this.props.t(shortcut.description)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -99,3 +102,5 @@ export class HelpModal extends React.PureComponent {
     );
   }
 }
+
+export default withTranslation()(HelpModal);

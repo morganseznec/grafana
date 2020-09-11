@@ -15,6 +15,7 @@ import { SearchResultsFilter } from './SearchResultsFilter';
 import { SearchResults } from './SearchResults';
 import { DashboardActions } from './DashboardActions';
 import { connectWithRouteParams, ConnectProps, DispatchProps } from '../connect';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   folder?: FolderDTO;
@@ -30,6 +31,7 @@ export const ManageDashboards: FC<Props & ConnectProps & DispatchProps> = memo((
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
   const defaultLayout = folderId ? SearchLayout.List : SearchLayout.Folders;
+  const { t } = useTranslation();
   const queryParams = {
     skipRecent: true,
     skipStarred: true,
@@ -80,13 +82,13 @@ export const ManageDashboards: FC<Props & ConnectProps & DispatchProps> = memo((
   if (noFolders && !hasFilters) {
     return (
       <EmptyListCTA
-        title="This folder doesn't have any dashboards yet"
+        title={t("This folder doesn't have any dashboards yet")}
         buttonIcon="plus"
-        buttonTitle="Create Dashboard"
+        buttonTitle={t('Create Dashboard')}
         buttonLink={`dashboard/new?folderId=${folderId}`}
-        proTip="Add/move dashboards to your folder at ->"
+        proTip={t('Add/move dashboards to your folder at ->')}
         proTipLink="dashboards"
-        proTipLinkTitle="Manage dashboards"
+        proTipLinkTitle={t('Manage dashboards')}
         proTipTarget=""
       />
     );
@@ -101,7 +103,7 @@ export const ManageDashboards: FC<Props & ConnectProps & DispatchProps> = memo((
             inputClassName="gf-form-input width-20"
             value={query.query}
             onChange={onQueryChange}
-            placeholder={'Search dashboards by name'}
+            placeholder={String(t('Search dashboards by name'))}
           />
           <DashboardActions isEditor={isEditor} canEdit={hasEditPermissionInFolders || canSave} folderId={folderId} />
         </HorizontalGroup>

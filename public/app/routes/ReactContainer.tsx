@@ -1,5 +1,5 @@
 // Libraries
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
@@ -8,16 +8,19 @@ import coreModule from 'app/core/core_module';
 import { store } from 'app/store/store';
 import { ContextSrv } from 'app/core/services/context_srv';
 import { provideTheme } from 'app/core/utils/ConfigProvider';
+import PageLoader from 'app/core/components/PageLoader/PageLoader';
 import { ErrorBoundaryAlert, ModalRoot, ModalsProvider } from '@grafana/ui';
 import { GrafanaRootScope } from './GrafanaCtrl';
 
 export function WrapInProvider(store: any, Component: any, props: any) {
   return (
-    <Provider store={store}>
-      <ErrorBoundaryAlert style="page">
-        <Component {...props} />
-      </ErrorBoundaryAlert>
-    </Provider>
+    <Suspense fallback={<PageLoader />}>
+      <Provider store={store}>
+        <ErrorBoundaryAlert style="page">
+          <Component {...props} />
+        </ErrorBoundaryAlert>
+      </Provider>
+    </Suspense>
   );
 }
 

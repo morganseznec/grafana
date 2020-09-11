@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LegacyForms, Icon } from '@grafana/ui';
 import { SelectableValue } from '@grafana/data';
 import { dashboardPermissionLevels, DashboardAcl, PermissionLevel } from 'app/types/acl';
@@ -24,13 +25,14 @@ function ItemAvatar({ item }: { item: DashboardAcl }) {
 }
 
 function ItemDescription({ item }: { item: DashboardAcl }) {
+  const { t } = useTranslation();
   if (item.userId) {
-    return <span className="filter-table__weak-italic">(User)</span>;
+    return <span className="filter-table__weak-italic">({t('User')})</span>;
   }
   if (item.teamId) {
-    return <span className="filter-table__weak-italic">(Team)</span>;
+    return <span className="filter-table__weak-italic">({t('Team')})</span>;
   }
-  return <span className="filter-table__weak-italic">(Role)</span>;
+  return <span className="filter-table__weak-italic">({t('Role')})</span>;
 }
 
 interface Props {
@@ -53,6 +55,7 @@ export default class PermissionsListItem extends PureComponent<Props> {
     const { item, folderInfo } = this.props;
     const inheritedFromRoot = item.dashboardId === -1 && !item.inherited;
     const currentPermissionLevel = dashboardPermissionLevels.find(dp => dp.value === item.permission);
+    const { t } = useTranslation();
 
     return (
       <tr className={setClassNameHelper(Boolean(item?.inherited))}>
@@ -65,15 +68,15 @@ export default class PermissionsListItem extends PureComponent<Props> {
         <td>
           {item.inherited && folderInfo && (
             <em className="muted no-wrap">
-              Inherited from folder{' '}
+              {t('Inherited from folder')}{' '}
               <a className="text-link" href={`${folderInfo.url}/permissions`}>
                 {folderInfo.title}
               </a>{' '}
             </em>
           )}
-          {inheritedFromRoot && <em className="muted no-wrap">Default Permission</em>}
+          {inheritedFromRoot && <em className="muted no-wrap">{t('Default Permission')}</em>}
         </td>
-        <td className="query-keyword">Can</td>
+        <td className="query-keyword">{t('Can')}</td>
         <td>
           <div className="gf-form">
             <Select

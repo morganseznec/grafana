@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { FilterInput } from '../FilterInput/FilterInput';
 import { LinkButton } from '@grafana/ui';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   searchQuery: string;
@@ -13,6 +14,7 @@ export default class OrgActionBar extends PureComponent<Props> {
   render() {
     const { searchQuery, linkButton, setSearchQuery, target } = this.props;
     const linkProps = { href: linkButton.href };
+    const { t } = useTranslation();
 
     if (target) {
       (linkProps as any).target = target;
@@ -26,7 +28,7 @@ export default class OrgActionBar extends PureComponent<Props> {
             inputClassName="gf-form-input width-20"
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder={'Search by name or type'}
+            placeholder={t('Search by name or type')}
           />
         </div>
         <div className="page-action-bar__spacer" />

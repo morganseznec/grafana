@@ -7,8 +7,9 @@ import { Icon, IconName } from '@grafana/ui';
 import { CoreEvents } from 'app/types';
 import { OrgSwitcher } from '../OrgSwitcher';
 import { getFooterLinks } from '../Footer/Footer';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-export interface Props {
+export interface Props extends WithTranslation {
   link: NavModelItem;
   user: User;
 }
@@ -17,7 +18,7 @@ interface State {
   showSwitcherModal: boolean;
 }
 
-export default class BottomNavLinks extends PureComponent<Props, State> {
+class BottomNavLinks extends PureComponent<Props, State> {
   state: State = {
     showSwitcherModal: false,
   };
@@ -58,14 +59,14 @@ export default class BottomNavLinks extends PureComponent<Props, State> {
         <ul className="dropdown-menu dropdown-menu--sidemenu" role="menu">
           {link.subTitle && (
             <li className="sidemenu-subtitle">
-              <span className="sidemenu-item-text">{link.subTitle}</span>
+              <span className="sidemenu-item-text">{this.props.t(link.subTitle)}</span>
             </li>
           )}
           {link.showOrgSwitcher && (
             <li className="sidemenu-org-switcher">
               <a onClick={this.toggleSwitcherModal}>
                 <div>
-                  <div className="sidemenu-org-switcher__org-current">Current Org.:</div>
+                  <div className="sidemenu-org-switcher__org-current">{this.props.t('Current Org.')}:</div>
                   <div className="sidemenu-org-switcher__org-name">{user.orgName}</div>
                 </div>
                 <div className="sidemenu-org-switcher__switch">
@@ -83,7 +84,7 @@ export default class BottomNavLinks extends PureComponent<Props, State> {
               <li key={`${child.text}-${index}`}>
                 <a href={child.url} target={child.target} rel="noopener">
                   {child.icon && <Icon name={child.icon as IconName} className={subMenuIconClassName} />}
-                  {child.text}
+                  {this.props.t(child.text)}
                 </a>
               </li>
             );
@@ -92,16 +93,18 @@ export default class BottomNavLinks extends PureComponent<Props, State> {
           {link.id === 'help' && (
             <li key="keyboard-shortcuts">
               <a onClick={() => this.onOpenShortcuts()}>
-                <Icon name="keyboard" className={subMenuIconClassName} /> Keyboard shortcuts
+                <Icon name="keyboard" className={subMenuIconClassName} /> {this.props.t('Keyboard shortcuts')}
               </a>
             </li>
           )}
 
           <li className="side-menu-header">
-            <span className="sidemenu-item-text">{link.text}</span>
+            <span className="sidemenu-item-text">{this.props.t(link.text)}</span>
           </li>
         </ul>
       </div>
     );
   }
 }
+
+export default withTranslation()(BottomNavLinks);

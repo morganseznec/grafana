@@ -5,7 +5,7 @@ import { AnnotationQueryEditor as CloudWatchAnnotationQueryEditor } from 'app/pl
 import PageHeader from './components/PageHeader/PageHeader';
 import EmptyListCTA from './components/EmptyListCTA/EmptyListCTA';
 import { TagFilter } from './components/TagFilter/TagFilter';
-import { SideMenu } from './components/sidemenu/SideMenu';
+import SideMenu from './components/sidemenu/SideMenu';
 import { MetricSelect } from './components/Select/MetricSelect';
 import AppNotificationList from './components/AppNotifications/AppNotificationList';
 import {
@@ -20,7 +20,7 @@ import {
 } from '@grafana/ui';
 import { FunctionEditor } from 'app/plugins/datasource/graphite/FunctionEditor';
 import { LokiAnnotationsQueryEditor } from '../plugins/datasource/loki/components/AnnotationsQueryEditor';
-import { HelpModal } from './components/help/HelpModal';
+import HelpModal from './components/help/HelpModal';
 import { Footer } from './components/Footer/Footer';
 import { FolderPicker } from 'app/core/components/Select/FolderPicker';
 import {

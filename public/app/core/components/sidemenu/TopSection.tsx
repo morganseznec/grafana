@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, Suspense } from 'react';
 import _ from 'lodash';
 import TopSectionItem from './TopSectionItem';
 import config from '../../config';
@@ -17,12 +17,14 @@ const TopSection: FC<any> = () => {
   };
 
   return (
-    <div className="sidemenu__top">
-      <TopSectionItem link={searchLink} onClick={onOpenSearch} />
-      {mainLinks.map((link, index) => {
-        return <TopSectionItem link={link} key={`${link.id}-${index}`} />;
-      })}
-    </div>
+    <Suspense fallback="loading...">
+      <div className="sidemenu__top">
+        <TopSectionItem link={searchLink} onClick={onOpenSearch} />
+        {mainLinks.map((link, index) => {
+          return <TopSectionItem link={link} key={`${link.id}-${index}`} />;
+        })}
+      </div>
+    </Suspense>
   );
 };
 
