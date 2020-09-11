@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, Suspense } from 'react';
 import {
   ThemeOptions,
   ThemeProvider,
@@ -86,67 +86,69 @@ export function TraceView(props: Props) {
   }
 
   return (
-    <ThemeProvider value={traceTheme}>
-      <UIElementsContext.Provider value={UIElements}>
-        <TracePageHeader
-          canCollapse={false}
-          clearSearch={useCallback(() => {}, [])}
-          focusUiFindMatches={useCallback(() => {}, [])}
-          hideMap={false}
-          hideSummary={false}
-          nextResult={useCallback(() => {}, [])}
-          onSlimViewClicked={useCallback(() => setSlim(!slim), [])}
-          onTraceGraphViewClicked={useCallback(() => {}, [])}
-          prevResult={useCallback(() => {}, [])}
-          resultCount={0}
-          slimView={slim}
-          textFilter={null}
-          trace={traceProp}
-          traceGraphView={false}
-          updateNextViewRangeTime={updateNextViewRangeTime}
-          updateViewRangeTime={updateViewRangeTime}
-          viewRange={viewRange}
-          searchValue={search}
-          onSearchValueChange={setSearch}
-          hideSearchButtons={true}
-        />
-        <TraceTimelineViewer
-          registerAccessors={useCallback(() => {}, [])}
-          scrollToFirstVisibleSpan={useCallback(() => {}, [])}
-          findMatchesIDs={spanFindMatches}
-          trace={traceProp}
-          traceTimeline={traceTimeline}
-          updateNextViewRangeTime={updateNextViewRangeTime}
-          updateViewRangeTime={updateViewRangeTime}
-          viewRange={viewRange}
-          focusSpan={useCallback(() => {}, [])}
-          createLinkToExternalSpan={useCallback(() => '', [])}
-          setSpanNameColumnWidth={setSpanNameColumnWidth}
-          collapseAll={collapseAll}
-          collapseOne={collapseOne}
-          expandAll={expandAll}
-          expandOne={expandOne}
-          childrenToggle={childrenToggle}
-          clearShouldScrollToFirstUiFindMatch={useCallback(() => {}, [])}
-          detailLogItemToggle={detailLogItemToggle}
-          detailLogsToggle={detailLogsToggle}
-          detailWarningsToggle={detailWarningsToggle}
-          detailStackTracesToggle={detailStackTracesToggle}
-          detailReferencesToggle={detailReferencesToggle}
-          detailProcessToggle={detailProcessToggle}
-          detailTagsToggle={detailTagsToggle}
-          detailToggle={toggleDetail}
-          setTrace={useCallback((trace: Trace | null, uiFind: string | null) => {}, [])}
-          addHoverIndentGuideId={addHoverIndentGuideId}
-          removeHoverIndentGuideId={removeHoverIndentGuideId}
-          linksGetter={useCallback(
-            (span: TraceSpan, items: TraceKeyValuePair[], itemIndex: number) => [] as TraceLink[],
-            []
-          )}
-          uiFind={search}
-          createSpanLink={createSpanLink}
-        />
-      </UIElementsContext.Provider>
-    </ThemeProvider>
+    <Suspense fallback="">
+      <ThemeProvider value={traceTheme}>
+        <UIElementsContext.Provider value={UIElements}>
+          <TracePageHeader
+            canCollapse={false}
+            clearSearch={useCallback(() => {}, [])}
+            focusUiFindMatches={useCallback(() => {}, [])}
+            hideMap={false}
+            hideSummary={false}
+            nextResult={useCallback(() => {}, [])}
+            onSlimViewClicked={useCallback(() => setSlim(!slim), [])}
+            onTraceGraphViewClicked={useCallback(() => {}, [])}
+            prevResult={useCallback(() => {}, [])}
+            resultCount={0}
+            slimView={slim}
+            textFilter={null}
+            trace={traceProp}
+            traceGraphView={false}
+            updateNextViewRangeTime={updateNextViewRangeTime}
+            updateViewRangeTime={updateViewRangeTime}
+            viewRange={viewRange}
+            searchValue={search}
+            onSearchValueChange={setSearch}
+            hideSearchButtons={true}
+          />
+          <TraceTimelineViewer
+            registerAccessors={useCallback(() => {}, [])}
+            scrollToFirstVisibleSpan={useCallback(() => {}, [])}
+            findMatchesIDs={spanFindMatches}
+            trace={traceProp}
+            traceTimeline={traceTimeline}
+            updateNextViewRangeTime={updateNextViewRangeTime}
+            updateViewRangeTime={updateViewRangeTime}
+            viewRange={viewRange}
+            focusSpan={useCallback(() => {}, [])}
+            createLinkToExternalSpan={useCallback(() => '', [])}
+            setSpanNameColumnWidth={setSpanNameColumnWidth}
+            collapseAll={collapseAll}
+            collapseOne={collapseOne}
+            expandAll={expandAll}
+            expandOne={expandOne}
+            childrenToggle={childrenToggle}
+            clearShouldScrollToFirstUiFindMatch={useCallback(() => {}, [])}
+            detailLogItemToggle={detailLogItemToggle}
+            detailLogsToggle={detailLogsToggle}
+            detailWarningsToggle={detailWarningsToggle}
+            detailStackTracesToggle={detailStackTracesToggle}
+            detailReferencesToggle={detailReferencesToggle}
+            detailProcessToggle={detailProcessToggle}
+            detailTagsToggle={detailTagsToggle}
+            detailToggle={toggleDetail}
+            setTrace={useCallback((trace: Trace | null, uiFind: string | null) => {}, [])}
+            addHoverIndentGuideId={addHoverIndentGuideId}
+            removeHoverIndentGuideId={removeHoverIndentGuideId}
+            linksGetter={useCallback(
+              (span: TraceSpan, items: TraceKeyValuePair[], itemIndex: number) => [] as TraceLink[],
+              []
+            )}
+            uiFind={search}
+            createSpanLink={createSpanLink}
+          />
+        </UIElementsContext.Provider>
+      </ThemeProvider>
+    </Suspense>
   );
 }

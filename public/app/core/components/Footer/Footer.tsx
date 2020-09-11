@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import config from 'app/core/config';
 import { Icon, IconName } from '@grafana/ui';
+import { useTranslation } from 'react-i18next';
 
 export interface FooterLink {
   text: string;
@@ -67,7 +68,7 @@ export function setVersionLinkFn(fn: typeof getFooterLinks) {
 
 export const Footer: FC = React.memo(() => {
   const links = getFooterLinks().concat(getVersionLinks());
-
+  const { t } = useTranslation();
   return (
     <footer className="footer">
       <div className="text-center">
@@ -75,7 +76,7 @@ export const Footer: FC = React.memo(() => {
           {links.map(link => (
             <li key={link.text}>
               <a href={link.url} target={link.target} rel="noopener">
-                <Icon name={link.icon as IconName} /> {link.text}
+                <Icon name={link.icon as IconName} /> {t(link.text)}
               </a>
             </li>
           ))}

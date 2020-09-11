@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { css } from 'emotion';
 import { Icon, IconName, useTheme } from '@grafana/ui';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   child: any;
@@ -8,6 +9,7 @@ export interface Props {
 
 const DropDownChild: FC<Props> = props => {
   const { child } = props;
+  const { t } = useTranslation();
   const listItemClassName = child.divider ? 'divider' : '';
   const theme = useTheme();
   const iconClassName = css`
@@ -18,7 +20,7 @@ const DropDownChild: FC<Props> = props => {
     <li className={listItemClassName}>
       <a href={child.url}>
         {child.icon && <Icon name={child.icon as IconName} className={iconClassName} />}
-        {child.text}
+        {t(child.text)}
       </a>
     </li>
   );

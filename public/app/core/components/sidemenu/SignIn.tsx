@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { connectWithStore } from 'app/core/utils/connectWithReduxStore';
 import { StoreState } from 'app/types';
@@ -7,6 +8,7 @@ import { getForcedLoginUrl } from './utils';
 
 export const SignIn: FC<any> = ({ url }) => {
   const forcedLoginUrl = getForcedLoginUrl(url);
+  const { t } = useTranslation();
 
   return (
     <div className="sidemenu-item">
@@ -18,7 +20,7 @@ export const SignIn: FC<any> = ({ url }) => {
       <a href={forcedLoginUrl} target="_self">
         <ul className="dropdown-menu dropdown-menu--sidemenu" role="menu">
           <li className="side-menu-header">
-            <span className="sidemenu-item-text">Sign In</span>
+            <span className="sidemenu-item-text">{t('Sign In')}</span>
           </li>
         </ul>
       </a>

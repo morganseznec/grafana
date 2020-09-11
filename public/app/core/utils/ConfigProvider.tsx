@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { config, GrafanaBootConfig } from '@grafana/runtime';
 import { ThemeContext, getTheme } from '@grafana/ui';
 import { GrafanaThemeType } from '@grafana/data';
@@ -8,7 +8,9 @@ export const ConfigConsumer = ConfigContext.Consumer;
 
 export const provideConfig = (component: React.ComponentType<any>) => {
   const ConfigProvider = (props: any) => (
-    <ConfigContext.Provider value={config}>{React.createElement(component, { ...props })}</ConfigContext.Provider>
+    <Suspense fallback="loading ...">
+      <ConfigContext.Provider value={config}>{React.createElement(component, { ...props })}</ConfigContext.Provider>
+    </Suspense>
   );
 
   return ConfigProvider;

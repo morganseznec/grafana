@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import _ from 'lodash';
 import SignIn from './SignIn';
 import BottomNavLinks from './BottomNavLinks';
@@ -20,11 +20,13 @@ export default function BottomSection() {
   }
 
   return (
-    <div className="sidemenu__bottom">
-      {!isSignedIn && <SignIn />}
-      {bottomNav.map((link, index) => {
-        return <BottomNavLinks link={link} user={user} key={`${link.url}-${index}`} />;
-      })}
-    </div>
+    <Suspense fallback="loading...">
+      <div className="sidemenu__bottom">
+        {!isSignedIn && <SignIn />}
+        {bottomNav.map((link, index) => {
+          return <BottomNavLinks link={link} user={user} key={`${link.url}-${index}`} />;
+        })}
+      </div>
+    </Suspense>
   );
 }

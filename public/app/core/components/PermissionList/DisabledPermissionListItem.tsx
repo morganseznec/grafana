@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LegacyForms, Icon } from '@grafana/ui';
 import { dashboardPermissionLevels } from 'app/types/acl';
 const { Select } = LegacyForms;
@@ -11,7 +12,7 @@ export default class DisabledPermissionListItem extends Component<Props, any> {
   render() {
     const { item } = this.props;
     const currentPermissionLevel = dashboardPermissionLevels.find(dp => dp.value === item.permission);
-
+    const { t } = useTranslation();
     return (
       <tr className="gf-form-disabled">
         <td style={{ width: '1%' }}>
@@ -19,10 +20,10 @@ export default class DisabledPermissionListItem extends Component<Props, any> {
         </td>
         <td style={{ width: '90%' }}>
           {item.name}
-          <span className="filter-table__weak-italic"> (Role)</span>
+          <span className="filter-table__weak-italic"> ({t('Role')})</span>
         </td>
         <td />
-        <td className="query-keyword">Can</td>
+        <td className="query-keyword">{t('Can')}</td>
         <td>
           <div className="gf-form">
             <Select

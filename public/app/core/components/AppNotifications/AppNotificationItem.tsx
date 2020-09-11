@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { AppNotification } from 'app/types';
 import { Alert } from '@grafana/ui';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   appNotification: AppNotification;
@@ -21,12 +22,12 @@ export default class AppNotificationItem extends Component<Props> {
 
   render() {
     const { appNotification, onClearNotification } = this.props;
-
+    const { t } = useTranslation();
     return (
       <Alert
         severity={appNotification.severity}
-        title={appNotification.title}
-        children={appNotification.component || appNotification.text}
+        title={t(appNotification.title)}
+        children={appNotification.component || t(appNotification.text)}
         onRemove={() => onClearNotification(appNotification.id)}
       />
     );

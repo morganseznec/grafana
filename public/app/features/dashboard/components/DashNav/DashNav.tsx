@@ -19,8 +19,9 @@ import { DashboardModel } from '../../state';
 import { CoreEvents, StoreState } from 'app/types';
 import { ShareModal } from 'app/features/dashboard/components/ShareModal';
 import { SaveDashboardModalProxy } from 'app/features/dashboard/components/SaveDashboard/SaveDashboardModalProxy';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-export interface OwnProps {
+export interface OwnProps extends WithTranslation {
   dashboard: DashboardModel;
   isFullscreen: boolean;
   $injector: any;
@@ -134,7 +135,7 @@ class DashNav extends PureComponent<Props> {
     if (canStar) {
       buttons.push(
         <DashNavButton
-          tooltip="Mark as favorite"
+          tooltip={this.props.t('Mark as favorite')}
           classSuffix="star"
           icon={isStarred ? 'favorite' : 'star'}
           iconType={isStarred ? 'mono' : 'default'}
@@ -151,7 +152,7 @@ class DashNav extends PureComponent<Props> {
         <ModalsController key="button-share">
           {({ showModal, hideModal }) => (
             <DashNavButton
-              tooltip="Share dashboard"
+              tooltip={this.props.t('Share dashboard')}
               classSuffix="share"
               icon="share-alt"
               iconSize="lg"
@@ -226,7 +227,7 @@ class DashNav extends PureComponent<Props> {
       buttons.push(
         <DashNavButton
           classSuffix="save"
-          tooltip="Add panel"
+          tooltip={this.props.t('Add panel')}
           icon="panel-add"
           onClick={onAddPanel}
           iconType="mono"
@@ -238,7 +239,7 @@ class DashNav extends PureComponent<Props> {
         <ModalsController key="button-save">
           {({ showModal, hideModal }) => (
             <DashNavButton
-              tooltip="Save dashboard"
+              tooltip={this.props.t('Save dashboard')}
               classSuffix="save"
               icon="save"
               onClick={() => {
@@ -268,7 +269,7 @@ class DashNav extends PureComponent<Props> {
     if (showSettings) {
       buttons.push(
         <DashNavButton
-          tooltip="Dashboard settings"
+          tooltip={this.props.t('Dashboard settings')}
           classSuffix="settings"
           icon="cog"
           onClick={this.onOpenSettings}
@@ -292,7 +293,7 @@ class DashNav extends PureComponent<Props> {
         {this.playlistSrv.isPlaying && (
           <div className="navbar-buttons navbar-buttons--playlist">
             <DashNavButton
-              tooltip="Go to previous dashboard"
+              tooltip={this.props.t('Go to previous dashboard')}
               classSuffix="tight"
               icon="step-backward"
               onClick={this.onPlaylistPrev}
@@ -304,7 +305,7 @@ class DashNav extends PureComponent<Props> {
               onClick={this.onPlaylistStop}
             />
             <DashNavButton
-              tooltip="Go to next dashboard"
+              tooltip={this.props.t('Go to next dashboard')}
               classSuffix="tight"
               icon="forward"
               onClick={this.onPlaylistNext}
@@ -315,7 +316,12 @@ class DashNav extends PureComponent<Props> {
         <div className="navbar-buttons navbar-buttons--actions">{this.renderRightActionsButton()}</div>
 
         <div className="navbar-buttons navbar-buttons--tv">
-          <DashNavButton tooltip="Cycle view mode" classSuffix="tv" icon="monitor" onClick={this.onToggleTVMode} />
+          <DashNavButton
+            tooltip={this.props.t('Cycle view mode')}
+            classSuffix="tv"
+            icon="monitor"
+            onClick={this.onToggleTVMode}
+          />
         </div>
 
         {!dashboard.timepicker.hidden && (
@@ -341,4 +347,4 @@ const mapDispatchToProps: MapDispatchToProps<DispatchProps, OwnProps> = {
   updateTimeZoneForSession,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DashNav);
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(DashNav));

@@ -17,6 +17,8 @@ import { LS_PANEL_COPY_KEY } from 'app/core/constants';
 import { css, cx, keyframes } from 'emotion';
 import { GrafanaTheme } from '@grafana/data';
 import tinycolor from 'tinycolor2';
+import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 
 export type PanelPluginInfo = { id: any; defaults: { gridPos: { w: any; h: any }; title: any } };
 
@@ -68,7 +70,7 @@ export const AddPanelWidgetUnconnected: React.FC<Props> = ({ panel, dashboard, u
 
     const newPanel: any = {
       type: 'graph',
-      title: 'Panel Title',
+      title: i18next.t('Panel Title'),
       gridPos: { x: gridPos.x, y: gridPos.y, w: gridPos.w, h: gridPos.h },
     };
 
@@ -90,7 +92,7 @@ export const AddPanelWidgetUnconnected: React.FC<Props> = ({ panel, dashboard, u
 
     const newPanel: any = {
       type: panelPluginInfo.id,
-      title: 'Panel Title',
+      title: i18next.t('Panel Title'),
       gridPos: {
         x: gridPos.x,
         y: gridPos.y,
@@ -113,7 +115,7 @@ export const AddPanelWidgetUnconnected: React.FC<Props> = ({ panel, dashboard, u
   const onCreateNewRow = () => {
     const newRow: any = {
       type: 'row',
-      title: 'Row title',
+      title: i18next.t('Row Title'),
       gridPos: { x: 0, y: 0 },
     };
 
@@ -122,6 +124,7 @@ export const AddPanelWidgetUnconnected: React.FC<Props> = ({ panel, dashboard, u
   };
 
   const styles = getStyles(theme);
+  const { t } = useTranslation();
   return (
     <div className={cx('panel-container', styles.wrapper)}>
       <AddPanelWidgetHandle onCancel={onCancelAddPanel} />
@@ -130,7 +133,7 @@ export const AddPanelWidgetUnconnected: React.FC<Props> = ({ panel, dashboard, u
         <div>
           <HorizontalGroup justify="center">
             <Button onClick={onCreateNewRow} variant="secondary" size="sm">
-              Convert to row
+              {t('Convert to row')}
             </Button>
           </HorizontalGroup>
         </div>
@@ -165,15 +168,16 @@ const AddPanelWidgetCreate: React.FC<AddPanelWidgetCreateProps> = ({ onCreate, o
   const copiedPanelPlugins = useMemo(() => getCopiedPanelPlugins(), []);
   const theme = useTheme();
   const styles = getAddPanelWidgetCreateStyles(theme);
+  const { t } = useTranslation();
   return (
     <div className={styles.wrapper}>
       <HorizontalGroup>
         <Button icon="plus" size="md" onClick={onCreate} aria-label={selectors.pages.AddDashboard.addNewPanel}>
-          Add new panel
+          {t('Add new panel')}
         </Button>
         {copiedPanelPlugins.length === 1 && (
           <Button variant="secondary" size="md" onClick={() => onPasteCopiedPanel(copiedPanelPlugins[0])}>
-            Paste copied panel
+            {t('Paste copied panel')}
           </Button>
         )}
       </HorizontalGroup>

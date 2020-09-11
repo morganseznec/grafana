@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cx, css, keyframes } from 'emotion';
 import { useStyles } from '@grafana/ui';
 import { Branding } from '../Branding/Branding';
@@ -15,14 +16,15 @@ export const InnerBox: FC<InnerBoxProps> = ({ children, enterAnimation = true })
 
 export const LoginLayout: FC = ({ children }) => {
   const loginStyles = useStyles(getLoginStyles);
+  const { t } = useTranslation();
   return (
     <Branding.LoginBackground className={loginStyles.container}>
       <div className={cx(loginStyles.loginContent, Branding.LoginBoxBackground())}>
         <div className={loginStyles.loginLogoWrapper}>
           <Branding.LoginLogo className={loginStyles.loginLogo} />
           <div className={loginStyles.titleWrapper}>
-            <h1 className={loginStyles.mainTitle}>{Branding.LoginTitle}</h1>
-            <h3 className={loginStyles.subTitle}>{Branding.GetLoginSubTitle()}</h3>
+            <h1 className={loginStyles.mainTitle}>{t(Branding.LoginTitle)}</h1>
+            <h3 className={loginStyles.subTitle}>{t(Branding.GetLoginSubTitle())}</h3>
           </div>
         </div>
         <div className={loginStyles.loginOuterBox}>{children}</div>
