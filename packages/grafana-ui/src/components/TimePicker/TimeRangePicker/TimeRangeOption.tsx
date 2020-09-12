@@ -3,6 +3,7 @@ import { css } from 'emotion';
 import { GrafanaTheme, TimeOption } from '@grafana/data';
 import { useTheme, stylesFactory, selectThemeVariant } from '../../../themes';
 import { Icon } from '../../Icon/Icon';
+import { useTranslation } from 'react-i18next';
 
 const getStyles = stylesFactory((theme: GrafanaTheme) => {
   const background = selectThemeVariant(
@@ -45,10 +46,11 @@ interface Props {
 export const TimeRangeOption = memo<Props>(({ value, onSelect, selected = false }) => {
   const theme = useTheme();
   const styles = getStyles(theme);
+  const { t } = useTranslation();
 
   return (
     <div className={styles.container} onClick={() => onSelect(value)} tabIndex={-1}>
-      <span>{value.display}</span>
+      <span>{t(value.display)}</span>
       {selected ? <Icon name="check" /> : null}
     </div>
   );

@@ -299,7 +299,7 @@ class DashNav extends PureComponent<Props> {
               onClick={this.onPlaylistPrev}
             />
             <DashNavButton
-              tooltip="Stop playlist"
+              tooltip={this.props.t('Stop playlist')}
               classSuffix="tight"
               icon="square-shape"
               onClick={this.onPlaylistStop}

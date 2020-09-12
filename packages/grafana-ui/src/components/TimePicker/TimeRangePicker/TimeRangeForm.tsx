@@ -15,6 +15,8 @@ import { Field } from '../../Forms/Field';
 import { Input } from '../../Input/Input';
 import { Button } from '../../Button';
 
+import { useTranslation } from 'react-i18next';
+
 interface Props {
   isFullscreen: boolean;
   value: TimeRange;
@@ -37,6 +39,8 @@ export const TimeRangeForm: React.FC<Props> = props => {
   const [from, setFrom] = useState<InputState>(valueToState(value.raw.from, false, timeZone));
   const [to, setTo] = useState<InputState>(valueToState(value.raw.to, true, timeZone));
   const [isOpen, setOpen] = useState(false);
+
+  const { t } = useTranslation();
 
   // Synchronize internal state with external value
   useEffect(() => {
@@ -89,7 +93,7 @@ export const TimeRangeForm: React.FC<Props> = props => {
 
   return (
     <>
-      <Field label="From" invalid={from.invalid} error={errorMessage}>
+      <Field label={t('From')} invalid={from.invalid} error={errorMessage}>
         <Input
           onClick={event => event.stopPropagation()}
           onFocus={onFocus}
@@ -99,7 +103,7 @@ export const TimeRangeForm: React.FC<Props> = props => {
           value={from.value}
         />
       </Field>
-      <Field label="To" invalid={to.invalid} error={errorMessage}>
+      <Field label={t('To')} invalid={to.invalid} error={errorMessage}>
         <Input
           onClick={event => event.stopPropagation()}
           onFocus={onFocus}
@@ -110,7 +114,7 @@ export const TimeRangeForm: React.FC<Props> = props => {
         />
       </Field>
       <Button aria-label="TimePicker submit button" onClick={onApply}>
-        Apply time range
+        {t('Apply time range')}
       </Button>
 
       <TimePickerCalendar
