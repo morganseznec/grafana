@@ -1,4 +1,6 @@
 import React, { FormEvent, memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import { css } from 'emotion';
 import Calendar from 'react-calendar/dist/entry.nostyle';
 import { dateTime, DateTime, dateTimeParse, GrafanaTheme, TimeZone } from '@grafana/data';
@@ -8,6 +10,8 @@ import { Button } from '../../Button';
 import { Icon } from '../../Icon/Icon';
 import { Portal } from '../../Portal/Portal';
 import { ClickOutsideWrapper } from '../../ClickOutsideWrapper/ClickOutsideWrapper';
+
+const getCurrentLng = () => i18n.language || window.localStorage.i18nextLng || '';
 
 const getStyles = stylesFactory((theme: GrafanaTheme, isReversed = false) => {
   const containerBorder = theme.isDark ? theme.palette.dark9 : theme.palette.gray5;
@@ -234,10 +238,11 @@ export const TimePickerCalendar = memo<Props>(props => {
 const Header = memo<Props>(({ onClose }) => {
   const theme = useTheme();
   const styles = getHeaderStyles(theme);
+  const { t } = useTranslation();
 
   return (
     <div className={styles.container}>
-      <TimePickerTitle>Select a time range</TimePickerTitle>
+      <TimePickerTitle>{t('Select a time range')}</TimePickerTitle>
       <Icon name="times" onClick={onClose} />
     </div>
   );
@@ -264,7 +269,7 @@ const Body = memo<Props>(({ onChange, from, to, timeZone }) => {
       nextLabel={<Icon name="angle-right" />}
       prevLabel={<Icon name="angle-left" />}
       onChange={onCalendarChange}
-      locale="en"
+      locale={getCurrentLng().toString()}
     />
   );
 });
@@ -272,14 +277,15 @@ const Body = memo<Props>(({ onChange, from, to, timeZone }) => {
 const Footer = memo<Props>(({ onClose, onApply }) => {
   const theme = useTheme();
   const styles = getFooterStyles(theme);
+  const { t } = useTranslation();
 
   return (
     <div className={styles.container}>
       <Button className={styles.apply} onClick={onApply}>
-        Apply time range
+        {t('Apply time range')}
       </Button>
       <Button variant="secondary" onClick={onClose}>
-        Cancel
+        {t('Cancel')}
       </Button>
     </div>
   );

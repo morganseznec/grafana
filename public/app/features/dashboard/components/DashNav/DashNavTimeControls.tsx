@@ -18,6 +18,7 @@ import { TimePickerWithHistory } from 'app/core/components/TimePicker/TimePicker
 // Utils & Services
 import { getTimeSrv } from 'app/features/dashboard/services/TimeSrv';
 import { appEvents } from 'app/core/core';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 const getStyles = stylesFactory((theme: GrafanaTheme) => {
   return {
@@ -28,7 +29,7 @@ const getStyles = stylesFactory((theme: GrafanaTheme) => {
   };
 });
 
-export interface Props extends Themeable {
+export interface Props extends Themeable, WithTranslation {
   dashboard: DashboardModel;
   location: LocationState;
   onChangeTimeZone: typeof updateTimeZoneForSession;
@@ -121,11 +122,11 @@ class UnthemedDashNavTimeControls extends Component<Props> {
           onRefresh={this.onRefresh}
           value={dashboard.refresh}
           intervals={intervals}
-          tooltip="Refresh dashboard"
+          tooltip={this.props.t('Refresh dashboard')}
         />
       </div>
     );
   }
 }
 
-export const DashNavTimeControls = withTheme(UnthemedDashNavTimeControls);
+export const DashNavTimeControls = withTheme(withTranslation()(UnthemedDashNavTimeControls));

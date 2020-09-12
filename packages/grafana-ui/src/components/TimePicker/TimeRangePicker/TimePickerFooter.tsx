@@ -9,6 +9,7 @@ import { Button } from '../../Button';
 import { TimeZonePicker } from '../TimeZonePicker';
 import isString from 'lodash/isString';
 import { selectors } from '@grafana/e2e-selectors';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   timeZone?: TimeZone;
@@ -19,6 +20,7 @@ interface Props {
 export const TimePickerFooter: FC<Props> = props => {
   const { timeZone, timestamp = Date.now(), onChangeTimeZone } = props;
   const [isEditing, setEditing] = useState(false);
+  const { t } = useTranslation();
 
   const onToggleChangeTz = useCallback(
     (event?: React.MouseEvent) => {
@@ -76,7 +78,7 @@ export const TimePickerFooter: FC<Props> = props => {
       </div>
       <div className={style.spacer} />
       <Button variant="secondary" onClick={onToggleChangeTz} size="sm">
-        Change time zone
+        {t('Change time zone')}
       </Button>
     </div>
   );
