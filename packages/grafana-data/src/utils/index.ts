@@ -2,6 +2,7 @@ export * from './Registry';
 export * from './datasource';
 export * from './deprecationWarning';
 export * from './csv';
+export * from './excel';
 export * from './logs';
 export * from './labels';
 export * from './labels';
