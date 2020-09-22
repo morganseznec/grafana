@@ -48,9 +48,12 @@ export function toExcel(data: DataFrame[]): any {
           const v = fields[j].values.get(i);
           if (v !== null) {
             array[i].push(writers[j](v));
+<<<<<<< HEAD
           } else {
             // Null values should display empty cells
             array[i].push('');
+=======
+>>>>>>> a38fdb3d22... Support Excel export
           }
         }
       }
