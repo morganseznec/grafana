@@ -9,6 +9,7 @@ import {
   getFrameDisplayName,
   SelectableValue,
   toCSV,
+  toExcel,
   transformDataFrame,
 } from '@grafana/data';
 import { Button, Container, Field, HorizontalGroup, Icon, Select, Switch, Table, VerticalGroup } from '@grafana/ui';
@@ -96,6 +97,20 @@ export class InspectDataTab extends PureComponent<Props, State> {
     });
     const transformation = transformId !== DataTransformerID.noop ? '-as-' + transformId.toLocaleLowerCase() : '';
     const fileName = `${panel.title}-data${transformation}-${dateTimeFormat(new Date())}.csv`;
+    saveAs(blob, fileName);
+  };
+
+  exportExcel = (dataFrame: DataFrame) => {
+    const { panel } = this.props;
+    const { transformId } = this.state;
+
+    const wbout = toExcel([dataFrame]);
+
+    const blob = new Blob([wbout], {
+      type: 'application/octet-stream',
+    });
+    const transformation = transformId !== DataTransformerID.noop ? '-as-' + transformId.toLocaleLowerCase() : '';
+    const fileName = `${panel.title}-data${transformation}-${dateTimeFormat(new Date())}.xlsx`;
     saveAs(blob, fileName);
   };
 
@@ -288,6 +303,16 @@ export class InspectDataTab extends PureComponent<Props, State> {
             `}
           >
             Download CSV
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => this.exportExcel(dataFrames[dataFrameIndex])}
+            className={css`
+              margin-bottom: 10px;
+              margin-left: 10px;
+            `}
+          >
+            Download Excel
           </Button>
         </div>
         <Container grow={1}>
