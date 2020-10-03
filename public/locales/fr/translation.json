@@ -192,5 +192,11 @@
   "To": "Au",
   "Browser Time": "Heure du navigateur",
   "Refresh dashboard": "Rafraichir le tableau de bord",
-  "Stop playlist": "Arrêter la playlist"
+  "Stop playlist": "Arrêter la playlist",
+  "Logged in": "Connecté",
+  "Invalid or expired reset password code": "",
+  "Invalid username or password": "Nom d'utilisateur ou mot de passe invalide",
+  "User is disabled": "L'utilisateur est désactivé",
+  "Error while trying to authenticate user": "Erreur lors de la tentative d'authentification de l'utilisateur",
+  "Error while signing in user": "Erreur lors de la connexion de l'utilisateur"
 }
