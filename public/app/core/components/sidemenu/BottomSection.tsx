@@ -20,7 +20,7 @@ export default function BottomSection() {
   }
 
   return (
-    <Suspense fallback="loading...">
+    <Suspense fallback="">
       <div className="sidemenu__bottom">
         {!isSignedIn && <SignIn />}
         {bottomNav.map((link, index) => {

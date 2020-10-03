@@ -50,6 +50,9 @@ func (hs *HTTPServer) ValidateRedirectTo(redirectTo string) error {
 	if strings.HasPrefix(to.Path, "//") {
 		return login.ErrForbiddenRedirectTo
 	}
+	if strings.HasPrefix(to.Path, "/public/locales") {
+		return login.ErrForbiddenRedirectTo
+	}
 
 	// when using a subUrl, the redirect_to should start with the subUrl (which contains the leading slash), otherwise the redirect
 	// will send the user to the wrong location

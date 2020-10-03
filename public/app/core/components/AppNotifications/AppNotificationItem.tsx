@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { AppNotification } from 'app/types';
 import { Alert } from '@grafana/ui';
-import { useTranslation } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-interface Props {
+interface Props extends WithTranslation {
   appNotification: AppNotification;
   onClearNotification: (id: string) => void;
 }
 
-export default class AppNotificationItem extends Component<Props> {
+class AppNotificationItem extends Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
     return this.props.appNotification.id !== nextProps.appNotification.id;
   }
@@ -22,14 +22,15 @@ export default class AppNotificationItem extends Component<Props> {
 
   render() {
     const { appNotification, onClearNotification } = this.props;
-    const { t } = useTranslation();
     return (
       <Alert
         severity={appNotification.severity}
-        title={t(appNotification.title)}
-        children={appNotification.component || t(appNotification.text)}
+        title={this.props.t(appNotification.title)}
+        children={appNotification.component || this.props.t(appNotification.text)}
         onRemove={() => onClearNotification(appNotification.id)}
       />
     );
   }
 }
+
+export default withTranslation()(AppNotificationItem);

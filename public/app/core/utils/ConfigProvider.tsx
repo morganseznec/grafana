@@ -8,7 +8,7 @@ export const ConfigConsumer = ConfigContext.Consumer;
 
 export const provideConfig = (component: React.ComponentType<any>) => {
   const ConfigProvider = (props: any) => (
-    <Suspense fallback="loading ...">
+    <Suspense fallback="">
       <ConfigContext.Provider value={config}>{React.createElement(component, { ...props })}</ConfigContext.Provider>
     </Suspense>
   );

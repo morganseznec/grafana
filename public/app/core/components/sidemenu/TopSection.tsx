@@ -17,7 +17,7 @@ const TopSection: FC<any> = () => {
   };
 
   return (
-    <Suspense fallback="loading...">
+    <Suspense fallback="">
       <div className="sidemenu__top">
         <TopSectionItem link={searchLink} onClick={onOpenSearch} />
         {mainLinks.map((link, index) => {
