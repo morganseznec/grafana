@@ -15,8 +15,9 @@ import { GrafanaTheme } from '@grafana/data';
 import { UserOrg, Organization, OrgRole } from 'app/types';
 import { OrgPicker, OrgSelectItem } from 'app/core/components/Select/OrgPicker';
 import { OrgRolePicker } from './OrgRolePicker';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-interface Props {
+interface Props extends WithTranslation {
   orgs: UserOrg[];
 
   onOrgRemove: (orgId: number) => void;
@@ -28,7 +29,7 @@ interface State {
   showAddOrgModal: boolean;
 }
 
-export class UserOrgs extends PureComponent<Props, State> {
+class __UserOrgs extends PureComponent<Props, State> {
   state = {
     showAddOrgModal: false,
   };
@@ -46,7 +47,7 @@ export class UserOrgs extends PureComponent<Props, State> {
 
     return (
       <>
-        <h3 className="page-heading">Organisations</h3>
+        <h3 className="page-heading">{this.props.t('Organisations')}</h3>
         <div className="gf-form-group">
           <div className="gf-form">
             <table className="filter-table form-inline">
@@ -64,7 +65,7 @@ export class UserOrgs extends PureComponent<Props, State> {
           </div>
           <div className={addToOrgContainerClass}>
             <Button variant="secondary" onClick={this.showOrgAddModal(true)}>
-              Add user to organisation
+              {this.props.t('Add user to organisation')}
             </Button>
           </div>
           <AddToOrgModal isOpen={showAddOrgModal} onOrgAdd={onOrgAdd} onDismiss={this.showOrgAddModal(false)} />
@@ -73,6 +74,8 @@ export class UserOrgs extends PureComponent<Props, State> {
     );
   }
 }
+
+export const UserOrgs = withTranslation()(__UserOrgs);
 
 const getOrgRowStyles = stylesFactory((theme: GrafanaTheme) => {
   return {
@@ -87,7 +90,7 @@ const getOrgRowStyles = stylesFactory((theme: GrafanaTheme) => {
   };
 });
 
-interface OrgRowProps extends Themeable {
+interface OrgRowProps extends Themeable, WithTranslation {
   org: UserOrg;
   onOrgRemove: (orgId: number) => void;
   onOrgRoleChange: (orgId: number, newRole: string) => void;
@@ -145,24 +148,24 @@ class UnThemedOrgRow extends PureComponent<OrgRowProps, OrgRowState> {
         <td colSpan={1}>
           <div className="pull-right">
             <ConfirmButton
-              confirmText="Save"
+              confirmText={this.props.t('Save')}
               onClick={this.onChangeRoleClick}
               onCancel={this.onCancelClick}
               onConfirm={this.onOrgRoleSave}
             >
-              Change role
+              {this.props.t('Change role')}
             </ConfirmButton>
           </div>
         </td>
         <td colSpan={1}>
           <div className="pull-right">
             <ConfirmButton
-              confirmText="Confirm removal"
+              confirmText={this.props.t('Confirm removal')}
               confirmVariant="destructive"
               onCancel={this.onCancelClick}
               onConfirm={this.onOrgRemove}
             >
-              Remove from organisation
+              {this.props.t('Remove from organisation')}
             </ConfirmButton>
           </div>
         </td>
@@ -171,7 +174,7 @@ class UnThemedOrgRow extends PureComponent<OrgRowProps, OrgRowState> {
   }
 }
 
-const OrgRow = withTheme(UnThemedOrgRow);
+const OrgRow = withTheme(withTranslation()(UnThemedOrgRow));
 
 const getAddToOrgModalStyles = stylesFactory(() => ({
   modal: css`
@@ -182,7 +185,7 @@ const getAddToOrgModalStyles = stylesFactory(() => ({
   `,
 }));
 
-interface AddToOrgModalProps {
+interface AddToOrgModalProps extends WithTranslation {
   isOpen: boolean;
   onOrgAdd(orgId: number, role: string): void;
   onDismiss?(): void;
@@ -193,7 +196,7 @@ interface AddToOrgModalState {
   role: OrgRole;
 }
 
-export class AddToOrgModal extends PureComponent<AddToOrgModalProps, AddToOrgModalState> {
+class __AddToOrgModal extends PureComponent<AddToOrgModalProps, AddToOrgModalState> {
   state: AddToOrgModalState = {
     selectedOrg: null,
     role: OrgRole.Admin,
@@ -226,20 +229,25 @@ export class AddToOrgModal extends PureComponent<AddToOrgModalProps, AddToOrgMod
     const styles = getAddToOrgModalStyles();
 
     return (
-      <Modal className={styles.modal} title="Add to an organization" isOpen={isOpen} onDismiss={this.onCancel}>
-        <Field label="Organisation">
+      <Modal
+        className={styles.modal}
+        title={this.props.t('Add to an organization')}
+        isOpen={isOpen}
+        onDismiss={this.onCancel}
+      >
+        <Field label={this.props.t('Organisation')}>
           <OrgPicker onSelected={this.onOrgSelect} />
         </Field>
-        <Field label="Role">
+        <Field label={this.props.t('Role')}>
           <OrgRolePicker value={role} onChange={this.onOrgRoleChange} />
         </Field>
         <Container padding="md">
           <HorizontalGroup spacing="md" justify="center">
             <Button variant="primary" onClick={this.onAddUserToOrg}>
-              Add to organisation
+              {this.props.t('Add to organisation')}
             </Button>
             <Button variant="secondary" onClick={this.onCancel}>
-              Cancel
+              {this.props.t('Cancel')}
             </Button>
           </HorizontalGroup>
         </Container>
@@ -247,3 +255,5 @@ export class AddToOrgModal extends PureComponent<AddToOrgModalProps, AddToOrgMod
     );
   }
 }
+
+export const AddToOrgModal = withTranslation()(__AddToOrgModal);

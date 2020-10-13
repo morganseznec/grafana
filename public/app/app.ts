@@ -57,6 +57,8 @@ import { getStandardFieldConfigs, getStandardOptionEditors, getScrollbarWidth } 
 import { getDefaultVariableAdapters, variableAdapters } from './features/variables/adapters';
 import { initDevFeatures } from './dev';
 import { getStandardTransformers } from 'app/core/utils/standardTransformers';
+import LocalStorageBackend from 'i18next-localstorage-backend'; // primary use cache
+import HttpApi from 'i18next-http-backend';
 
 // add move to lodash for backward compatabiltiy
 // @ts-ignore
@@ -76,6 +78,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const options = {
+  backends: [LocalStorageBackend, HttpApi],
   loadPath: '/public/locales/{{lng}}/{{ns}}.json',
 };
 

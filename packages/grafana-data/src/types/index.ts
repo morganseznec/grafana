@@ -28,6 +28,7 @@ export * from './flot';
 export * from './trace';
 export * from './explore';
 export * from './live';
+export * from './languages';
 
 import * as AppEvents from './appEvents';
 import { AppEvent } from './appEvents';

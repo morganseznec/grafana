@@ -116,6 +116,9 @@ class UnthemedDashNavTimeControls extends Component<Props> {
           onMoveForward={this.onMoveForward}
           onZoom={this.onZoom}
           onChangeTimeZone={this.onChangeTimeZone}
+          i18n={this.props.i18n}
+          tReady={this.props.tReady}
+          t={this.props.t}
         />
         <RefreshPicker
           onIntervalChanged={this.onChangeRefreshInterval}

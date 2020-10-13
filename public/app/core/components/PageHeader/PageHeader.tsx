@@ -4,6 +4,7 @@ import { Tab, TabsBar, Icon, IconName } from '@grafana/ui';
 import appEvents from 'app/core/app_events';
 import { NavModel, NavModelItem, NavModelBreadcrumb } from '@grafana/data';
 import { CoreEvents } from 'app/types';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   model: NavModel;
@@ -66,6 +67,8 @@ const Navigation = ({ children }: { children: NavModelItem[] }) => {
     });
   };
 
+  const { t } = useTranslation();
+
   return (
     <nav>
       <SelectNav customCss="page-header__select-nav" children={children} />
@@ -74,7 +77,7 @@ const Navigation = ({ children }: { children: NavModelItem[] }) => {
           return (
             !child.hideFromTabs && (
               <Tab
-                label={child.text}
+                label={t(child.text)}
                 active={child.active}
                 key={`${child.url}-${index}`}
                 icon={child.icon as IconName}

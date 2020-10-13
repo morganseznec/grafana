@@ -3,6 +3,7 @@ import config from 'app/core/config';
 import { Button, LinkButton, Form, Field, Input, HorizontalGroup } from '@grafana/ui';
 import { ChangePasswordFields } from 'app/core/utils/UserProvider';
 import { css } from 'emotion';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   isSaving: boolean;
@@ -11,6 +12,7 @@ export interface Props {
 
 export const ChangePasswordForm: FC<Props> = ({ onChangePassword, isSaving }) => {
   const { ldapEnabled, authProxyEnabled } = config;
+  const { t } = useTranslation();
 
   if (ldapEnabled || authProxyEnabled) {
     return <p>You cannot change password when ldap or auth proxy authentication is enabled.</p>;
@@ -25,40 +27,45 @@ export const ChangePasswordForm: FC<Props> = ({ onChangePassword, isSaving }) =>
         {({ register, errors, getValues }) => {
           return (
             <>
-              <Field label="Old password" invalid={!!errors.oldPassword} error={errors?.oldPassword?.message}>
-                <Input type="password" name="oldPassword" ref={register({ required: 'Old password is required' })} />
+              <Field label={t('Old password')} invalid={!!errors.oldPassword} error={errors?.oldPassword?.message}>
+                <Input
+                  type="password"
+                  name="oldPassword"
+                  ref={register({ required: String(t('Old password is required')) })}
+                />
               </Field>
 
-              <Field label="New password" invalid={!!errors.newPassword} error={errors?.newPassword?.message}>
+              <Field label={t('New password')} invalid={!!errors.newPassword} error={errors?.newPassword?.message}>
                 <Input
                   type="password"
                   name="newPassword"
                   ref={register({
-                    required: 'New password is required',
+                    required: String(t('New password is required')),
                     validate: {
-                      confirm: v => v === getValues().confirmNew || 'Passwords must match',
-                      old: v => v !== getValues().oldPassword || `New password can't be the same as the old one.`,
+                      confirm: v => v === getValues().confirmNew || String(t('Passwords must match')),
+                      old: v =>
+                        v !== getValues().oldPassword || String(t("New password can't be the same as the old one.")),
                     },
                   })}
                 />
               </Field>
 
-              <Field label="Confirm password" invalid={!!errors.confirmNew} error={errors?.confirmNew?.message}>
+              <Field label={t('Confirm password')} invalid={!!errors.confirmNew} error={errors?.confirmNew?.message}>
                 <Input
                   type="password"
                   name="confirmNew"
                   ref={register({
-                    required: 'New password confirmation is required',
-                    validate: v => v === getValues().newPassword || 'Passwords must match',
+                    required: String(t('New password confirmation is required')),
+                    validate: v => v === getValues().newPassword || String(t('Passwords must match')),
                   })}
                 />
               </Field>
               <HorizontalGroup>
                 <Button variant="primary" disabled={isSaving}>
-                  Change Password
+                  {t('Change Password')}
                 </Button>
                 <LinkButton variant="secondary" href={`${config.appSubUrl}/profile`}>
-                  Cancel
+                  {t('Cancel')}
                 </LinkButton>
               </HorizontalGroup>
             </>

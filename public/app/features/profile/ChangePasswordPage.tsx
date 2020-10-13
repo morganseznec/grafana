@@ -7,8 +7,9 @@ import { getNavModel } from 'app/core/selectors/navModel';
 import { UserProvider } from 'app/core/utils/UserProvider';
 import Page from 'app/core/components/Page/Page';
 import { ChangePasswordForm } from './ChangePasswordForm';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-export interface Props {
+export interface Props extends WithTranslation {
   navModel: NavModel;
 }
 
@@ -20,7 +21,7 @@ export class ChangePasswordPage extends PureComponent<Props> {
         <UserProvider>
           {({ changePassword }, states) => (
             <Page.Contents>
-              <h3 className="page-sub-heading">Change Your Password</h3>
+              <h3 className="page-sub-heading">{this.props.t('Change Your Password')}</h3>
               <ChangePasswordForm onChangePassword={changePassword} isSaving={states.changePassword} />
             </Page.Contents>
           )}
@@ -38,4 +39,4 @@ function mapStateToProps(state: StoreState) {
 
 const mapDispatchToProps = {};
 
-export default hot(module)(connect(mapStateToProps, mapDispatchToProps)(ChangePasswordPage));
+export default hot(module)(connect(mapStateToProps, mapDispatchToProps)(withTranslation()(ChangePasswordPage)));

@@ -4,8 +4,9 @@ import { cx, css } from 'emotion';
 import { config } from 'app/core/config';
 import { GrafanaTheme } from '@grafana/data';
 import { ConfirmButton, ConfirmModal, LegacyInputStatus, Button, stylesFactory, Input } from '@grafana/ui';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-interface Props {
+interface Props extends WithTranslation {
   user: UserDTO;
 
   onUserUpdate: (user: UserDTO) => void;
@@ -21,7 +22,7 @@ interface State {
   showDisableModal: boolean;
 }
 
-export class UserProfile extends PureComponent<Props, State> {
+class __UserProfile extends PureComponent<Props, State> {
   state = {
     isLoading: false,
     showDeleteModal: false,
@@ -88,34 +89,34 @@ export class UserProfile extends PureComponent<Props, State> {
 
     return (
       <>
-        <h3 className="page-heading">User information</h3>
+        <h3 className="page-heading">{this.props.t('User information')}</h3>
         <div className="gf-form-group">
           <div className="gf-form">
             <table className="filter-table form-inline">
               <tbody>
                 <UserProfileRow
-                  label="Name"
+                  label={this.props.t('Name')}
                   value={user.name}
                   locked={user.isExternal}
                   lockMessage={lockMessage}
                   onChange={this.onUserNameChange}
                 />
                 <UserProfileRow
-                  label="Email"
+                  label={this.props.t('Email')}
                   value={user.email}
                   locked={user.isExternal}
                   lockMessage={lockMessage}
                   onChange={this.onUserEmailChange}
                 />
                 <UserProfileRow
-                  label="Username"
+                  label={this.props.t('Username')}
                   value={user.login}
                   locked={user.isExternal}
                   lockMessage={lockMessage}
                   onChange={this.onUserLoginChange}
                 />
                 <UserProfileRow
-                  label="Password"
+                  label={this.props.t('Password')}
                   value="********"
                   inputType="password"
                   locked={user.isExternal}
@@ -127,30 +128,30 @@ export class UserProfile extends PureComponent<Props, State> {
           </div>
           <div className={styles.buttonRow}>
             <Button variant="destructive" onClick={this.showDeleteUserModal(true)}>
-              Delete User
+              {this.props.t('Delete User')}
             </Button>
             <ConfirmModal
               isOpen={showDeleteModal}
-              title="Delete user"
-              body="Are you sure you want to delete this user?"
-              confirmText="Delete user"
+              title={this.props.t('Delete user')}
+              body={this.props.t('Are you sure you want to delete this user?')}
+              confirmText={this.props.t('Delete user')}
               onConfirm={this.onUserDelete}
               onDismiss={this.showDeleteUserModal(false)}
             />
             {user.isDisabled ? (
               <Button variant="secondary" onClick={this.onUserEnable}>
-                Enable User
+                {this.props.t('Enable User')}
               </Button>
             ) : (
               <Button variant="secondary" onClick={this.showDisableUserModal(true)}>
-                Disable User
+                {this.props.t('Disable User')}
               </Button>
             )}
             <ConfirmModal
               isOpen={showDisableModal}
-              title="Disable user"
-              body="Are you sure you want to disable this user?"
-              confirmText="Disable user"
+              title={this.props.t('Disable user')}
+              body={this.props.t('Are you sure you want to disable this user?')}
+              confirmText={this.props.t('Disable user')}
               onConfirm={this.onUserDisable}
               onDismiss={this.showDisableUserModal(false)}
             />
@@ -160,6 +161,8 @@ export class UserProfile extends PureComponent<Props, State> {
     );
   }
 }
+
+export const UserProfile = withTranslation()(__UserProfile);
 
 const getStyles = stylesFactory((theme: GrafanaTheme) => {
   return {
@@ -172,7 +175,7 @@ const getStyles = stylesFactory((theme: GrafanaTheme) => {
   };
 });
 
-interface UserProfileRowProps {
+interface UserProfileRowProps extends WithTranslation {
   label: string;
   value?: string;
   locked?: boolean;
@@ -186,7 +189,7 @@ interface UserProfileRowState {
   editing: boolean;
 }
 
-export class UserProfileRow extends PureComponent<UserProfileRowProps, UserProfileRowState> {
+class __UserProfileRow extends PureComponent<UserProfileRowProps, UserProfileRowState> {
   inputElem: HTMLInputElement;
 
   static defaultProps: Partial<UserProfileRowProps> = {
@@ -286,7 +289,7 @@ export class UserProfileRow extends PureComponent<UserProfileRowProps, UserProfi
               onConfirm={this.onSave}
               onCancel={this.onCancelClick}
             >
-              Edit
+              {this.props.t('Edit')}
             </ConfirmButton>
           </div>
         </td>
@@ -294,6 +297,8 @@ export class UserProfileRow extends PureComponent<UserProfileRowProps, UserProfi
     );
   }
 }
+
+export const UserProfileRow = withTranslation()(__UserProfileRow);
 
 interface LockedRowProps {
   label: string;

@@ -13,8 +13,9 @@ import { TimePickerWithHistory } from 'app/core/components/TimePicker/TimePicker
 
 // Utils & Services
 import { getShiftedTimeRange, getZoomedTimeRange } from 'app/core/utils/timePicker';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-export interface Props {
+export interface Props extends WithTranslation {
   exploreId: ExploreId;
   hideText?: boolean;
   range: TimeRange;
@@ -26,7 +27,7 @@ export interface Props {
   onChangeTimeZone: (timeZone: TimeZone) => void;
 }
 
-export class ExploreTimeControls extends Component<Props> {
+class __ExploreTimeControls extends Component<Props> {
   onMoveTimePicker = (direction: number) => {
     const { range, onChangeTime, timeZone } = this.props;
     const { from, to } = getShiftedTimeRange(direction, range);
@@ -57,7 +58,18 @@ export class ExploreTimeControls extends Component<Props> {
   };
 
   render() {
-    const { range, timeZone, splitted, syncedTimes, onChangeTimeSync, hideText, onChangeTimeZone } = this.props;
+    const {
+      range,
+      timeZone,
+      splitted,
+      syncedTimes,
+      onChangeTimeSync,
+      hideText,
+      onChangeTimeZone,
+      t,
+      i18n,
+      tReady,
+    } = this.props;
     const timeSyncButton = splitted ? <TimeSyncButton onClick={onChangeTimeSync} isSynced={syncedTimes} /> : undefined;
     const timePickerCommonProps = {
       value: range,
@@ -75,7 +87,12 @@ export class ExploreTimeControls extends Component<Props> {
         isSynced={syncedTimes}
         onChange={this.onChangeTimePicker}
         onChangeTimeZone={onChangeTimeZone}
+        t={t}
+        i18n={i18n}
+        tReady={tReady}
       />
     );
   }
 }
+
+export const ExploreTimeControls = withTranslation()(__ExploreTimeControls);

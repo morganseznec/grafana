@@ -17,6 +17,8 @@ import { isDateTime, rangeUtil, GrafanaTheme, dateTimeFormat, timeZoneFormatUser
 import { TimeRange, TimeZone, dateMath } from '@grafana/data';
 import { Themeable } from '../../types';
 import { otherOptions, quickOptions } from './rangeOptions';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const getStyles = stylesFactory((theme: GrafanaTheme) => {
   return {
@@ -56,7 +58,7 @@ const getLabelStyles = stylesFactory((theme: GrafanaTheme) => {
   };
 });
 
-export interface Props extends Themeable {
+export interface Props extends Themeable, WithTranslation {
   hideText?: boolean;
   value: TimeRange;
   timeZone?: TimeZone;
@@ -159,7 +161,7 @@ export class UnthemedTimeRangePicker extends PureComponent<Props, State> {
             </button>
           )}
 
-          <Tooltip content={ZoomOutTooltip} placement="bottom">
+          <Tooltip content={ZoomOutTooltip(this.props.t)} placement="bottom">
             <button className="btn navbar-button navbar-button--zoom" onClick={onZoom}>
               <Icon name="search-minus" size="lg" />
             </button>
@@ -170,20 +172,21 @@ export class UnthemedTimeRangePicker extends PureComponent<Props, State> {
   }
 }
 
-const ZoomOutTooltip = () => (
+const ZoomOutTooltip = (t: any) => (
   <>
-    Time range zoom out <br /> CTRL+Z
+    {t('Time range zoom out')} <br /> CTRL+Z
   </>
 );
 
 const TimePickerTooltip = ({ timeRange, timeZone }: { timeRange: TimeRange; timeZone?: TimeZone }) => {
   const theme = useTheme();
   const styles = getLabelStyles(theme);
+  const { t } = useTranslation();
 
   return (
     <>
       {dateTimeFormat(timeRange.from, { timeZone })}
-      <div className="text-center">to</div>
+      <div className="text-center">{t('to')}</div>
       {dateTimeFormat(timeRange.to, { timeZone })}
       <div className="text-center">
         <span className={styles.utc}>{timeZoneFormatUserFriendly(timeZone)}</span>
@@ -197,6 +200,7 @@ type LabelProps = Pick<Props, 'hideText' | 'value' | 'timeZone'>;
 export const TimePickerButtonLabel = memo<LabelProps>(({ hideText, value, timeZone }) => {
   const theme = useTheme();
   const styles = getLabelStyles(theme);
+  const { t } = useTranslation();
 
   if (hideText) {
     return null;
@@ -204,7 +208,7 @@ export const TimePickerButtonLabel = memo<LabelProps>(({ hideText, value, timeZo
 
   return (
     <span className={styles.container}>
-      <span>{formattedRange(value, timeZone)}</span>
+      <span>{t(formattedRange(value, timeZone))}</span>
       <span className={styles.utc}>{rangeUtil.describeTimeRangeAbbreviation(value, timeZone)}</span>
     </span>
   );
@@ -218,4 +222,4 @@ const formattedRange = (value: TimeRange, timeZone?: TimeZone) => {
   return rangeUtil.describeTimeRange(adjustedTimeRange, timeZone);
 };
 
-export const TimeRangePicker = withTheme(UnthemedTimeRangePicker);
+export const TimeRangePicker = withTheme(withTranslation()(UnthemedTimeRangePicker));
