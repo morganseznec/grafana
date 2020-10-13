@@ -5,6 +5,7 @@ import { useStyles } from '@grafana/ui';
 import { Branding } from '../Branding/Branding';
 import { GrafanaTheme } from '@grafana/data';
 import { Footer } from '../Footer/Footer';
+import { LanguagePicker } from './LanguagePicker';
 
 interface InnerBoxProps {
   enterAnimation?: boolean;
@@ -16,10 +17,14 @@ export const InnerBox: FC<InnerBoxProps> = ({ children, enterAnimation = true })
 
 export const LoginLayout: FC = ({ children }) => {
   const loginStyles = useStyles(getLoginStyles);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const getCurrentLng = () => i18n.language || window.localStorage.i18nextLng || '';
+
   return (
     <Branding.LoginBackground className={loginStyles.container}>
       <div className={cx(loginStyles.loginContent, Branding.LoginBoxBackground())}>
+        <LanguagePicker value={getCurrentLng()} onChange={(language: string) => i18n.changeLanguage(language)} />
         <div className={loginStyles.loginLogoWrapper}>
           <Branding.LoginLogo className={loginStyles.loginLogo} />
           <div className={loginStyles.titleWrapper}>

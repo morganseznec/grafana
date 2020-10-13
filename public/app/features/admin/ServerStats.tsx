@@ -6,8 +6,9 @@ import { getNavModel } from 'app/core/selectors/navModel';
 import { getServerStats, ServerStat } from './state/apis';
 import Page from 'app/core/components/Page/Page';
 import { NavModel } from '@grafana/data';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-interface Props {
+interface Props extends WithTranslation {
   navModel: NavModel;
   getServerStats: () => Promise<ServerStat[]>;
 }
@@ -36,14 +37,16 @@ export class ServerStats extends PureComponent<Props, State> {
     const { navModel } = this.props;
     const { stats, isLoading } = this.state;
 
+    translateNames(this.props.t, stats);
+
     return (
       <Page navModel={navModel}>
         <Page.Contents isLoading={isLoading}>
           <table className="filter-table form-inline">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Value</th>
+                <th>{this.props.t('Name')}</th>
+                <th>{this.props.t('Value')}</th>
               </tr>
             </thead>
             <tbody>{stats.map(StatItem)}</tbody>
@@ -51,6 +54,12 @@ export class ServerStats extends PureComponent<Props, State> {
         </Page.Contents>
       </Page>
     );
+  }
+}
+
+function translateNames(t: any, stats: ServerStat[]) {
+  for (let stat of stats) {
+    stat.name = t(stat.name);
   }
 }
 
@@ -68,4 +77,4 @@ const mapStateToProps = (state: StoreState) => ({
   getServerStats: getServerStats,
 });
 
-export default hot(module)(connect(mapStateToProps)(ServerStats));
+export default hot(module)(connect(mapStateToProps)(withTranslation()(ServerStats)));

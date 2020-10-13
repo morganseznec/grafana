@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import { ConfirmButton, RadioButtonGroup, Icon } from '@grafana/ui';
 import { cx } from 'emotion';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-interface Props {
+interface Props extends WithTranslation {
   isGrafanaAdmin: boolean;
 
   onGrafanaAdminChange: (isGrafanaAdmin: boolean) => void;
@@ -18,10 +19,10 @@ const adminOptions = [
   { label: 'No', value: 'NO' },
 ];
 
-export class UserPermissions extends PureComponent<Props, State> {
+class __UserPermissions extends PureComponent<Props, State> {
   state = {
     isEditing: false,
-    currentAdminOption: this.props.isGrafanaAdmin ? 'YES' : 'NO',
+    currentAdminOption: this.props.isGrafanaAdmin ? this.props.t('YES') : this.props.t('NO'),
   };
 
   onChangeClick = () => {
@@ -31,7 +32,7 @@ export class UserPermissions extends PureComponent<Props, State> {
   onCancelClick = () => {
     this.setState({
       isEditing: false,
-      currentAdminOption: this.props.isGrafanaAdmin ? 'YES' : 'NO',
+      currentAdminOption: this.props.isGrafanaAdmin ? this.props.t('YES') : this.props.t('NO'),
     });
   };
 
@@ -50,15 +51,17 @@ export class UserPermissions extends PureComponent<Props, State> {
     const { isEditing, currentAdminOption } = this.state;
     const changeButtonContainerClass = cx('pull-right');
 
+    translateAdminOpts(this.props.t, adminOptions);
+
     return (
       <>
-        <h3 className="page-heading">Permissions</h3>
+        <h3 className="page-heading">{this.props.t('Permissions')}</h3>
         <div className="gf-form-group">
           <div className="gf-form">
             <table className="filter-table form-inline">
               <tbody>
                 <tr>
-                  <td className="width-16">Grafana Admin</td>
+                  <td className="width-16">{this.props.t('Grafana Admin')}</td>
                   {isEditing ? (
                     <td colSpan={2}>
                       <RadioButtonGroup
@@ -71,10 +74,10 @@ export class UserPermissions extends PureComponent<Props, State> {
                     <td colSpan={2}>
                       {isGrafanaAdmin ? (
                         <>
-                          <Icon name="shield" /> Yes
+                          <Icon name="shield" /> {this.props.t('Yes')}
                         </>
                       ) : (
-                        <>No</>
+                        <>{this.props.t('No')}</>
                       )}
                     </td>
                   )}
@@ -85,9 +88,9 @@ export class UserPermissions extends PureComponent<Props, State> {
                         onClick={this.onChangeClick}
                         onConfirm={this.onGrafanaAdminChange}
                         onCancel={this.onCancelClick}
-                        confirmText="Change"
+                        confirmText={this.props.t('Change')}
                       >
-                        Change
+                        {this.props.t('Change')}
                       </ConfirmButton>
                     </div>
                   </td>
@@ -100,3 +103,11 @@ export class UserPermissions extends PureComponent<Props, State> {
     );
   }
 }
+
+function translateAdminOpts(t: any, adminOptions: any) {
+  for (let option of adminOptions) {
+    option.label = t(option.label);
+  }
+}
+
+export const UserPermissions = withTranslation()(__UserPermissions);
