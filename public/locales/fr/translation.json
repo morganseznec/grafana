@@ -275,8 +275,8 @@
   "Table data is formatted with options defined in the Field and Override tabs.": "Les données du tableau sont formatées avec les options définies dans les onglets 'Champ' et 'Remplacer'.",
   "No Data": "Pas de données",
   "Could not find the Data Frame": "Impossible de trouver le bloc de données",
-  "Download CSV": "Télécharger le fichier CSV",
-  "Download Excel": "Télécharger le fichier Excel",
+  "Download CSV": "Télécharger (CSV)",
+  "Download Excel": "Télécharger (Excel)",
   "queries with total query time of": "requête(s) avec une durée totale de",
   "Panel inspect": "Inspecter le panneau",
   "Total request time": "Temps total de la requête",
@@ -291,5 +291,7 @@
   "Collapse all": "Tout réduire",
   "Expand all": "Développer tout",
   "Loading query inspector...": "Chargement de l'inspecteur de requêtes...",
-  "No request & response collected yet. Hit refresh button": "Aucune demande et réponse recueillies pour le moment. Appuyez sur le bouton Rafraichir"
+  "No request & response collected yet. Hit refresh button": "Aucune demande et réponse recueillies pour le moment. Appuyez sur le bouton Rafraichir",
+  "Download for Excel": "Télécharger pour Excel",
+  "Adds header to CSV for use with Excel": "Ajoute un en-tête au CSV pour une utilisation avec Excel"
 }

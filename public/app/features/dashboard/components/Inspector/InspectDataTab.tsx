@@ -260,7 +260,10 @@ class __InspectDataTab extends PureComponent<Props, State> {
                   />
                 </Field>
               )}
-              <Field label="Download for Excel" description="Adds header to CSV for use with Excel">
+              <Field
+                label={this.props.t('Download for Excel')}
+                description={this.props.t('Adds header to CSV for use with Excel')}
+              >
                 <Switch
                   value={this.state.downloadForExcel}
                   onChange={() => this.setState({ downloadForExcel: !this.state.downloadForExcel })}
@@ -300,25 +303,29 @@ class __InspectDataTab extends PureComponent<Props, State> {
       <div className={styles.dataTabContent} aria-label={selectors.components.PanelInspector.Data.content}>
         <div className={styles.actionsWrapper}>
           <div className={styles.dataDisplayOptions}>{this.renderDataOptions(dataFrames)}</div>
-          <Button
-            variant="primary"
-            onClick={() => this.exportCsv(dataFrames[dataFrameIndex], { useExcelHeader: this.state.downloadForExcel })}
-            className={css`
-              margin-bottom: 10px;
-            `}
-          >
-            {t('Download CSV')}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => this.exportExcel(dataFrames[dataFrameIndex])}
-            className={css`
-              margin-bottom: 10px;
-              margin-left: 10px;
-            `}
-          >
-            Download Excel
-          </Button>
+          <div>
+            <Button
+              variant="primary"
+              onClick={() =>
+                this.exportCsv(dataFrames[dataFrameIndex], { useExcelHeader: this.state.downloadForExcel })
+              }
+              className={css`
+                margin-bottom: 10px;
+              `}
+            >
+              {t('Download CSV')}
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => this.exportExcel(dataFrames[dataFrameIndex])}
+              className={css`
+                margin-bottom: 10px;
+                margin-left: 10px;
+              `}
+            >
+              {t('Download Excel')}
+            </Button>
+          </div>
         </div>
         <Container grow={1}>
           <AutoSizer>

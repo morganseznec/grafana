@@ -54,6 +54,7 @@ export const getPanelInspectorStyles = stylesFactory(() => {
     `,
     actionsWrapper: css`
       display: flex;
+      flex-wrap: wrap;
     `,
     leftActions: css`
       display: flex;
@@ -69,8 +70,6 @@ export const getPanelInspectorStyles = stylesFactory(() => {
     `,
     dataDisplayOptions: css`
       flex-grow: 1;
-      min-width: 300px;
-      margin-right: ${config.theme.spacing.sm};
     `,
     selects: css`
       display: flex;
