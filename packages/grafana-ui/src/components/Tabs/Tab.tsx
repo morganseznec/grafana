@@ -7,6 +7,7 @@ import { Icon } from '../Icon/Icon';
 import { IconName } from '../../types';
 import { stylesFactory, useTheme } from '../../themes';
 import { Counter } from './Counter';
+import { useTranslation } from 'react-i18next';
 
 export interface TabProps extends HTMLProps<HTMLLIElement> {
   label: string;
@@ -23,10 +24,12 @@ export const Tab = React.forwardRef<HTMLLIElement, TabProps>(
   ({ label, active, icon, onChangeTab, counter, className, href, ...otherProps }, ref) => {
     const theme = useTheme();
     const tabsStyles = getTabStyles(theme);
+    const { t } = useTranslation();
+
     const content = () => (
       <>
         {icon && <Icon name={icon} />}
-        {label}
+        {t(label)}
         {typeof counter === 'number' && <Counter value={counter} />}
       </>
     );

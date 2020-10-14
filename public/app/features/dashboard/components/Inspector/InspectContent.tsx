@@ -13,6 +13,7 @@ import { QueryInspector } from './QueryInspector';
 import { InspectTab } from './types';
 import { DashboardModel, PanelModel } from '../../state';
 import { GetDataOptions } from '../../state/PanelQueryRunner';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   dashboard: DashboardModel;
@@ -51,6 +52,7 @@ export const InspectContent: React.FC<Props> = ({
 
   const styles = getPanelInspectorStyles();
   const error = data?.error;
+  const { t } = useTranslation();
 
   // Validate that the active tab is actually valid and allowed
   let activeTab = currentTab;
@@ -61,7 +63,11 @@ export const InspectContent: React.FC<Props> = ({
 
   return (
     <Drawer
+<<<<<<< HEAD
       title={`Inspect: ${title || 'Panel'}`}
+=======
+      title={`${t('Inspect')}: ${panel.title}` || t('Panel inspect')}
+>>>>>>> e5008fc78d... Improve translation
       subtitle={
         <InspectSubtitle
           tabs={tabs}

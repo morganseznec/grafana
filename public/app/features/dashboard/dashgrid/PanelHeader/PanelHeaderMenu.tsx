@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react';
 import { PanelHeaderMenuItem } from './PanelHeaderMenuItem';
 import { PanelMenuItem } from '@grafana/data';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-export interface Props {
+export interface Props extends WithTranslation {
   items: PanelMenuItem[];
 }
 
-export class PanelHeaderMenu extends PureComponent<Props> {
+class __PanelHeaderMenu extends PureComponent<Props> {
   renderItems = (menu: PanelMenuItem[], isSubMenu = false) => {
     return (
       <ul className="dropdown-menu dropdown-menu--menu panel-menu" role={isSubMenu ? '' : 'menu'}>
@@ -15,7 +16,7 @@ export class PanelHeaderMenu extends PureComponent<Props> {
             <PanelHeaderMenuItem
               key={`${menuItem.text}${idx}`}
               type={menuItem.type}
-              text={menuItem.text}
+              text={this.props.t(menuItem.text)}
               iconClassName={menuItem.iconClassName}
               onClick={menuItem.onClick}
               shortcut={menuItem.shortcut}
@@ -32,3 +33,5 @@ export class PanelHeaderMenu extends PureComponent<Props> {
     return <div className="panel-menu-container dropdown open">{this.renderItems(this.props.items)}</div>;
   }
 }
+
+export const PanelHeaderMenu = withTranslation()(__PanelHeaderMenu);

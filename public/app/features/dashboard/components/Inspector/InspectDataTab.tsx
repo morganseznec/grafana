@@ -25,8 +25,9 @@ import { QueryOperationRow } from 'app/core/components/QueryOperationRow/QueryOp
 import { PanelModel } from 'app/features/dashboard/state';
 import { DetailText } from './DetailText';
 import { getDatasourceSrv } from '../../../plugins/datasource_srv';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-interface Props {
+interface Props extends WithTranslation {
   panel: PanelModel;
   data?: DataFrame[];
   isLoading: boolean;
@@ -44,7 +45,7 @@ interface State {
   downloadForExcel: boolean;
 }
 
-export class InspectDataTab extends PureComponent<Props, State> {
+class __InspectDataTab extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -156,21 +157,21 @@ export class InspectDataTab extends PureComponent<Props, State> {
     const parts: string[] = [];
 
     if (selectedDataFrame === DataTransformerID.seriesToColumns) {
-      parts.push('Series joined by time');
+      parts.push(String(this.props.t('Series joined by time')));
     } else if (data.length > 1) {
       parts.push(getFrameDisplayName(data[selectedDataFrame as number]));
     }
 
     if (options.withTransforms || options.withFieldConfig) {
       if (options.withTransforms) {
-        parts.push('Panel transforms');
+        parts.push(String(this.props.t('Panel transforms')));
       }
 
       if (options.withTransforms && options.withFieldConfig) {
       }
 
       if (options.withFieldConfig) {
-        parts.push('Formatted data');
+        parts.push(String(this.props.t('Formatted data')));
       }
     }
 
@@ -215,14 +216,14 @@ export class InspectDataTab extends PureComponent<Props, State> {
       <QueryOperationRow
         id="Data options"
         index={0}
-        title="Data options"
+        title={this.props.t('Data options')}
         headerElement={<DetailText>{this.getActiveString()}</DetailText>}
         isOpen={false}
       >
         <div className={styles.options}>
           <VerticalGroup spacing="none">
             {data!.length > 1 && (
-              <Field label="Show data frame">
+              <Field label={this.props.t('Show data frame')}>
                 <Select
                   options={selectableOptions}
                   value={selectedDataFrame}
@@ -235,8 +236,10 @@ export class InspectDataTab extends PureComponent<Props, State> {
             <HorizontalGroup>
               {showPanelTransformationsOption && (
                 <Field
-                  label="Apply panel transformations"
-                  description="Table data is displayed with transformations defined in the panel Transform tab."
+                  label={this.props.t('Apply panel transformations')}
+                  description={this.props.t(
+                    'Table data is displayed with transformations defined in the panel Transform tab.'
+                  )}
                 >
                   <Switch
                     value={!!options.withTransforms}
@@ -246,8 +249,10 @@ export class InspectDataTab extends PureComponent<Props, State> {
               )}
               {showFieldConfigsOption && (
                 <Field
-                  label="Formatted data"
-                  description="Table data is formatted with options defined in the Field and Override tabs."
+                  label={this.props.t('Formatted data')}
+                  description={this.props.t(
+                    'Table data is formatted with options defined in the Field and Override tabs.'
+                  )}
                 >
                   <Switch
                     value={!!options.withFieldConfig}
@@ -269,14 +274,14 @@ export class InspectDataTab extends PureComponent<Props, State> {
   }
 
   render() {
-    const { isLoading } = this.props;
+    const { isLoading, t } = this.props;
     const { dataFrameIndex } = this.state;
     const styles = getPanelInspectorStyles();
 
     if (isLoading) {
       return (
         <div>
-          Loading <Icon name="fa fa-spinner" className="fa-spin" size="lg" />
+          {t('Loading')} <Icon name="fa fa-spinner" className="fa-spin" size="lg" />
         </div>
       );
     }
@@ -284,7 +289,7 @@ export class InspectDataTab extends PureComponent<Props, State> {
     const dataFrames = this.getProcessedData();
 
     if (!dataFrames || !dataFrames.length) {
-      return <div>No Data</div>;
+      return <div>{t('No Data')}</div>;
     }
 
     // let's make sure we don't try to render a frame that doesn't exists
@@ -302,7 +307,7 @@ export class InspectDataTab extends PureComponent<Props, State> {
               margin-bottom: 10px;
             `}
           >
-            Download CSV
+            {t('Download CSV')}
           </Button>
           <Button
             variant="primary"
@@ -334,6 +339,8 @@ export class InspectDataTab extends PureComponent<Props, State> {
     );
   }
 }
+
+export const InspectDataTab = withTranslation()(__InspectDataTab);
 
 function buildTransformationOptions() {
   const transformations: Array<SelectableValue<DataTransformerID>> = [
