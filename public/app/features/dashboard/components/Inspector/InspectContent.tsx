@@ -12,6 +12,7 @@ import { InspectTab } from './types';
 import { DashboardModel, PanelModel } from '../../state';
 import { DataSourceApi, PanelData, PanelPlugin } from '@grafana/data';
 import { GetDataOptions } from '../../state/PanelQueryRunner';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   dashboard: DashboardModel;
@@ -50,6 +51,7 @@ export const InspectContent: React.FC<Props> = ({
 
   const styles = getPanelInspectorStyles();
   const error = data?.error;
+  const { t } = useTranslation();
 
   // Validate that the active tab is actually valid and allowed
   let activeTab = currentTab;
@@ -59,7 +61,7 @@ export const InspectContent: React.FC<Props> = ({
 
   return (
     <Drawer
-      title={`Inspect: ${panel.title}` || 'Panel inspect'}
+      title={`${t('Inspect')}: ${panel.title}` || t('Panel inspect')}
       subtitle={
         <InspectSubtitle
           tabs={tabs}

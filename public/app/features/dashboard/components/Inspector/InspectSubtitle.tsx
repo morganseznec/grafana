@@ -3,6 +3,8 @@ import { css } from 'emotion';
 import { stylesFactory, Tab, TabsBar, useTheme } from '@grafana/ui';
 import { GrafanaTheme, SelectableValue, PanelData, getValueFormat, formattedValueToString } from '@grafana/data';
 import { InspectTab } from './types';
+import { useTranslation } from 'react-i18next';
+import { TFunction } from 'i18next';
 
 interface Props {
   tab: InspectTab;
@@ -14,10 +16,10 @@ interface Props {
 export const InspectSubtitle: FC<Props> = ({ tab, tabs, onSelectTab, data }) => {
   const theme = useTheme();
   const styles = getStyles(theme);
-
+  const { t } = useTranslation();
   return (
     <>
-      {data && <div className="muted">{formatStats(data)}</div>}
+      {data && <div className="muted">{formatStats(data, t)}</div>}
       <TabsBar className={styles.tabsBar}>
         {tabs.map((t, index) => {
           return (
@@ -43,7 +45,7 @@ const getStyles = stylesFactory((theme: GrafanaTheme) => {
   };
 });
 
-function formatStats(data: PanelData) {
+function formatStats(data: PanelData, t: TFunction) {
   const { request } = data;
   if (!request) {
     return '';
@@ -53,5 +55,5 @@ function formatStats(data: PanelData) {
   const requestTime = request.endTime ? request.endTime - request.startTime : 0;
   const formatted = formattedValueToString(getValueFormat('ms')(requestTime));
 
-  return `${queryCount} queries with total query time of ${formatted}`;
+  return `${queryCount} ${t('queries with total query time of')} ${formatted}`;
 }

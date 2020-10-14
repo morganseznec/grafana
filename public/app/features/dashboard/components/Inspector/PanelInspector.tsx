@@ -31,7 +31,7 @@ const PanelInspectorUnconnected: React.FC<Props> = ({ panel, dashboard, defaultT
 
   const dispatch = useDispatch();
   const [dataOptions, setDataOptions] = useState<GetDataOptions>({
-    withTransforms: false,
+    withTransforms: true,
     withFieldConfig: true,
   });
   const { data, isLoading, error } = usePanelLatestData(panel, dataOptions);

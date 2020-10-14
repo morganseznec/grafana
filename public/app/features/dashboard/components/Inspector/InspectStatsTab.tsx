@@ -2,6 +2,7 @@ import { PanelData, QueryResultMetaStat, TimeZone } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
 import { InspectStatsTable } from './InspectStatsTable';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface InspectStatsTabProps {
   data: PanelData;
@@ -17,6 +18,7 @@ export const InspectStatsTab: React.FC<InspectStatsTabProps> = ({ data, timeZone
 
   const requestTime = data.request.endTime ? data.request.endTime - data.request.startTime : -1;
   const processingTime = data.timings?.dataProcessingTime || -1;
+  const { t } = useTranslation();
   let dataRows = 0;
 
   for (const frame of data.series) {
@@ -24,13 +26,13 @@ export const InspectStatsTab: React.FC<InspectStatsTabProps> = ({ data, timeZone
   }
 
   if (requestTime > 0) {
-    stats.push({ displayName: 'Total request time', value: requestTime, unit: 'ms' });
+    stats.push({ displayName: t('Total request time'), value: requestTime, unit: 'ms' });
   }
   if (processingTime > 0) {
-    stats.push({ displayName: 'Data processing time', value: processingTime, unit: 'ms' });
+    stats.push({ displayName: t('Data processing time'), value: processingTime, unit: 'ms' });
   }
-  stats.push({ displayName: 'Number of queries', value: data.request.targets.length });
-  stats.push({ displayName: 'Total number rows', value: dataRows });
+  stats.push({ displayName: t('Number of queries'), value: data.request.targets.length });
+  stats.push({ displayName: t('Total number rows'), value: dataRows });
 
   let dataStats: QueryResultMetaStat[] = [];
 

@@ -12,6 +12,7 @@ import { config } from '@grafana/runtime';
 import { css } from 'emotion';
 import { Unsubscribable } from 'rxjs';
 import { backendSrv } from 'app/core/services/backend_srv';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 interface DsQuery {
   isLoading: boolean;
@@ -25,7 +26,7 @@ interface ExecutedQueryInfo {
   rows: number;
 }
 
-interface Props {
+interface Props extends WithTranslation {
   panel: PanelModel;
   data: DataFrame[];
 }
@@ -38,7 +39,7 @@ interface State {
   executedQueries: ExecutedQueryInfo[];
 }
 
-export class QueryInspector extends PureComponent<Props, State> {
+class __QueryInspector extends PureComponent<Props, State> {
   formattedJson: any;
   clipboard: any;
   subscription?: Unsubscribable;
@@ -190,7 +191,7 @@ export class QueryInspector extends PureComponent<Props, State> {
   };
 
   onClipboardSuccess = () => {
-    appEvents.emit(AppEvents.alertSuccess, ['Content copied to clipboard']);
+    appEvents.emit(AppEvents.alertSuccess, [this.props.t('Content copied to clipboard')]);
   };
 
   onToggleExpand = () => {
@@ -269,10 +270,12 @@ export class QueryInspector extends PureComponent<Props, State> {
     return (
       <>
         <div aria-label={selectors.components.PanelInspector.Query.content}>
-          <h3 className="section-heading">Query inspector</h3>
+          <h3 className="section-heading">{this.props.t('Query inspector')}</h3>
           <p className="small muted">
-            Query inspector allows you to view raw request and response. To collect this data Grafana needs to issue a
-            new query. Hit refresh button below to trigger a new query.
+            {this.props.t(
+              'Query inspector allows you to view raw request and response. To collect this data Grafana needs to issue a'
+            )}
+            {this.props.t('new query. Hit refresh button below to trigger a new query.')}
           </p>
         </div>
         {this.renderExecutedQueries(executedQueries)}
@@ -282,17 +285,17 @@ export class QueryInspector extends PureComponent<Props, State> {
             onClick={this.onIssueNewQuery}
             aria-label={selectors.components.PanelInspector.Query.refreshButton}
           >
-            Refresh
+            {this.props.t('Refresh')}
           </Button>
 
           {haveData && allNodesExpanded && (
             <Button icon="minus" variant="secondary" className={styles.toolbarItem} onClick={this.onToggleExpand}>
-              Collapse all
+              {this.props.t('Collapse all')}
             </Button>
           )}
           {haveData && !allNodesExpanded && (
             <Button icon="plus" variant="secondary" className={styles.toolbarItem} onClick={this.onToggleExpand}>
-              Expand all
+              {this.props.t('Expand all')}
             </Button>
           )}
 
@@ -304,20 +307,24 @@ export class QueryInspector extends PureComponent<Props, State> {
               className={styles.toolbarItem}
             >
               <Button icon="copy" variant="secondary">
-                Copy to clipboard
+                {this.props.t('Copy to clipboard')}
               </Button>
             </CopyToClipboard>
           )}
           <div className="flex-grow-1" />
         </div>
         <div className={styles.contentQueryInspector}>
-          {isLoading && <LoadingPlaceholder text="Loading query inspector..." />}
+          {isLoading && <LoadingPlaceholder text={this.props.t('Loading query inspector...')} />}
           {!isLoading && haveData && (
             <JSONFormatter json={response} open={openNodes} onDidRender={this.setFormattedJson} />
           )}
-          {!isLoading && !haveData && <p className="muted">No request & response collected yet. Hit refresh button</p>}
+          {!isLoading && !haveData && (
+            <p className="muted">{this.props.t('No request & response collected yet. Hit refresh button')}</p>
+          )}
         </div>
       </>
     );
   }
 }
+
+export const QueryInspector = withTranslation()(__QueryInspector);
