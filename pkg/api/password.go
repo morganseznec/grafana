@@ -57,5 +57,15 @@ func ResetPassword(c *models.ReqContext, form dtos.ResetUserPasswordForm) Respon
 		return Error(500, "Failed to change user password", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User password changed",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("User password changed")
 }

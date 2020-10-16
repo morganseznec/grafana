@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strconv"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana/pkg/api/datasource"
@@ -99,6 +100,16 @@ func DeleteDataSourceById(c *models.ReqContext) Response {
 		return Error(500, "Failed to delete datasource", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Data source with ID " + strconv.Itoa(int(id)) + " deleted",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("Data source deleted")
 }
 
@@ -125,6 +136,16 @@ func DeleteDataSourceByName(c *models.ReqContext) Response {
 	err := bus.Dispatch(cmd)
 	if err != nil {
 		return Error(500, "Failed to delete datasource", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Data source with Name " + name + " deleted",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return JSON(200, util.DynMap{
@@ -158,6 +179,16 @@ func AddDataSource(c *models.ReqContext, cmd models.AddDataSourceCommand) Respon
 		}
 
 		return Error(500, "Failed to add datasource", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Data source with Name " + cmd.Result.Name + " added",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	ds := convertModelToDtos(cmd.Result)
@@ -200,6 +231,16 @@ func UpdateDataSource(c *models.ReqContext, cmd models.UpdateDataSourceCommand) 
 			return Error(404, "Data source not found", nil)
 		}
 		return Error(500, "Failed to query datasources", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Data source with Name " + cmd.Name + " updated",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	dtos := convertModelToDtos(query.Result)

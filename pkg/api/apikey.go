@@ -1,6 +1,7 @@
 package api
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/grafana/grafana/pkg/api/dtos"
@@ -44,6 +45,16 @@ func DeleteAPIKey(c *models.ReqContext) Response {
 		return Error(500, "Failed to delete API key", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "API key deleted: {ApiKeyID:" + strconv.Itoa(int(id)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("API key deleted")
 }
 
@@ -83,6 +94,16 @@ func (hs *HTTPServer) AddAPIKey(c *models.ReqContext, cmd models.AddApiKeyComman
 		ID:   cmd.Result.Id,
 		Name: cmd.Result.Name,
 		Key:  newKeyInfo.ClientSecret,
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "API key added: {ID:" + strconv.Itoa(int(result.ID)) + ",Name:'" + result.Name + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return JSON(200, result)

@@ -248,6 +248,16 @@ func (hs *HTTPServer) loginUserWithUser(user *models.User, c *models.ReqContext)
 		return errutil.Wrap("failed to create auth token", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  user.Login,
+		Action:    "Successful Login",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	hs.log.Info("Successful Login", "User", user.Email)
 	middleware.WriteSessionCookie(c, userToken.UnhashedToken, hs.Cfg.LoginMaxLifetime)
 	return nil
@@ -270,6 +280,16 @@ func (hs *HTTPServer) Logout(c *models.ReqContext) {
 	} else {
 		hs.log.Info("Successful Logout", "User", c.Email)
 		c.Redirect(setting.AppSubUrl + "/login")
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.Login,
+		Action:    "Successful Logout",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 }
 

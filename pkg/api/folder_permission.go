@@ -1,6 +1,7 @@
 package api
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/grafana/grafana/pkg/api/dtos"
@@ -108,6 +109,16 @@ func UpdateFolderPermissions(c *models.ReqContext, apiCmd dtos.UpdateDashboardAc
 		}
 
 		return Error(500, "Failed to create permission", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Folder permissions updated: {FolderId:" + strconv.Itoa(int(folder.Id)) + ",Name:'" + folder.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return JSON(200, util.DynMap{

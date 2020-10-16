@@ -20,6 +20,7 @@ import {
   usersFetched,
   queryChanged,
   pageChanged,
+  auditRecordsLoaded,
 } from './reducers';
 import { debounce } from 'lodash';
 
@@ -272,5 +273,12 @@ export function changePage(page: number): ThunkResult<void> {
   return async dispatch => {
     dispatch(pageChanged(page));
     dispatch(fetchUsers());
+  };
+}
+
+export function loadAuditRecords(): ThunkResult<void> {
+  return async dispatch => {
+    const response = await getBackendSrv().get('/api/admin/audit', { perpage: 1000, page: 1 });
+    dispatch(auditRecordsLoaded(response.records));
   };
 }

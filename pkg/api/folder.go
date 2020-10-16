@@ -3,6 +3,8 @@ package api
 import (
 	"errors"
 	"fmt"
+	"github.com/grafana/grafana/pkg/bus"
+	"strconv"
 
 	"github.com/grafana/grafana/pkg/api/dtos"
 	"github.com/grafana/grafana/pkg/models"
@@ -68,6 +70,16 @@ func (hs *HTTPServer) CreateFolder(c *models.ReqContext, cmd models.CreateFolder
 		}
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Folder created: {FolderId:" + strconv.Itoa(int(cmd.Result.Id)) + ",Name:'" + cmd.Result.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.Bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	g := guardian.New(cmd.Result.Id, c.OrgId, c.SignedInUser)
 	return JSON(200, toFolderDto(g, cmd.Result))
 }
@@ -79,6 +91,16 @@ func UpdateFolder(c *models.ReqContext, cmd models.UpdateFolderCommand) Response
 		return toFolderError(err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Folder updated: {FolderId:" + strconv.Itoa(int(cmd.Result.Id)) + ",Name:'" + cmd.Result.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	g := guardian.New(cmd.Result.Id, c.OrgId, c.SignedInUser)
 	return JSON(200, toFolderDto(g, cmd.Result))
 }
@@ -88,6 +110,16 @@ func DeleteFolder(c *models.ReqContext) Response {
 	f, err := s.DeleteFolder(c.Params(":uid"))
 	if err != nil {
 		return toFolderError(err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Folder deleted: {Name:'" + f.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return JSON(200, util.DynMap{
