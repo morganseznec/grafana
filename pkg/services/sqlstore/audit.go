@@ -57,7 +57,7 @@ func SearchAuditRecords(query *models.SearchAuditRecordsQuery) error {
 	}
 
 	auditRecord := models.AuditRecord{}
-	countSess := x.Table("audit")
+	countSess := x.Table("audit_record")
 	count, err := countSess.Count(&auditRecord)
 	query.Result.TotalCount = count
 
