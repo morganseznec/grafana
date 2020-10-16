@@ -127,6 +127,16 @@ func CreateDashboardSnapshot(c *models.ReqContext, cmd models.CreateDashboardSna
 		return
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Snapshot created: {Key:" + cmd.Key + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	c.JSON(200, util.DynMap{
 		"key":       cmd.Key,
 		"deleteKey": cmd.DeleteKey,

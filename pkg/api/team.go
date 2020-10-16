@@ -6,6 +6,7 @@ import (
 	"github.com/grafana/grafana/pkg/models"
 	"github.com/grafana/grafana/pkg/services/teamguardian"
 	"github.com/grafana/grafana/pkg/util"
+	"strconv"
 )
 
 // POST /api/teams
@@ -43,6 +44,16 @@ func (hs *HTTPServer) CreateTeam(c *models.ReqContext, cmd models.CreateTeamComm
 		}
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Team created: {TeamId:" + strconv.Itoa(int(cmd.Result.Id)) + ",Name:" + cmd.Result.Name + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return JSON(200, &util.DynMap{
 		"teamId":  cmd.Result.Id,
 		"message": "Team created",
@@ -65,6 +76,16 @@ func (hs *HTTPServer) UpdateTeam(c *models.ReqContext, cmd models.UpdateTeamComm
 		return Error(500, "Failed to update Team", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Team updated: {TeamId:" + strconv.Itoa(int(cmd.Id)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("Team updated")
 }
 
@@ -84,6 +105,17 @@ func (hs *HTTPServer) DeleteTeamByID(c *models.ReqContext) Response {
 		}
 		return Error(500, "Failed to delete Team", err)
 	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Team delete: {TeamId:" + strconv.Itoa(int(teamId)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("Team deleted")
 }
 
@@ -161,6 +193,16 @@ func (hs *HTTPServer) UpdateTeamPreferences(c *models.ReqContext, dtoCmd dtos.Up
 
 	if err := teamguardian.CanAdmin(hs.Bus, orgId, teamId, c.SignedInUser); err != nil {
 		return Error(403, "Not allowed to update team preferences.", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Team preferences updated: {TeamId:" + strconv.Itoa(int(teamId)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return updatePreferencesFor(orgId, 0, teamId, &dtoCmd)

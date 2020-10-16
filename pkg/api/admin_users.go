@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/grafana/grafana/pkg/api/dtos"
 	"github.com/grafana/grafana/pkg/bus"
@@ -52,6 +53,16 @@ func AdminCreateUser(c *models.ReqContext, form dtos.AdminCreateUserForm) Respon
 		Id:      user.Id,
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User created: {ID:" + strconv.Itoa(int(user.Id)) + ", Login:" + form.Login + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return JSON(200, result)
 }
 
@@ -82,6 +93,16 @@ func AdminUpdateUserPassword(c *models.ReqContext, form dtos.AdminUpdateUserPass
 		return Error(500, "Failed to update user password", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User password updated: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("User password updated")
 }
 
@@ -102,6 +123,16 @@ func AdminUpdateUserPermissions(c *models.ReqContext, form dtos.AdminUpdateUserP
 		return Error(500, "Failed to update user permissions", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User permissions updated: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("User permissions updated")
 }
 
@@ -115,6 +146,16 @@ func AdminDeleteUser(c *models.ReqContext) Response {
 			return Error(404, models.ErrUserNotFound.Error(), nil)
 		}
 		return Error(500, "Failed to delete user", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User deleted: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return Success("User deleted")
@@ -143,6 +184,16 @@ func (server *HTTPServer) AdminDisableUser(c *models.ReqContext) Response {
 		return Error(500, "Failed to disable user", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User disabled: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("User disabled")
 }
 
@@ -164,6 +215,16 @@ func AdminEnableUser(c *models.ReqContext) Response {
 		return Error(500, "Failed to enable user", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User enabled: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("User enabled")
 }
 
@@ -173,6 +234,16 @@ func (server *HTTPServer) AdminLogoutUser(c *models.ReqContext) Response {
 
 	if c.UserId == userID {
 		return Error(400, "You cannot logout yourself", nil)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Attempting to log out user: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return server.logoutUserFromAllDevicesInternal(c.Req.Context(), userID)

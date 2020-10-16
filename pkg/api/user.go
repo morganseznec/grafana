@@ -76,13 +76,13 @@ func UpdateSignedInUser(c *models.ReqContext, cmd models.UpdateUserCommand) Resp
 		}
 	}
 	cmd.UserId = c.UserId
-	return handleUpdateUser(cmd)
+	return handleUpdateUser(c, cmd)
 }
 
 // POST /api/users/:id
 func UpdateUser(c *models.ReqContext, cmd models.UpdateUserCommand) Response {
 	cmd.UserId = c.ParamsInt64(":id")
-	return handleUpdateUser(cmd)
+	return handleUpdateUser(c, cmd)
 }
 
 // POST /api/users/:id/using/:orgId
@@ -103,7 +103,7 @@ func UpdateUserActiveOrg(c *models.ReqContext) Response {
 	return Success("Active organization changed")
 }
 
-func handleUpdateUser(cmd models.UpdateUserCommand) Response {
+func handleUpdateUser(c *models.ReqContext, cmd models.UpdateUserCommand) Response {
 	if len(cmd.Login) == 0 {
 		cmd.Login = cmd.Email
 		if len(cmd.Login) == 0 {
@@ -113,6 +113,16 @@ func handleUpdateUser(cmd models.UpdateUserCommand) Response {
 
 	if err := bus.Dispatch(&cmd); err != nil {
 		return Error(500, "Failed to update user", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User updated: " + cmd.Login,
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return Success("User updated")
@@ -245,6 +255,16 @@ func ChangeUserPassword(c *models.ReqContext, cmd models.ChangeUserPasswordComma
 
 	if err := bus.Dispatch(&cmd); err != nil {
 		return Error(500, "Failed to change user password", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User password changed",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return Success("User password changed")

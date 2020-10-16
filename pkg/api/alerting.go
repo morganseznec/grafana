@@ -395,6 +395,16 @@ func DeleteAlertNotification(c *models.ReqContext) Response {
 		return Error(500, "Failed to delete alert notification", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Notification deleted: {NotificationID:" + strconv.Itoa(int(c.ParamsInt64("notificationId"))) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("Notification deleted")
 }
 
@@ -409,6 +419,16 @@ func DeleteAlertNotificationByUID(c *models.ReqContext) Response {
 			return Error(404, err.Error(), nil)
 		}
 		return Error(500, "Failed to delete alert notification", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Notification deleted: {Uid:" + c.Params("uid") + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return JSON(200, util.DynMap{
@@ -488,6 +508,17 @@ func PauseAlert(c *models.ReqContext, dto dtos.PauseAlertCommand) Response {
 
 	result["state"] = response
 	result["message"] = "Alert " + pausedState
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    pausedState + " alert: {AlertID:" + strconv.Itoa(int(alertID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return JSON(200, result)
 }
 
@@ -512,6 +543,16 @@ func PauseAllAlerts(c *models.ReqContext, dto dtos.PauseAllAlertsCommand) Respon
 		"state":          response,
 		"message":        "alerts " + pausedState,
 		"alertsAffected": updateCmd.ResultCount,
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Paused all alerts",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return JSON(200, result)

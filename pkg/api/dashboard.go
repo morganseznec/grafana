@@ -207,6 +207,16 @@ func deleteDashboard(c *models.ReqContext) Response {
 		return Error(500, "Failed to delete dashboard", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Dashboard deleted: {ID:" + c.Params(":uid") + ",Name:'" + dash.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return JSON(200, util.DynMap{
 		"title":   dash.Title,
 		"message": fmt.Sprintf("Dashboard %s deleted", dash.Title),
@@ -271,6 +281,16 @@ func (hs *HTTPServer) PostDashboard(c *models.ReqContext, cmd models.SaveDashboa
 		if err != nil {
 			hs.log.Warn("unable to broadcast save event", "uid", dashboard.Uid, "error", err)
 		}
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Dashboard updated: {ID:" + dashboard.Uid + ",Name:'" + dashboard.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.Bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	c.TimeRequest(metrics.MApiDashboardSave)

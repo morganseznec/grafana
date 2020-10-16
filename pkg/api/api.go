@@ -56,6 +56,7 @@ func (hs *HTTPServer) registerRoutes() {
 	r.Get("/admin/orgs", reqGrafanaAdmin, hs.Index)
 	r.Get("/admin/orgs/edit/:id", reqGrafanaAdmin, hs.Index)
 	r.Get("/admin/stats", reqGrafanaAdmin, hs.Index)
+	r.Get("/admin/audit", reqGrafanaAdmin, hs.Index)
 	r.Get("/admin/ldap", reqGrafanaAdmin, hs.Index)
 
 	r.Get("/styleguide", reqSignedIn, hs.Index)
@@ -409,6 +410,7 @@ func (hs *HTTPServer) registerRoutes() {
 		adminRoute.Get("/users/:id/quotas", Wrap(GetUserQuotas))
 		adminRoute.Put("/users/:id/quotas/:target", bind(models.UpdateUserQuotaCmd{}), Wrap(UpdateUserQuota))
 		adminRoute.Get("/stats", Wrap(AdminGetStats))
+		adminRoute.Get("/audit", Wrap(SearchAuditRecords))
 		adminRoute.Post("/pause-all-alerts", bind(dtos.PauseAllAlertsCommand{}), Wrap(PauseAllAlerts))
 
 		adminRoute.Post("/users/:id/logout", Wrap(hs.AdminLogoutUser))

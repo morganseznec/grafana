@@ -88,6 +88,16 @@ func CreateOrg(c *models.ReqContext, cmd models.CreateOrgCommand) Response {
 		return Error(500, "Failed to create organization", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Organization created: " + cmd.Name,
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	metrics.MApiOrgCreate.Inc()
 
 	return JSON(200, &util.DynMap{
@@ -98,16 +108,19 @@ func CreateOrg(c *models.ReqContext, cmd models.CreateOrgCommand) Response {
 
 // PUT /api/org
 func UpdateOrgCurrent(c *models.ReqContext, form dtos.UpdateOrgForm) Response {
-	return updateOrgHelper(form, c.OrgId)
+	return updateOrgHelper(c, form)
 }
 
 // PUT /api/orgs/:orgId
 func UpdateOrg(c *models.ReqContext, form dtos.UpdateOrgForm) Response {
-	return updateOrgHelper(form, c.ParamsInt64(":orgId"))
+	return updateOrgHelper(c, form)
 }
 
-func updateOrgHelper(form dtos.UpdateOrgForm, orgID int64) Response {
-	cmd := models.UpdateOrgCommand{Name: form.Name, OrgId: orgID}
+func updateOrgHelper(c *models.ReqContext, form dtos.UpdateOrgForm) Response {
+	if c.ParamsInt64(":orgId") <= 0 {
+		c.OrgId = c.ParamsInt64(":orgId")
+	}
+	cmd := models.UpdateOrgCommand{Name: form.Name, OrgId: c.OrgId}
 	if err := bus.Dispatch(&cmd); err != nil {
 		if err == models.ErrOrgNameTaken {
 			return Error(400, "Organization name taken", err)
@@ -115,22 +128,35 @@ func updateOrgHelper(form dtos.UpdateOrgForm, orgID int64) Response {
 		return Error(500, "Failed to update organization", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Organization updated: " + cmd.Name,
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("Organization updated")
 }
 
 // PUT /api/org/address
 func UpdateOrgAddressCurrent(c *models.ReqContext, form dtos.UpdateOrgAddressForm) Response {
-	return updateOrgAddressHelper(form, c.OrgId)
+	return updateOrgAddressHelper(c, form)
 }
 
 // PUT /api/orgs/:orgId/address
 func UpdateOrgAddress(c *models.ReqContext, form dtos.UpdateOrgAddressForm) Response {
-	return updateOrgAddressHelper(form, c.ParamsInt64(":orgId"))
+	return updateOrgAddressHelper(c, form)
 }
 
-func updateOrgAddressHelper(form dtos.UpdateOrgAddressForm, orgID int64) Response {
+func updateOrgAddressHelper(c *models.ReqContext, form dtos.UpdateOrgAddressForm) Response {
+	if c.ParamsInt64(":orgId") > 0 {
+		c.OrgId = c.ParamsInt64(":orgId")
+	}
 	cmd := models.UpdateOrgAddressCommand{
-		OrgId: orgID,
+		OrgId: c.OrgId,
 		Address: models.Address{
 			Address1: form.Address1,
 			Address2: form.Address2,
@@ -145,6 +171,16 @@ func updateOrgAddressHelper(form dtos.UpdateOrgAddressForm, orgID int64) Respons
 		return Error(500, "Failed to update org address", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Org Address updated",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("Address updated")
 }
 
@@ -156,6 +192,17 @@ func DeleteOrgByID(c *models.ReqContext) Response {
 		}
 		return Error(500, "Failed to update organization", err)
 	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Organization deleted",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success("Organization deleted")
 }
 

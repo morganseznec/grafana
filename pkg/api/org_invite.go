@@ -94,6 +94,16 @@ func AddOrgInvite(c *models.ReqContext, inviteDto dtos.AddInviteForm) Response {
 		return Success(fmt.Sprintf("Sent invite to %s", inviteDto.LoginOrEmail))
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Created invite for " + inviteDto.LoginOrEmail,
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return Success(fmt.Sprintf("Created invite for %s", inviteDto.LoginOrEmail))
 }
 
@@ -121,6 +131,16 @@ func inviteExistingUserToOrg(c *models.ReqContext, user *models.User, inviteDto 
 		if err := bus.Dispatch(&emailCmd); err != nil {
 			return Error(500, "Failed to send email invited_to_org", err)
 		}
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Existing Grafana user " + user.NameOrFallback() + " added to org " + c.OrgName,
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return JSON(200, util.DynMap{
@@ -213,6 +233,16 @@ func (hs *HTTPServer) CompleteInvite(c *models.ReqContext, completeInvite dtos.C
 
 	metrics.MApiUserSignUpCompleted.Inc()
 	metrics.MApiUserSignUpInvite.Inc()
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  cmd.Name,
+		Action:    "User created and logged in ",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
 
 	return JSON(200, util.DynMap{
 		"message": "User created and logged in",

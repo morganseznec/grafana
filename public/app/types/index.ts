@@ -15,6 +15,7 @@ export * from './store';
 export * from './ldap';
 export * from './appEvent';
 export * from './angular';
+export * from './audit';
 
 import * as CoreEvents from './events';
 export { CoreEvents };
