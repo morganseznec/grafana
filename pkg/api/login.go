@@ -194,6 +194,17 @@ func (hs *HTTPServer) LoginPost(c *models.ReqContext, cmd dtos.LoginCommand) Res
 	authModule = authQuery.AuthModule
 	if err != nil {
 		response = Error(401, "Invalid username or password", err)
+
+		createAuditRecordCmd := models.CreateAuditRecordCommand{
+			Username:  cmd.User,
+			Action:    err.Error(),
+			IpAddress: c.RemoteAddr(),
+		}
+
+		if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
+			c.Logger.Error("Could not create audit record.", "error", err)
+		}
+
 		if err == login.ErrInvalidCredentials || err == login.ErrTooManyLoginAttempts || err == models.ErrUserNotFound {
 			return response
 		}
