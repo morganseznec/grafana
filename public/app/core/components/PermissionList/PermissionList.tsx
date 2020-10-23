@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
-import { useTranslation } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import PermissionsListItem from './PermissionListItem';
 import DisabledPermissionsListItem from './DisabledPermissionListItem';
 import { FolderInfo } from 'app/types';
 import { DashboardAcl } from 'app/types/acl';
 
-export interface Props {
+export interface Props extends WithTranslation {
   items: DashboardAcl[];
   onRemoveItem: (item: DashboardAcl) => void;
   onPermissionChanged: any;
@@ -15,8 +15,7 @@ export interface Props {
 
 class PermissionList extends PureComponent<Props> {
   render() {
-    const { items, onRemoveItem, onPermissionChanged, isFetching, folderInfo } = this.props;
-    const { t } = useTranslation();
+    const { items, onRemoveItem, onPermissionChanged, isFetching, folderInfo, t } = this.props;
     return (
       <table className="filter-table gf-form-group">
         <tbody>
@@ -60,4 +59,4 @@ class PermissionList extends PureComponent<Props> {
   }
 }
 
-export default PermissionList;
+export default withTranslation()(PermissionList);
