@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Translation } from 'react-i18next';
 import { UserPicker } from 'app/core/components/Select/UserPicker';
 import { TeamPicker, Team } from 'app/core/components/Select/TeamPicker';
 import { LegacyForms, Icon } from '@grafana/ui';
@@ -89,14 +89,14 @@ class AddPermissions extends Component<Props, NewDashboardAclItem> {
     const newItem = this.state;
     const pickerClassName = 'min-width-20';
     const isValid = this.isValid();
-    const { t } = useTranslation();
+
     return (
       <div className="gf-form-inline cta-form">
         <button className="cta-form__close btn btn-transparent" onClick={onCancel}>
           <Icon name="times" />
         </button>
         <form name="addPermission" onSubmit={this.onSubmit}>
-          <h5>{t('Add Permission For')}</h5>
+          <Translation>{t => <h5>{t('Add Permission For')}</h5>}</Translation>
           <div className="gf-form-inline">
             <div className="gf-form">
               <div className="gf-form-select-wrapper">
@@ -135,7 +135,7 @@ class AddPermissions extends Component<Props, NewDashboardAclItem> {
 
             <div className="gf-form">
               <button data-save-permission className="btn btn-primary" type="submit" disabled={!isValid}>
-                {t('Save')}
+                <Translation>{t => t('Save')}</Translation>
               </button>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, withTranslation, WithTranslation } from 'react-i18next';
 import { LegacyForms, Icon } from '@grafana/ui';
 import { SelectableValue } from '@grafana/data';
 import { dashboardPermissionLevels, DashboardAcl, PermissionLevel } from 'app/types/acl';
@@ -35,14 +35,14 @@ function ItemDescription({ item }: { item: DashboardAcl }) {
   return <span className="filter-table__weak-italic">({t('Role')})</span>;
 }
 
-interface Props {
+interface Props extends WithTranslation {
   item: DashboardAcl;
   onRemoveItem: (item: DashboardAcl) => void;
   onPermissionChanged: (item: DashboardAcl, level: PermissionLevel) => void;
   folderInfo?: FolderInfo;
 }
 
-export default class PermissionsListItem extends PureComponent<Props> {
+class PermissionsListItem extends PureComponent<Props> {
   onPermissionChanged = (option: SelectableValue<PermissionLevel>) => {
     this.props.onPermissionChanged(this.props.item, option.value!);
   };
@@ -52,10 +52,9 @@ export default class PermissionsListItem extends PureComponent<Props> {
   };
 
   render() {
-    const { item, folderInfo } = this.props;
+    const { item, folderInfo, t } = this.props;
     const inheritedFromRoot = item.dashboardId === -1 && !item.inherited;
     const currentPermissionLevel = dashboardPermissionLevels.find(dp => dp.value === item.permission);
-    const { t } = useTranslation();
 
     return (
       <tr className={setClassNameHelper(Boolean(item?.inherited))}>
@@ -104,3 +103,5 @@ export default class PermissionsListItem extends PureComponent<Props> {
     );
   }
 }
+
+export default withTranslation()(PermissionsListItem);
