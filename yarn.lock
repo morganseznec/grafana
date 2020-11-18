@@ -15339,6 +15339,13 @@ i18next-http-backend@^1.0.18:
   dependencies:
     node-fetch "2.6.0"
 
+i18next-localstorage-backend@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/i18next-localstorage-backend/-/i18next-localstorage-backend-3.1.2.tgz#415fcac42d6d66ff8bc878d269c5b5719fdedc2c"
+  integrity sha512-J81qf9atTAc9iMdHUNKJeAWgUsFvqbxfHIIztmF62tOaINA2AJk0kewJjm8LQDuArkiuW9RhQPbhqbyeZut35g==
+  dependencies:
+    "@babel/runtime" "^7.4.5"
+
 i18next@^19.7.0:
   version "19.7.0"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-19.7.0.tgz#e637bbbf36481d34b7d5e6d3b04e1bb654bf2a26"
@@ -22696,6 +22703,11 @@ react-icons@2.2.7:
   dependencies:
     react-icon-base "2.1.0"
 
+react-idle-timer@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/react-idle-timer/-/react-idle-timer-4.4.2.tgz#52bd8798d1bc8107548fedfab955be1e4a99d9c7"
+  integrity sha512-ORLyVFXj/4tTZL63ztbJDtPqQK2LzZw/QXSMakTR/VGdL0VQqJ6Zg43HJmY6HcwUj8i5bjvf8gJYl5s7N+9eiw==
+
 react-immutable-proptypes@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/react-immutable-proptypes/-/react-immutable-proptypes-2.1.0.tgz#023d6f39bb15c97c071e9e60d00d136eac5fa0b4"
@@ -27918,6 +27930,21 @@ xlsx@^0.16.7:
   version "0.16.7"
   resolved "https://registry.yarnpkg.com/xlsx/-/xlsx-0.16.7.tgz#62fd6590addac7c4419daaaa2b0c5388015d5f69"
   integrity sha512-Xc4NRjci2Grbh9NDk/XoaWycJurxEug1wwn0aJCmB0NvIMyQuHYq2muWLWGidYNZPf94aUbqm6K8Fbjd7gKTZg==
+  dependencies:
+    adler-32 "~1.2.0"
+    cfb "^1.1.4"
+    codepage "~1.14.0"
+    commander "~2.17.1"
+    crc-32 "~1.2.0"
+    exit-on-epipe "~1.0.1"
+    ssf "~0.11.2"
+    wmf "~1.0.1"
+    word "~0.3.0"
+
+xlsx@^0.16.8:
+  version "0.16.8"
+  resolved "https://registry.yarnpkg.com/xlsx/-/xlsx-0.16.8.tgz#5546de9b0ba15169b36770d4e43b24790d3ff1b8"
+  integrity sha512-qWub4YCn0xLEGHI7WWhk6IJ73MDu7sPSJQImxN6/LiI8wsHi0hUhICEDbyqBT+jgFgORZxrii0HvhNSwBNAPoQ==
   dependencies:
     adler-32 "~1.2.0"
     cfb "^1.1.4"
