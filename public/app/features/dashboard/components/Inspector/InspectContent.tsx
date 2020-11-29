@@ -63,11 +63,7 @@ export const InspectContent: React.FC<Props> = ({
 
   return (
     <Drawer
-<<<<<<< HEAD
       title={`${t('Inspect')}: ${title}` || t('Panel inspect')}
-=======
-      title={`${t('Inspect')}: ${panel.title}` || t('Panel inspect')}
->>>>>>> 880fcc9556... Fix branch
       subtitle={
         <InspectSubtitle
           tabs={tabs}
