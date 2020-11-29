@@ -293,5 +293,6 @@
   "Loading query inspector...": "Chargement de l'inspecteur de requêtes...",
   "No request & response collected yet. Hit refresh button": "Aucune demande et réponse recueillies pour le moment. Appuyez sur le bouton Rafraichir",
   "Download for Excel": "Télécharger pour Excel",
-  "Adds header to CSV for use with Excel": "Ajoute un en-tête au CSV pour une utilisation avec Excel"
+  "Adds header to CSV for use with Excel": "Ajoute un en-tête au CSV pour une utilisation avec Excel",
+  "Inactive user": "Utilisateur inactif"
 }

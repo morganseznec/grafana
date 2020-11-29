@@ -89,11 +89,14 @@ i18n
   .init({
     fallbackLng: 'en',
     backend: options,
+    load: 'languageOnly',
     debug: true,
+    nonExplicitSupportedLngs: true,
     interpolation: {
       escapeValue: false,
     },
     keySeparator: false,
+    nsSeparator: ':::',
   });
 
 export class GrafanaApp {

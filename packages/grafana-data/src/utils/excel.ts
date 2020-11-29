@@ -4,14 +4,30 @@ import XLSX from 'xlsx';
 import { formattedValueToString } from '../valueFormats';
 import { getFieldDisplayName } from '../field';
 
-type FieldWriter = (value: any) => string;
+type FieldWriter = (value: any) => any;
 
 function writeValue(value: any): string {
   const str = value.toString();
   return str;
 }
 
+function writeDate(value: any): Date {
+  return new Date(value);
+}
+
+function writeNumber(value: any): Number {
+  return Number(value);
+}
+
 function makeFieldWriter(field: Field): FieldWriter {
+  if (field.type === 'time') {
+    return (value: any) => writeDate(value);
+  }
+
+  if (field.type === 'number') {
+    return (value: any) => writeNumber(value);
+  }
+
   if (field.display) {
     return (value: any) => {
       const displayValue = field.display!(value);
@@ -59,7 +75,7 @@ export function toExcel(data: DataFrame[]): any {
 
   array.unshift(headers);
 
-  const ws = XLSX.utils.aoa_to_sheet(array);
+  const ws = XLSX.utils.aoa_to_sheet(array, { dateNF: 'yyyy"-"mm"-"dd" "HH":"MM":"SS' });
   const wb = XLSX.utils.book_new();
 
   XLSX.utils.book_append_sheet(wb, ws, 'Grafana');
