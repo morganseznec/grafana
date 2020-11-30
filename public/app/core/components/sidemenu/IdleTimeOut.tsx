@@ -5,6 +5,8 @@ import { refreshToken } from './state/actions';
 
 const unAuthenticatedPaths = ['/login', '/user/password/send-reset-email'];
 
+const documentTitle = document.title;
+
 export interface Props extends IdleTimerProps {
   refreshToken: typeof refreshToken;
 }
@@ -37,6 +39,7 @@ class IdleTimeOut extends PureComponent<Props, State> {
         this.setState({ remainingSeconds: diff });
         if (diff > 0) {
           this.countItDown();
+          document.title = `(${this.state.remainingSeconds}) ${document.title}`;
         } else {
           this.handleLogout();
         }
@@ -100,10 +103,10 @@ class IdleTimeOut extends PureComponent<Props, State> {
   }
 
   handleClose() {
-    this.setState({
-      confirmModal: false,
-      remainingSeconds: 30,
-    });
+    this.setState({ confirmModal: false, remainingSeconds: 30 });
+    refreshToken();
+    window.sessionStorage.setItem('refreshed_at', new Date().toISOString());
+    document.title = documentTitle;
   }
 
   handleLogout() {
