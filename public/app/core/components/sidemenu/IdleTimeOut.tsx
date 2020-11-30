@@ -39,7 +39,7 @@ class IdleTimeOut extends PureComponent<Props, State> {
         this.setState({ remainingSeconds: diff });
         if (diff > 0) {
           this.countItDown();
-          document.title = `(${this.state.remainingSeconds}) ${document.title}`;
+          document.title = `(${this.state.remainingSeconds}) ${documentTitle}`;
         } else {
           this.handleLogout();
         }
