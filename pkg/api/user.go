@@ -13,11 +13,6 @@ func GetSignedInUser(c *models.ReqContext) Response {
 	return getUserUserProfile(c.UserId)
 }
 
-// GET /api/user/token  (Refresh token)
-func RefreshToken(c *models.ReqContext) Response {
-	return Success("Refreshed")
-}
-
 // GET /api/users/:id
 func GetUserByID(c *models.ReqContext) Response {
 	return getUserUserProfile(c.ParamsInt64(":id"))

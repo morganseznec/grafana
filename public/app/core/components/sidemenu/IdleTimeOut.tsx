@@ -1,36 +1,74 @@
 import React, { PureComponent } from 'react';
 import { ConfirmModal } from '@grafana/ui';
 import IdleTimer, { IdleTimerProps } from 'react-idle-timer';
-import { refreshToken } from './state/actions';
-
-const unAuthenticatedPaths = ['/login', '/user/password/send-reset-email'];
-
-const documentTitle = document.title;
+import { getBackendSrv } from '@grafana/runtime';
 
 export interface Props extends IdleTimerProps {
-  refreshToken: typeof refreshToken;
+  userId: number;
 }
+
+const defaultRemainingSeconds = 30;
 
 export interface State {
   timeout: number;
   confirmModal: boolean;
   isTimedOut: boolean;
   // AnimationFrame
-  targetDate: Date | null;
-  remainingSeconds: Number;
+  targetDate: number;
+  remainingSeconds: number;
 }
 
 class IdleTimeOut extends PureComponent<Props, State> {
   idleTimer: IdleTimer | null;
+  idleChannel: BroadcastChannel;
+  interval: any;
+  _updateGuard: any;
 
   state: State = {
     timeout: 1000 * 270,
     confirmModal: false,
     isTimedOut: false,
     // AnimationFrame
-    targetDate: null,
-    remainingSeconds: 30,
+    targetDate: 0,
+    remainingSeconds: defaultRemainingSeconds,
   };
+
+  constructor(props: Readonly<Props>) {
+    super(props);
+
+    this.idleChannel = new BroadcastChannel('idleUser');
+
+    this.idleTimer = null;
+    this.onAction = this.onAction.bind(this);
+    this.onActive = this.onActive.bind(this);
+    this.onIdle = this.onIdle.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
+
+    this.interval = setInterval(() => {
+      this.idleChannel.onmessage = message => this.updateTimer(message);
+      if (
+        this.idleTimer &&
+        this.state.isTimedOut === true &&
+        Date.now() > this.idleTimer.getLastActiveTime() + this.state.timeout + defaultRemainingSeconds * 1000
+      ) {
+        this.logout();
+      }
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  updateTimer(message: any) {
+    const userId = message.data.userId;
+    if (userId === this.props.userId) {
+      if (this.idleTimer) {
+        this.idleTimer.reset();
+      }
+    }
+  }
 
   countItDown = () => {
     requestAnimationFrame(() => {
@@ -39,7 +77,6 @@ class IdleTimeOut extends PureComponent<Props, State> {
         this.setState({ remainingSeconds: diff });
         if (diff > 0) {
           this.countItDown();
-          document.title = `(${this.state.remainingSeconds}) ${documentTitle}`;
         } else {
           this.handleLogout();
         }
@@ -47,70 +84,71 @@ class IdleTimeOut extends PureComponent<Props, State> {
     });
   };
 
-  constructor(props: Readonly<Props>) {
-    super(props);
-    this.idleTimer = null;
-    this.onAction = this.onAction.bind(this);
-    this.onActive = this.onActive.bind(this);
-    this.onIdle = this.onIdle.bind(this);
-    this.handleClose = this.handleClose.bind(this);
-    this.handleLogout = this.handleLogout.bind(this);
+  refresh() {
+    getBackendSrv().loginPing();
+    localStorage.setItem('next_refresh_at', String(Date.now() + defaultRemainingSeconds * 1000));
   }
 
-  needRefresh = (): boolean => {
-    const refreshAt = sessionStorage.getItem('refreshed_at');
-    if (refreshAt === null) {
-      return true;
-    } else {
-      const diff = Number(new Date()) - Number(Date.parse(refreshAt));
-      if (diff > 60000) {
-        return true;
-      }
-      return false;
+  doPing() {
+    if (this._updateGuard) {
+      clearTimeout(this._updateGuard);
     }
-  };
+    this._updateGuard = setTimeout(() => {
+      const localValue = localStorage.getItem('next_refresh_at');
+      if (localValue !== null) {
+        const expiredTime = parseInt(localValue, 10);
+        const currentTime = Date.now();
+        if (expiredTime < currentTime) {
+          this.refresh();
+          this.idleChannel.postMessage({
+            userId: this.props.userId,
+          });
+        }
+      } else {
+        this.refresh();
+      }
+    }, 1000);
+  }
 
   onAction() {
     this.setState({ isTimedOut: false });
-    if (!unAuthenticatedPaths.includes(window.location.pathname)) {
-      if (this.needRefresh()) {
-        refreshToken();
-        window.sessionStorage.setItem('refreshed_at', new Date().toISOString());
-      }
-    }
+    this.doPing();
   }
 
   onActive() {
     this.setState({ isTimedOut: false });
+    this.doPing();
   }
 
   onIdle() {
     const isTimedOut = this.state.isTimedOut;
-    if (isTimedOut) {
-      console.log('isTimedOut: ', isTimedOut);
+    if (!isTimedOut) {
+      this.setState({
+        isTimedOut: true,
+        confirmModal: true,
+        targetDate: Date.now() + this.state.remainingSeconds * 1000,
+      });
+      this.countItDown();
     } else {
-      if (!unAuthenticatedPaths.includes(window.location.pathname)) {
-        const d = new Date();
-        d.setSeconds(d.getSeconds() + 30);
-        this.setState({ confirmModal: true, targetDate: d });
-        this.countItDown();
-      }
+      this.setState({ isTimedOut: false });
       if (this.idleTimer) {
         this.idleTimer.reset();
       }
-      this.setState({ isTimedOut: true });
     }
   }
 
   handleClose() {
-    this.setState({ confirmModal: false, remainingSeconds: 30 });
-    refreshToken();
-    window.sessionStorage.setItem('refreshed_at', new Date().toISOString());
-    document.title = documentTitle;
+    this.setState({ confirmModal: false, remainingSeconds: defaultRemainingSeconds });
   }
 
   handleLogout() {
     this.setState({ confirmModal: false });
+    this.logout();
+  }
+
+  logout() {
+    clearTimeout(this._updateGuard);
+    this.idleChannel.close();
     window.location.assign('/logout');
   }
 
@@ -133,7 +171,7 @@ class IdleTimeOut extends PureComponent<Props, State> {
         />
         <ConfirmModal
           isOpen={this.state.confirmModal}
-          title="Inactive user"
+          title="Inactive session"
           body={modalBody}
           confirmText="Logout"
           dismissText="Stay"

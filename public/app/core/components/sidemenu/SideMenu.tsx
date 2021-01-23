@@ -8,9 +8,17 @@ import { Branding } from 'app/core/components/Branding/Branding';
 import { Icon } from '@grafana/ui';
 import { Translation } from 'react-i18next';
 import IdleTimeOut from './IdleTimeOut';
-import { refreshToken } from './state/actions';
+import { contextSrv } from 'app/core/core';
 
 const homeUrl = config.appSubUrl || '/';
+
+function IdleTimer(props: any) {
+  const isSignedIn = contextSrv.isSignedIn;
+  if (isSignedIn) {
+    return <IdleTimeOut userId={props.userId} />;
+  }
+  return <></>;
+}
 
 class SideMenu extends PureComponent {
   toggleSideMenuSmallBreakpoint = () => {
@@ -21,7 +29,7 @@ class SideMenu extends PureComponent {
     return [
       <a href={homeUrl} className="sidemenu__logo" key="logo">
         <Branding.MenuLogo />
-        <IdleTimeOut refreshToken={() => refreshToken()} />
+        <IdleTimer userId={contextSrv.user.id} />
       </a>,
       <div className="sidemenu__logo_small_breakpoint" onClick={this.toggleSideMenuSmallBreakpoint} key="hamburger">
         <Icon name="bars" size="xl" />

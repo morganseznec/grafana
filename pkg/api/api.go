@@ -32,7 +32,7 @@ func (hs *HTTPServer) registerRoutes() {
 	r.Get("/invite/:code", hs.Index)
 
 	// authed views
-	r.Get("/token", reqSignedIn, hs.Index)
+	// Ping used as an auth keepalive
 	r.Get("/profile/", reqSignedIn, hs.Index)
 	r.Get("/profile/password", reqSignedIn, hs.Index)
 	r.Get("/profile/switch-org/:id", reqSignedIn, hs.ChangeActiveOrgAndRedirectToHome)
@@ -119,7 +119,6 @@ func (hs *HTTPServer) registerRoutes() {
 		// user (signed in)
 		apiRoute.Group("/user", func(userRoute routing.RouteRegister) {
 			userRoute.Get("/", Wrap(GetSignedInUser))
-			userRoute.Get("/token", Wrap(RefreshToken))
 			userRoute.Put("/", bind(models.UpdateUserCommand{}), Wrap(UpdateSignedInUser))
 			userRoute.Post("/using/:id", Wrap(UserSetUsingOrg))
 			userRoute.Get("/orgs", Wrap(GetSignedInUserOrgList))

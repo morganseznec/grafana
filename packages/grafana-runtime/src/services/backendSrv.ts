@@ -135,6 +135,7 @@ export interface BackendSrv {
   post(url: string, data?: any): Promise<any>;
   patch(url: string, data?: any): Promise<any>;
   put(url: string, data?: any): Promise<any>;
+  loginPing(): any;
 
   /**
    * @deprecated Use the fetch function instead. If you prefer to work with a promise

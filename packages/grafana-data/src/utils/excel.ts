@@ -20,7 +20,11 @@ function writeNumber(value: any): Number {
 }
 
 function makeFieldWriter(field: Field): FieldWriter {
-  if (field.type === 'time') {
+  if (field.type === 'time' || (field.type === 'number' && field.config.unit === 'dateTimeAsIso')) {
+    return (value: any) => writeDate(value);
+  }
+
+  if (field.config.unit === 'dateTimeAsIso') {
     return (value: any) => writeDate(value);
   }
 
@@ -77,6 +81,19 @@ export function toExcel(data: DataFrame[]): any {
 
   const ws = XLSX.utils.aoa_to_sheet(array, { dateNF: 'yyyy"-"mm"-"dd" "HH":"MM":"SS' });
   const wb = XLSX.utils.book_new();
+
+  /**
+  console.log(ws);
+  const targetColumn = XLSX.utils.decode_col('A');
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let i = range.s.r + 1; i <= range.e.r; i += 1) {
+    const ref = XLSX.utils.encode_cell({ r: i, c: targetColumn });
+    if (!ws[ref]) {
+      continue;
+    }
+    ws[ref].t = 'd';
+  }
+   */
 
   XLSX.utils.book_append_sheet(wb, ws, 'Grafana');
 
