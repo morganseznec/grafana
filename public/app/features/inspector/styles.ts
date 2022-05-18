@@ -16,6 +16,7 @@ export const getPanelInspectorStyles = stylesFactory(() => {
       display: flex;
       width: 100%;
       flex-grow: 0;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: flex-end;
       margin-bottom: ${config.theme.spacing.sm};

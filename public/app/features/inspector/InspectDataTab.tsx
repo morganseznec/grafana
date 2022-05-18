@@ -14,6 +14,7 @@ import {
   MutableDataFrame,
   SelectableValue,
   toCSV,
+  toExcel,
   transformDataFrame,
   TimeZone,
 } from '@grafana/data';
@@ -103,6 +104,21 @@ export class InspectDataTab extends PureComponent<Props, State> {
     const displayTitle = panel ? panel.getDisplayTitle() : 'Explore';
     const transformation = transformId !== DataTransformerID.noop ? '-as-' + transformId.toLocaleLowerCase() : '';
     const fileName = `${displayTitle}-data${transformation}-${dateTimeFormat(new Date())}.csv`;
+    saveAs(blob, fileName);
+  };
+
+  exportExcel = (dataFrame: DataFrame) => {
+    const { panel } = this.props;
+    const { transformId } = this.state;
+
+    const wbout = toExcel([dataFrame]);
+
+    const blob = new Blob([wbout], {
+      type: 'application/octet-stream',
+    });
+    const displayTitle = panel ? panel.getDisplayTitle() : 'Explore';
+    const transformation = transformId !== DataTransformerID.noop ? '-as-' + transformId.toLocaleLowerCase() : '';
+    const fileName = `${displayTitle}-data${transformation}-${dateTimeFormat(new Date())}.xlsx`;
     saveAs(blob, fileName);
   };
 
@@ -257,6 +273,16 @@ export class InspectDataTab extends PureComponent<Props, State> {
             `}
           >
             Download CSV
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => this.exportExcel(dataFrames[dataFrameIndex])}
+            className={css`
+              margin-bottom: 10px;
+              margin-left: 10px;
+            `}
+          >
+            Download Excel
           </Button>
           {hasLogs && (
             <Button
