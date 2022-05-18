@@ -17,7 +17,7 @@ interface Props {
   onChangeTimeZone: (timeZone: TimeZone) => void;
 }
 
-export const TimePickerFooter: FC<Props> = props => {
+export const TimePickerFooter: FC<Props> = (props) => {
   const { timeZone, timestamp = Date.now(), onChangeTimeZone } = props;
   const [isEditing, setEditing] = useState(false);
   const { t } = useTranslation();
@@ -51,7 +51,7 @@ export const TimePickerFooter: FC<Props> = props => {
         <div aria-label={selectors.components.TimeZonePicker.container} className={style.timeZoneContainer}>
           <TimeZonePicker
             includeInternal={true}
-            onChange={timeZone => {
+            onChange={(timeZone) => {
               onToggleChangeTz();
 
               if (isString(timeZone)) {

@@ -3,19 +3,21 @@ title = "Team HTTP API "
 description = "Grafana Team HTTP API"
 keywords = ["grafana", "http", "documentation", "api", "team", "teams", "group"]
 aliases = ["/docs/grafana/latest/http_api/team/"]
-type = "docs"
-[menu.docs]
-name = "Teams"
-parent = "http_api"
 +++
 
 # Team API
 
-This API can be used to create/update/delete Teams and to add/remove users to Teams. All actions require that the user has the Admin role for the organization.
+This API can be used to manage Teams and Team Memberships.
+
+Access to these API endpoints is restricted as follows:
+
+- All authenticated users are able to view details of teams they are a member of.
+- Organization Admins are able to manage all teams and team members.
+- If the `editors_can_admin` configuration flag is enabled, Organization Editors are able to view details of all teams and to manage teams that they are Admin members of.
 
 ## Team Search With Paging
 
-`GET /api/teams/search?perpage=50&page=1&query=mytea`
+`GET /api/teams/search?perpage=50&page=1&query=myteam`
 
 or
 
@@ -46,6 +48,7 @@ The `name` parameter returns a single team if the parameter matches the `name` f
 HTTP/1.1 200
 Content-Type: application/json
 
+{
   "totalCount": 1,
   "teams": [
     {

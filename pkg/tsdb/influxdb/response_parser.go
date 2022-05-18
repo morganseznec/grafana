@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	legendFormat = regexp.MustCompile(`\[\[(\w+)(\.\w+)*\]\]*|\$\s*(\w+?)*`)
+	legendFormat = regexp.MustCompile(`\[\[([\@\/\w-]+)(\.[\@\/\w-]+)*\]\]*|\$\s*([\@\/\w-]+?)*`)
 }
 
 func (rp *ResponseParser) Parse(response *Response, query *Query) *tsdb.QueryResult {
@@ -64,7 +64,6 @@ func (rp *ResponseParser) formatSeriesName(row Row, column string, query *Query)
 	if query.Alias == "" {
 		return rp.buildSeriesNameFromQuery(row, column)
 	}
-
 	nameSegment := strings.Split(row.Name, ".")
 
 	result := legendFormat.ReplaceAllFunc([]byte(query.Alias), func(in []byte) []byte {
@@ -127,7 +126,7 @@ func (rp *ResponseParser) parseTimepoint(valuePair []interface{}, valuePosition 
 		return tsdb.TimePoint{}, err
 	}
 
-	return tsdb.NewTimePoint(value, timestamp), nil
+	return tsdb.NewTimePoint(value, timestamp*1000), nil
 }
 
 func (rp *ResponseParser) parseValue(value interface{}) null.Float {

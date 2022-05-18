@@ -41,7 +41,6 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
   onLayoutChange={[Function]}
   onResize={[Function]}
   onResizeStop={[Function]}
-  onWidthChange={[Function]}
   viewPanel={null}
 >
   <div
@@ -68,38 +67,19 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
           "autoUpdate": undefined,
           "description": undefined,
           "editable": true,
-          "events": Emitter {
+          "events": EventBusSrv {
             "emitter": EventEmitter {
               "_events": Object {
-                "panel-added": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "panel-removed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "repeats-processed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "row-collapsed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "row-expanded": EE {
+                "dashboard-panels-changed": EE {
                   "context": [Circular],
                   "fn": [Function],
                   "once": false,
                 },
               },
-              "_eventsCount": 5,
+              "_eventsCount": 1,
             },
           },
+          "formatDate": [Function],
           "getVariables": [Function],
           "getVariablesFromState": [Function],
           "gnetId": null,
@@ -112,6 +92,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             "canSave": true,
             "canShare": true,
             "canStar": true,
+            "hasUnsavedFolderChange": false,
             "showSettings": true,
           },
           "originalTemplating": Array [],
@@ -123,7 +104,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -151,7 +132,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -179,7 +160,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -207,7 +188,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -235,7 +216,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
           ],
           "refresh": undefined,
           "revision": undefined,
-          "schemaVersion": 26,
+          "schemaVersion": 27,
           "snapshot": undefined,
           "style": "dark",
           "tags": Array [],
@@ -258,7 +239,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
         PanelModel {
           "cachedPluginOptions": Object {},
           "datasource": null,
-          "events": Emitter {
+          "events": EventBusSrv {
             "emitter": EventEmitter {
               "_events": Object {},
               "_eventsCount": 0,
@@ -310,38 +291,19 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
           "autoUpdate": undefined,
           "description": undefined,
           "editable": true,
-          "events": Emitter {
+          "events": EventBusSrv {
             "emitter": EventEmitter {
               "_events": Object {
-                "panel-added": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "panel-removed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "repeats-processed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "row-collapsed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "row-expanded": EE {
+                "dashboard-panels-changed": EE {
                   "context": [Circular],
                   "fn": [Function],
                   "once": false,
                 },
               },
-              "_eventsCount": 5,
+              "_eventsCount": 1,
             },
           },
+          "formatDate": [Function],
           "getVariables": [Function],
           "getVariablesFromState": [Function],
           "gnetId": null,
@@ -354,6 +316,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             "canSave": true,
             "canShare": true,
             "canStar": true,
+            "hasUnsavedFolderChange": false,
             "showSettings": true,
           },
           "originalTemplating": Array [],
@@ -365,7 +328,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -393,7 +356,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -421,7 +384,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -449,7 +412,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -477,7 +440,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
           ],
           "refresh": undefined,
           "revision": undefined,
-          "schemaVersion": 26,
+          "schemaVersion": 27,
           "snapshot": undefined,
           "style": "dark",
           "tags": Array [],
@@ -500,7 +463,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
         PanelModel {
           "cachedPluginOptions": Object {},
           "datasource": null,
-          "events": Emitter {
+          "events": EventBusSrv {
             "emitter": EventEmitter {
               "_events": Object {},
               "_eventsCount": 0,
@@ -552,38 +515,19 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
           "autoUpdate": undefined,
           "description": undefined,
           "editable": true,
-          "events": Emitter {
+          "events": EventBusSrv {
             "emitter": EventEmitter {
               "_events": Object {
-                "panel-added": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "panel-removed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "repeats-processed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "row-collapsed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "row-expanded": EE {
+                "dashboard-panels-changed": EE {
                   "context": [Circular],
                   "fn": [Function],
                   "once": false,
                 },
               },
-              "_eventsCount": 5,
+              "_eventsCount": 1,
             },
           },
+          "formatDate": [Function],
           "getVariables": [Function],
           "getVariablesFromState": [Function],
           "gnetId": null,
@@ -596,6 +540,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             "canSave": true,
             "canShare": true,
             "canStar": true,
+            "hasUnsavedFolderChange": false,
             "showSettings": true,
           },
           "originalTemplating": Array [],
@@ -607,7 +552,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -635,7 +580,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -663,7 +608,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -691,7 +636,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -719,7 +664,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
           ],
           "refresh": undefined,
           "revision": undefined,
-          "schemaVersion": 26,
+          "schemaVersion": 27,
           "snapshot": undefined,
           "style": "dark",
           "tags": Array [],
@@ -742,7 +687,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
         PanelModel {
           "cachedPluginOptions": Object {},
           "datasource": null,
-          "events": Emitter {
+          "events": EventBusSrv {
             "emitter": EventEmitter {
               "_events": Object {},
               "_eventsCount": 0,
@@ -794,38 +739,19 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
           "autoUpdate": undefined,
           "description": undefined,
           "editable": true,
-          "events": Emitter {
+          "events": EventBusSrv {
             "emitter": EventEmitter {
               "_events": Object {
-                "panel-added": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "panel-removed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "repeats-processed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "row-collapsed": EE {
-                  "context": [Circular],
-                  "fn": [Function],
-                  "once": false,
-                },
-                "row-expanded": EE {
+                "dashboard-panels-changed": EE {
                   "context": [Circular],
                   "fn": [Function],
                   "once": false,
                 },
               },
-              "_eventsCount": 5,
+              "_eventsCount": 1,
             },
           },
+          "formatDate": [Function],
           "getVariables": [Function],
           "getVariablesFromState": [Function],
           "gnetId": null,
@@ -838,6 +764,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             "canSave": true,
             "canShare": true,
             "canStar": true,
+            "hasUnsavedFolderChange": false,
             "showSettings": true,
           },
           "originalTemplating": Array [],
@@ -849,7 +776,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -877,7 +804,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -905,7 +832,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -933,7 +860,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
             PanelModel {
               "cachedPluginOptions": Object {},
               "datasource": null,
-              "events": Emitter {
+              "events": EventBusSrv {
                 "emitter": EventEmitter {
                   "_events": Object {},
                   "_eventsCount": 0,
@@ -961,7 +888,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
           ],
           "refresh": undefined,
           "revision": undefined,
-          "schemaVersion": 26,
+          "schemaVersion": 27,
           "snapshot": undefined,
           "style": "dark",
           "tags": Array [],
@@ -984,7 +911,7 @@ exports[`DashboardGrid Can render dashboard grid Should render 1`] = `
         PanelModel {
           "cachedPluginOptions": Object {},
           "datasource": null,
-          "events": Emitter {
+          "events": EventBusSrv {
             "emitter": EventEmitter {
               "_events": Object {},
               "_eventsCount": 0,

@@ -1,50 +1,48 @@
-import set from 'lodash/set';
+import { from, merge, Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 import {
+  AnnotationEvent,
   ArrayDataFrame,
   arrowTableToDataFrame,
   base64StringToArrowTable,
   DataFrame,
-  DataQueryError,
   DataQueryRequest,
   DataQueryResponse,
-  DataSourceApi,
   DataSourceInstanceSettings,
-  LoadingState,
-  MetricFindValue,
-  TableData,
-  TimeSeries,
-  TimeRange,
   DataTopic,
-  AnnotationEvent,
   LiveChannelScope,
+  LoadingState,
+  TimeRange,
 } from '@grafana/data';
 import { Scenario, TestDataQuery } from './types';
 import {
+  DataSourceWithBackend,
   getBackendSrv,
-  toDataQueryError,
+  getLiveMeasurementsObserver,
   getTemplateSrv,
   TemplateSrv,
-  getLiveMeasurementsObserver,
+  toDataQueryError,
 } from '@grafana/runtime';
 import { queryMetricTree } from './metricTree';
-import { from, merge, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { runStream } from './runStreams';
 import { getSearchFilterScopedVar } from 'app/features/variables/utils';
+import { TestDataVariableSupport } from './variables';
+import { generateRandomNodes, savedNodesResponse } from './nodeGraphUtils';
 
-type TestData = TimeSeries | TableData;
+export class TestDataDataSource extends DataSourceWithBackend<TestDataQuery> {
+  scenariosCache?: Promise<Scenario[]>;
 
-export class TestDataDataSource extends DataSourceApi<TestDataQuery> {
   constructor(
     instanceSettings: DataSourceInstanceSettings,
     private readonly templateSrv: TemplateSrv = getTemplateSrv()
   ) {
     super(instanceSettings);
+    this.variables = new TestDataVariableSupport();
   }
 
   query(options: DataQueryRequest<TestDataQuery>): Observable<DataQueryResponse> {
-    const queries: any[] = [];
+    const backendQueries: TestDataQuery[] = [];
     const streams: Array<Observable<DataQueryResponse>> = [];
 
     // Start streams and prepare queries
@@ -69,77 +67,38 @@ export class TestDataDataSource extends DataSourceApi<TestDataQuery> {
         case 'annotations':
           streams.push(this.annotationDataTopicTest(target, options));
           break;
+        case 'variables-query':
+          streams.push(this.variablesQuery(target, options));
+          break;
+        case 'node_graph':
+          streams.push(this.nodesQuery(target, options));
+          break;
         default:
-          queries.push({
-            ...target,
-            intervalMs: options.intervalMs,
-            maxDataPoints: options.maxDataPoints,
-            datasourceId: this.id,
-            alias: this.templateSrv.replace(target.alias || '', options.scopedVars),
-          });
+          backendQueries.push(target);
       }
     }
 
-    if (queries.length) {
-      const stream = getBackendSrv()
-        .fetch({
-          method: 'POST',
-          url: '/api/tsdb/query',
-          data: {
-            from: options.range.from.valueOf().toString(),
-            to: options.range.to.valueOf().toString(),
-            queries: queries,
-          },
-        })
-        .pipe(map(res => this.processQueryResult(queries, res)));
+    if (backendQueries.length) {
+      const backendOpts = {
+        ...options,
+        targets: backendQueries,
+      };
+      streams.push(super.query(backendOpts));
+    }
 
-      streams.push(stream);
+    if (streams.length === 0) {
+      return of({ data: [] });
     }
 
     return merge(...streams);
   }
 
-  processQueryResult(queries: any, res: any): DataQueryResponse {
-    const data: TestData[] = [];
-    let error: DataQueryError | undefined = undefined;
-
-    for (const query of queries) {
-      const results = res.data.results[query.refId];
-
-      for (const t of results.tables || []) {
-        const table = t as TableData;
-        table.refId = query.refId;
-        table.name = query.alias;
-
-        if (query.scenarioId === 'logs') {
-          set(table, 'meta.preferredVisualisationType', 'logs');
-        }
-
-        data.push(table);
-      }
-
-      for (const series of results.series || []) {
-        data.push({ target: series.name, datapoints: series.points, refId: query.refId, tags: series.tags });
-      }
-
-      if (results.error) {
-        error = {
-          message: results.error,
-        };
-      }
-    }
-
-    return { data, error };
-  }
-
   annotationDataTopicTest(target: TestDataQuery, req: DataQueryRequest<TestDataQuery>): Observable<DataQueryResponse> {
-    return new Observable<DataQueryResponse>(observer => {
-      const events = this.buildFakeAnnotationEvents(req.range, 10);
-      const dataFrame = new ArrayDataFrame(events);
-      dataFrame.meta = { dataTopic: DataTopic.Annotations };
+    const events = this.buildFakeAnnotationEvents(req.range, 10);
+    const dataFrame = new ArrayDataFrame(events);
+    dataFrame.meta = { dataTopic: DataTopic.Annotations };
 
-      observer.next({ key: target.refId, data: [dataFrame] });
-    });
+    return of({ key: target.refId, data: [dataFrame] }).pipe(delay(100));
   }
 
   buildFakeAnnotationEvents(range: TimeRange, count: number): AnnotationEvent[] {
@@ -179,21 +138,41 @@ export class TestDataDataSource extends DataSourceApi<TestDataQuery> {
   }
 
   getScenarios(): Promise<Scenario[]> {
-    return getBackendSrv().get('/api/tsdb/testdata/scenarios');
+    if (!this.scenariosCache) {
+      this.scenariosCache = this.getResource('scenarios');
+    }
+
+    return this.scenariosCache;
   }
 
-  metricFindQuery(query: string, options: any) {
-    return new Promise<MetricFindValue[]>((resolve, reject) => {
-      setTimeout(() => {
-        const interpolatedQuery = this.templateSrv.replace(
-          query,
-          getSearchFilterScopedVar({ query, wildcardChar: '*', options })
-        );
-        const children = queryMetricTree(interpolatedQuery);
-        const items = children.map(item => ({ value: item.name, text: item.name }));
-        resolve(items);
-      }, 100);
-    });
+  variablesQuery(target: TestDataQuery, options: DataQueryRequest<TestDataQuery>): Observable<DataQueryResponse> {
+    const query = target.stringInput;
+    const interpolatedQuery = this.templateSrv.replace(
+      query,
+      getSearchFilterScopedVar({ query, wildcardChar: '*', options: options.scopedVars })
+    );
+    const children = queryMetricTree(interpolatedQuery);
+    const items = children.map((item) => ({ value: item.name, text: item.name }));
+    const dataFrame = new ArrayDataFrame(items);
+
+    return of({ data: [dataFrame] }).pipe(delay(100));
+  }
+
+  nodesQuery(target: TestDataQuery, options: DataQueryRequest<TestDataQuery>): Observable<DataQueryResponse> {
+    const type = target.nodes?.type || 'random';
+    let frames: DataFrame[];
+    switch (type) {
+      case 'random':
+        frames = generateRandomNodes(target.nodes?.count);
+        break;
+      case 'response':
+        frames = savedNodesResponse();
+        break;
+      default:
+        throw new Error(`Unknown node_graph sub type ${type}`);
+    }
+
+    return of({ data: frames }).pipe(delay(100));
   }
 }
 
@@ -220,7 +199,7 @@ function runGrafanaAPI(target: TestDataQuery, req: DataQueryRequest<TestDataQuer
   return from(
     getBackendSrv()
       .get(url)
-      .then(res => {
+      .then((res) => {
         const frame = new ArrayDataFrame(res);
         return {
           state: LoadingState.Done,

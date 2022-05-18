@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { LegacyForms, Icon } from '@grafana/ui';
+import { Select, Icon } from '@grafana/ui';
 import { dashboardPermissionLevels } from 'app/types/acl';
-const { Select } = LegacyForms;
 
-export interface Props extends WithTranslation {
+export interface Props {
   item: any;
 }
 
-class DisabledPermissionListItem extends Component<Props, any> {
+export default class DisabledPermissionListItem extends Component<Props, any> {
   render() {
-    const { item, t } = this.props;
-    const currentPermissionLevel = dashboardPermissionLevels.find(dp => dp.value === item.permission);
+    const { item } = this.props;
+    const currentPermissionLevel = dashboardPermissionLevels.find((dp) => dp.value === item.permission);
+
     return (
       <tr className="gf-form-disabled">
         <td style={{ width: '1%' }}>
@@ -19,17 +18,16 @@ class DisabledPermissionListItem extends Component<Props, any> {
         </td>
         <td style={{ width: '90%' }}>
           {item.name}
-          <span className="filter-table__weak-italic"> ({t('Role')})</span>
+          <span className="filter-table__weak-italic"> (Role)</span>
         </td>
         <td />
-        <td className="query-keyword">{t('Can')}</td>
+        <td className="query-keyword">Can</td>
         <td>
           <div className="gf-form">
             <Select
               options={dashboardPermissionLevels}
               onChange={() => {}}
-              isDisabled={true}
-              className="gf-form-select-box__control--menu-right"
+              disabled={true}
               value={currentPermissionLevel}
             />
           </div>
@@ -43,5 +41,3 @@ class DisabledPermissionListItem extends Component<Props, any> {
     );
   }
 }
-
-export default withTranslation()(DisabledPermissionListItem);

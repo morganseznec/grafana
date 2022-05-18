@@ -5,12 +5,12 @@ import { DashboardModel, PanelModel } from 'app/features/dashboard/state';
 
 import { PanelPlugin } from '@grafana/data';
 import { StoreState } from 'app/types';
-import { GetDataOptions } from '../../state/PanelQueryRunner';
+import { GetDataOptions } from '../../../query/state/PanelQueryRunner';
 import { usePanelLatestData } from '../PanelEditor/usePanelLatestData';
 import { InspectContent } from './InspectContent';
 import { useDatasourceMetadata, useInspectTabs } from './hooks';
-import { InspectTab } from './types';
 import { updateLocation } from 'app/core/actions';
+import { InspectTab } from 'app/features/inspector/types';
 
 interface OwnProps {
   dashboard: DashboardModel;

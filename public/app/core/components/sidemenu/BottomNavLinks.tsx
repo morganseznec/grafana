@@ -30,7 +30,7 @@ class BottomNavLinks extends PureComponent<Props, State> {
   };
 
   toggleSwitcherModal = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       showSwitcherModal: !prevState.showSwitcherModal,
     }));
   };

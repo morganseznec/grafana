@@ -33,8 +33,8 @@ interface InputState {
 
 const errorMessage = 'Please enter a past date or "now"';
 
-export const TimeRangeForm: React.FC<Props> = props => {
-  const { value, isFullscreen = false, timeZone, roundup } = props;
+export const TimeRangeForm: React.FC<Props> = (props) => {
+  const { value, isFullscreen = false, timeZone, onApply: onApplyFromProps, isReversed } = props;
 
   const [from, setFrom] = useState<InputState>(valueToState(value.raw.from, false, timeZone));
   const [to, setTo] = useState<InputState>(valueToState(value.raw.to, true, timeZone));
@@ -76,9 +76,9 @@ export const TimeRangeForm: React.FC<Props> = props => {
       const raw: RawTimeRange = { from: from.value, to: to.value };
       const timeRange = rangeUtil.convertRawToRange(raw, timeZone);
 
-      props.onApply(timeRange);
+      onApplyFromProps(timeRange);
     },
-    [from, to, roundup, timeZone]
+    [from.invalid, from.value, onApplyFromProps, timeZone, to.invalid, to.value]
   );
 
   const onChange = useCallback(
@@ -95,9 +95,9 @@ export const TimeRangeForm: React.FC<Props> = props => {
     <>
       <Field label={t('From')} invalid={from.invalid} error={errorMessage}>
         <Input
-          onClick={event => event.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
           onFocus={onFocus}
-          onChange={event => setFrom(eventToState(event, false, timeZone))}
+          onChange={(event) => setFrom(eventToState(event, false, timeZone))}
           addonAfter={icon}
           aria-label="TimePicker from field"
           value={from.value}
@@ -105,9 +105,9 @@ export const TimeRangeForm: React.FC<Props> = props => {
       </Field>
       <Field label={t('To')} invalid={to.invalid} error={errorMessage}>
         <Input
-          onClick={event => event.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
           onFocus={onFocus}
-          onChange={event => setTo(eventToState(event, true, timeZone))}
+          onChange={(event) => setTo(eventToState(event, true, timeZone))}
           addonAfter={icon}
           aria-label="TimePicker to field"
           value={to.value}
@@ -126,7 +126,7 @@ export const TimeRangeForm: React.FC<Props> = props => {
         onClose={() => setOpen(false)}
         onChange={onChange}
         timeZone={timeZone}
-        isReversed={props.isReversed}
+        isReversed={isReversed}
       />
     </>
   );

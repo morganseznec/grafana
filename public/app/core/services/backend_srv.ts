@@ -1,4 +1,4 @@
-import { from, merge, MonoTypeOperatorFunction, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { from, merge, MonoTypeOperatorFunction, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { catchError, filter, map, mergeMap, retryWhen, share, takeUntil, tap, throwIfEmpty } from 'rxjs/operators';
 import { fromFetch } from 'rxjs/fetch';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,21 +8,21 @@ import { AppEvents, DataQueryErrorType } from '@grafana/data';
 import appEvents from 'app/core/app_events';
 import { getConfig } from 'app/core/config';
 import { DashboardSearchHit } from 'app/features/search/types';
-import { FolderDTO } from 'app/types';
+import { CoreEvents, FolderDTO } from 'app/types';
 import { coreModule } from 'app/core/core_module';
 import { ContextSrv, contextSrv } from './context_srv';
-import { Emitter } from '../utils/emitter';
-import { parseInitFromOptions, parseUrlFromOptions } from '../utils/fetch';
+import { parseInitFromOptions, parseResponseBody, parseUrlFromOptions } from '../utils/fetch';
 import { isDataQuery, isLocalUrl } from '../utils/query';
 import { FetchQueue } from './FetchQueue';
 import { ResponseQueue } from './ResponseQueue';
 import { FetchQueueWorker } from './FetchQueueWorker';
+import { TokenRevokedModal } from 'app/features/users/TokenRevokedModal';
 
 const CANCEL_ALL_REQUESTS_REQUEST_ID = 'cancel_all_requests_request_id';
 
 export interface BackendSrvDependencies {
   fromFetch: (input: string | Request, init?: RequestInit) => Observable<Response>;
-  appEvents: Emitter;
+  appEvents: typeof appEvents;
   contextSrv: ContextSrv;
   logout: () => void;
 }
@@ -40,6 +40,7 @@ export class BackendSrv implements BackendService {
     appEvents: appEvents,
     contextSrv: contextSrv,
     logout: () => {
+      contextSrv.setLoggedOut();
       window.location.reload();
     },
   };
@@ -69,14 +70,14 @@ export class BackendSrv implements BackendService {
     const id = uuidv4();
     const fetchQueue = this.fetchQueue;
 
-    return new Observable(observer => {
+    return new Observable((observer) => {
       // Subscription is an object that is returned whenever you subscribe to an Observable.
       // You can also use it as a container of many subscriptions and when it is unsubscribed all subscriptions within are also unsubscribed.
       const subscriptions: Subscription = new Subscription();
 
       // We're using the subscriptions.add function to add the subscription implicitly returned by this.responseQueue.getResponses<T>(id).subscribe below.
       subscriptions.add(
-        this.responseQueue.getResponses<T>(id).subscribe(result => {
+        this.responseQueue.getResponses<T>(id).subscribe((result) => {
           // The one liner below can seem magical if you're not accustomed to RxJs.
           // Firstly, we're subscribing to the result from the result.observable and we're passing in the outer observer object.
           // By passing the outer observer object then any updates on result.observable are passed through to any subscriber of the fetch<T> function.
@@ -109,8 +110,8 @@ export class BackendSrv implements BackendService {
     const fromFetchStream = this.getFromFetchStream<T>(options);
     const failureStream = fromFetchStream.pipe(this.toFailureStream<T>(options));
     const successStream = fromFetchStream.pipe(
-      filter(response => response.ok === true),
-      tap(response => {
+      filter((response) => response.ok === true),
+      tap((response) => {
         this.showSuccessAlert(response);
         this.inspectorStream.next(response);
       })
@@ -174,17 +175,10 @@ export class BackendSrv implements BackendService {
     const init = parseInitFromOptions(options);
 
     return this.dependencies.fromFetch(url, init).pipe(
-      mergeMap(async response => {
+      mergeMap(async (response) => {
         const { status, statusText, ok, headers, url, type, redirected } = response;
-        const textData = await response.text(); // this could be just a string, prometheus requests for instance
-        let data: T;
 
-        try {
-          data = JSON.parse(textData); // majority of the requests this will be something that can be parsed
-        } catch {
-          data = textData as any;
-        }
-
+        const data = await parseResponseBody<T>(response, options.responseType);
         const fetchResponse: FetchResponse<T> = {
           status,
           statusText,
@@ -205,10 +199,10 @@ export class BackendSrv implements BackendService {
   private toFailureStream<T>(options: BackendSrvRequest): MonoTypeOperatorFunction<FetchResponse<T>> {
     const { isSignedIn } = this.dependencies.contextSrv.user;
 
-    return inputStream =>
+    return (inputStream) =>
       inputStream.pipe(
-        filter(response => response.ok === false),
-        mergeMap(response => {
+        filter((response) => response.ok === false),
+        mergeMap((response) => {
           const { status, statusText, data } = response;
           const fetchErrorResponse: FetchError = { status, statusText, data, config: options };
           return throwError(fetchErrorResponse);
@@ -219,8 +213,19 @@ export class BackendSrv implements BackendService {
               const firstAttempt = i === 0 && options.retry === 0;
 
               if (error.status === 401 && isLocalUrl(options.url) && firstAttempt && isSignedIn) {
+                if (error.data?.error?.id === 'ERR_TOKEN_REVOKED') {
+                  this.dependencies.appEvents.emit(CoreEvents.showModalReact, {
+                    component: TokenRevokedModal,
+                    props: {
+                      maxConcurrentSessions: error.data?.error?.maxConcurrentSessions,
+                    },
+                  });
+
+                  return of({});
+                }
+
                 return from(this.loginPing()).pipe(
-                  catchError(err => {
+                  catchError((err) => {
                     if (err.status === 401) {
                       this.dependencies.logout();
                       return throwError(err);
@@ -320,11 +325,11 @@ export class BackendSrv implements BackendService {
   }
 
   private handleStreamCancellation(options: BackendSrvRequest): MonoTypeOperatorFunction<FetchResponse<any>> {
-    return inputStream =>
+    return (inputStream) =>
       inputStream.pipe(
         takeUntil(
           this.inFlightRequests.pipe(
-            filter(requestId => {
+            filter((requestId) => {
               let cancelRequest = false;
 
               if (options && options.requestId && options.requestId === requestId) {

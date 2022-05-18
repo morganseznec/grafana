@@ -2,18 +2,17 @@ import React, { useState } from 'react';
 import { DataSourceApi, PanelData, PanelPlugin } from '@grafana/data';
 import { getTemplateSrv } from '@grafana/runtime';
 import { CustomScrollbar, Drawer, TabContent } from '@grafana/ui';
-import { getPanelInspectorStyles } from './styles';
-import { InspectSubtitle } from './InspectSubtitle';
-import { InspectDataTab } from './InspectDataTab';
-import { InspectMetadataTab } from './InspectMetadataTab';
-import { InspectJSONTab } from './InspectJSONTab';
-import { InspectErrorTab } from './InspectErrorTab';
-import { InspectStatsTab } from './InspectStatsTab';
-import { QueryInspector } from './QueryInspector';
-import { InspectTab } from './types';
+import { getPanelInspectorStyles } from 'app/features/inspector/styles';
+import { InspectMetadataTab } from 'app/features/inspector/InspectMetadataTab';
+import { InspectSubtitle } from 'app/features/inspector/InspectSubtitle';
+import { InspectJSONTab } from 'app/features/inspector/InspectJSONTab';
+import { QueryInspector } from 'app/features/inspector/QueryInspector';
+import { InspectStatsTab } from 'app/features/inspector/InspectStatsTab';
+import { InspectErrorTab } from 'app/features/inspector/InspectErrorTab';
+import { InspectDataTab } from 'app/features/inspector/InspectDataTab';
+import { InspectTab } from 'app/features/inspector/types';
 import { DashboardModel, PanelModel } from '../../state';
-import { GetDataOptions } from '../../state/PanelQueryRunner';
-import { useTranslation } from 'react-i18next';
+import { GetDataOptions } from '../../../query/state/PanelQueryRunner';
 
 interface Props {
   dashboard: DashboardModel;
@@ -52,24 +51,23 @@ export const InspectContent: React.FC<Props> = ({
 
   const styles = getPanelInspectorStyles();
   const error = data?.error;
-  const { t } = useTranslation();
 
   // Validate that the active tab is actually valid and allowed
   let activeTab = currentTab;
-  if (!tabs.find(item => item.value === currentTab)) {
+  if (!tabs.find((item) => item.value === currentTab)) {
     activeTab = InspectTab.JSON;
   }
   const title = getTemplateSrv().replace(panel.title, panel.scopedVars, 'text');
 
   return (
     <Drawer
-      title={`${t('Inspect')}: ${title}` || t('Panel inspect')}
+      title={`Inspect: ${title || 'Panel'}`}
       subtitle={
         <InspectSubtitle
           tabs={tabs}
           tab={activeTab}
           data={data}
-          onSelectTab={item => setCurrentTab(item.value || InspectTab.Data)}
+          onSelectTab={(item) => setCurrentTab(item.value || InspectTab.Data)}
         />
       }
       width="50%"
@@ -96,7 +94,9 @@ export const InspectContent: React.FC<Props> = ({
           )}
           {activeTab === InspectTab.Error && <InspectErrorTab error={error} />}
           {data && activeTab === InspectTab.Stats && <InspectStatsTab data={data} timeZone={dashboard.getTimezone()} />}
-          {data && activeTab === InspectTab.Query && <QueryInspector panel={panel} data={data.series} />}
+          {data && activeTab === InspectTab.Query && (
+            <QueryInspector panel={panel} data={data.series} onRefreshQuery={() => panel.refresh()} />
+          )}
         </TabContent>
       </CustomScrollbar>
     </Drawer>

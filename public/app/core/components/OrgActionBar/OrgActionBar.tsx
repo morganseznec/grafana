@@ -5,7 +5,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 
 export interface Props extends WithTranslation {
   searchQuery: string;
-  setSearchQuery: (value: string) => {};
+  setSearchQuery: (value: string) => void;
   linkButton: { href: string; title: string };
   target?: string;
 }

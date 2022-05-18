@@ -1,27 +1,29 @@
 package api
 
 import (
+	"errors"
+
 	"github.com/grafana/grafana/pkg/api/dtos"
+	"github.com/grafana/grafana/pkg/api/response"
 	"github.com/grafana/grafana/pkg/bus"
 	"github.com/grafana/grafana/pkg/models"
 	"github.com/grafana/grafana/pkg/services/teamguardian"
 	"github.com/grafana/grafana/pkg/util"
-	"strconv"
 )
 
 // POST /api/teams
-func (hs *HTTPServer) CreateTeam(c *models.ReqContext, cmd models.CreateTeamCommand) Response {
+func (hs *HTTPServer) CreateTeam(c *models.ReqContext, cmd models.CreateTeamCommand) response.Response {
 	cmd.OrgId = c.OrgId
 
 	if c.OrgRole == models.ROLE_VIEWER {
-		return Error(403, "Not allowed to create team.", nil)
+		return response.Error(403, "Not allowed to create team.", nil)
 	}
 
 	if err := hs.Bus.Dispatch(&cmd); err != nil {
-		if err == models.ErrTeamNameTaken {
-			return Error(409, "Team name taken", err)
+		if errors.Is(err, models.ErrTeamNameTaken) {
+			return response.Error(409, "Team name taken", err)
 		}
-		return Error(500, "Failed to create Team", err)
+		return response.Error(500, "Failed to create Team", err)
 	}
 
 	if c.OrgRole == models.ROLE_EDITOR && hs.Cfg.EditorsCanAdmin {
@@ -44,83 +46,52 @@ func (hs *HTTPServer) CreateTeam(c *models.ReqContext, cmd models.CreateTeamComm
 		}
 	}
 
-	createAuditRecordCmd := models.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Team created: {TeamId:" + strconv.Itoa(int(cmd.Result.Id)) + ",Name:" + cmd.Result.Name + "}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
-	return JSON(200, &util.DynMap{
+	return response.JSON(200, &util.DynMap{
 		"teamId":  cmd.Result.Id,
 		"message": "Team created",
 	})
 }
 
 // PUT /api/teams/:teamId
-func (hs *HTTPServer) UpdateTeam(c *models.ReqContext, cmd models.UpdateTeamCommand) Response {
+func (hs *HTTPServer) UpdateTeam(c *models.ReqContext, cmd models.UpdateTeamCommand) response.Response {
 	cmd.OrgId = c.OrgId
 	cmd.Id = c.ParamsInt64(":teamId")
 
 	if err := teamguardian.CanAdmin(hs.Bus, cmd.OrgId, cmd.Id, c.SignedInUser); err != nil {
-		return Error(403, "Not allowed to update team", err)
+		return response.Error(403, "Not allowed to update team", err)
 	}
 
 	if err := hs.Bus.Dispatch(&cmd); err != nil {
-		if err == models.ErrTeamNameTaken {
-			return Error(400, "Team name taken", err)
+		if errors.Is(err, models.ErrTeamNameTaken) {
+			return response.Error(400, "Team name taken", err)
 		}
-		return Error(500, "Failed to update Team", err)
+		return response.Error(500, "Failed to update Team", err)
 	}
 
-	createAuditRecordCmd := models.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Team updated: {TeamId:" + strconv.Itoa(int(cmd.Id)) + "}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
-	return Success("Team updated")
+	return response.Success("Team updated")
 }
 
 // DELETE /api/teams/:teamId
-func (hs *HTTPServer) DeleteTeamByID(c *models.ReqContext) Response {
+func (hs *HTTPServer) DeleteTeamByID(c *models.ReqContext) response.Response {
 	orgId := c.OrgId
 	teamId := c.ParamsInt64(":teamId")
 	user := c.SignedInUser
 
 	if err := teamguardian.CanAdmin(hs.Bus, orgId, teamId, user); err != nil {
-		return Error(403, "Not allowed to delete team", err)
+		return response.Error(403, "Not allowed to delete team", err)
 	}
 
 	if err := hs.Bus.Dispatch(&models.DeleteTeamCommand{OrgId: orgId, Id: teamId}); err != nil {
-		if err == models.ErrTeamNotFound {
-			return Error(404, "Failed to delete Team. ID not found", nil)
+		if errors.Is(err, models.ErrTeamNotFound) {
+			return response.Error(404, "Failed to delete Team. ID not found", nil)
 		}
-		return Error(500, "Failed to delete Team", err)
+		return response.Error(500, "Failed to delete Team", err)
 	}
-
-	createAuditRecordCmd := models.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Team delete: {TeamId:" + strconv.Itoa(int(teamId)) + "}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
-	return Success("Team deleted")
+	return response.Success("Team deleted")
 }
 
 // GET /api/teams/search
-func (hs *HTTPServer) SearchTeams(c *models.ReqContext) Response {
+func (hs *HTTPServer) SearchTeams(c *models.ReqContext) response.Response {
 	perPage := c.QueryInt("perpage")
 	if perPage <= 0 {
 		perPage = 1000
@@ -130,22 +101,19 @@ func (hs *HTTPServer) SearchTeams(c *models.ReqContext) Response {
 		page = 1
 	}
 
-	var userIdFilter int64
-	if hs.Cfg.EditorsCanAdmin && c.OrgRole != models.ROLE_ADMIN {
-		userIdFilter = c.SignedInUser.UserId
-	}
-
 	query := models.SearchTeamsQuery{
 		OrgId:        c.OrgId,
 		Query:        c.Query("query"),
 		Name:         c.Query("name"),
-		UserIdFilter: userIdFilter,
+		UserIdFilter: userFilter(hs.Cfg.EditorsCanAdmin, c),
 		Page:         page,
 		Limit:        perPage,
+		SignedInUser: c.SignedInUser,
+		HiddenUsers:  hs.Cfg.HiddenUsers,
 	}
 
 	if err := bus.Dispatch(&query); err != nil {
-		return Error(500, "Failed to search Teams", err)
+		return response.Error(500, "Failed to search Teams", err)
 	}
 
 	for _, team := range query.Result.Teams {
@@ -155,54 +123,63 @@ func (hs *HTTPServer) SearchTeams(c *models.ReqContext) Response {
 	query.Result.Page = page
 	query.Result.PerPage = perPage
 
-	return JSON(200, query.Result)
+	return response.JSON(200, query.Result)
+}
+
+// UserFilter returns the user ID used in a filter when querying a team
+// 1. If the user is a viewer or editor, this will return the user's ID.
+// 2. If EditorsCanAdmin is enabled and the user is an editor, this will return models.FilterIgnoreUser (0)
+// 3. If the user is an admin, this will return models.FilterIgnoreUser (0)
+func userFilter(editorsCanAdmin bool, c *models.ReqContext) int64 {
+	userIdFilter := c.SignedInUser.UserId
+	if (editorsCanAdmin && c.OrgRole == models.ROLE_EDITOR) || c.OrgRole == models.ROLE_ADMIN {
+		userIdFilter = models.FilterIgnoreUser
+	}
+
+	return userIdFilter
 }
 
 // GET /api/teams/:teamId
-func GetTeamByID(c *models.ReqContext) Response {
-	query := models.GetTeamByIdQuery{OrgId: c.OrgId, Id: c.ParamsInt64(":teamId")}
+func (hs *HTTPServer) GetTeamByID(c *models.ReqContext) response.Response {
+	query := models.GetTeamByIdQuery{
+		OrgId:        c.OrgId,
+		Id:           c.ParamsInt64(":teamId"),
+		SignedInUser: c.SignedInUser,
+		HiddenUsers:  hs.Cfg.HiddenUsers,
+		UserIdFilter: userFilter(hs.Cfg.EditorsCanAdmin, c),
+	}
 
 	if err := bus.Dispatch(&query); err != nil {
-		if err == models.ErrTeamNotFound {
-			return Error(404, "Team not found", err)
+		if errors.Is(err, models.ErrTeamNotFound) {
+			return response.Error(404, "Team not found", err)
 		}
 
-		return Error(500, "Failed to get Team", err)
+		return response.Error(500, "Failed to get Team", err)
 	}
 
 	query.Result.AvatarUrl = dtos.GetGravatarUrlWithDefault(query.Result.Email, query.Result.Name)
-	return JSON(200, &query.Result)
+	return response.JSON(200, &query.Result)
 }
 
 // GET /api/teams/:teamId/preferences
-func (hs *HTTPServer) GetTeamPreferences(c *models.ReqContext) Response {
+func (hs *HTTPServer) GetTeamPreferences(c *models.ReqContext) response.Response {
 	teamId := c.ParamsInt64(":teamId")
 	orgId := c.OrgId
 
 	if err := teamguardian.CanAdmin(hs.Bus, orgId, teamId, c.SignedInUser); err != nil {
-		return Error(403, "Not allowed to view team preferences.", err)
+		return response.Error(403, "Not allowed to view team preferences.", err)
 	}
 
 	return getPreferencesFor(orgId, 0, teamId)
 }
 
 // PUT /api/teams/:teamId/preferences
-func (hs *HTTPServer) UpdateTeamPreferences(c *models.ReqContext, dtoCmd dtos.UpdatePrefsCmd) Response {
+func (hs *HTTPServer) UpdateTeamPreferences(c *models.ReqContext, dtoCmd dtos.UpdatePrefsCmd) response.Response {
 	teamId := c.ParamsInt64(":teamId")
 	orgId := c.OrgId
 
 	if err := teamguardian.CanAdmin(hs.Bus, orgId, teamId, c.SignedInUser); err != nil {
-		return Error(403, "Not allowed to update team preferences.", err)
-	}
-
-	createAuditRecordCmd := models.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Team preferences updated: {TeamId:" + strconv.Itoa(int(teamId)) + "}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := bus.Dispatch(&createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
+		return response.Error(403, "Not allowed to update team preferences.", err)
 	}
 
 	return updatePreferencesFor(orgId, 0, teamId, &dtoCmd)

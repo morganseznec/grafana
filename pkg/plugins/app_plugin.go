@@ -13,14 +13,10 @@ import (
 	"github.com/grafana/grafana/pkg/util/errutil"
 )
 
-type AppPluginCss struct {
-	Light string `json:"light"`
-	Dark  string `json:"dark"`
-}
-
 type AppPlugin struct {
 	FrontendPluginBase
-	Routes []*AppPluginRoute `json:"routes"`
+	Routes      []*AppPluginRoute `json:"routes"`
+	AutoEnabled bool              `json:"autoEnabled"`
 
 	FoundChildPlugins []*PluginInclude `json:"-"`
 	Pinned            bool             `json:"-"`

@@ -1,10 +1,8 @@
 import React, { PureComponent } from 'react';
-import { useTranslation, withTranslation, WithTranslation } from 'react-i18next';
-import { LegacyForms, Icon } from '@grafana/ui';
+import { Select, Icon } from '@grafana/ui';
 import { SelectableValue } from '@grafana/data';
 import { dashboardPermissionLevels, DashboardAcl, PermissionLevel } from 'app/types/acl';
 import { FolderInfo } from 'app/types';
-const { Select } = LegacyForms;
 
 const setClassNameHelper = (inherited: boolean) => {
   return inherited ? 'gf-form-disabled' : '';
@@ -25,24 +23,23 @@ function ItemAvatar({ item }: { item: DashboardAcl }) {
 }
 
 function ItemDescription({ item }: { item: DashboardAcl }) {
-  const { t } = useTranslation();
   if (item.userId) {
-    return <span className="filter-table__weak-italic">({t('User')})</span>;
+    return <span className="filter-table__weak-italic">(User)</span>;
   }
   if (item.teamId) {
-    return <span className="filter-table__weak-italic">({t('Team')})</span>;
+    return <span className="filter-table__weak-italic">(Team)</span>;
   }
-  return <span className="filter-table__weak-italic">({t('Role')})</span>;
+  return <span className="filter-table__weak-italic">(Role)</span>;
 }
 
-interface Props extends WithTranslation {
+interface Props {
   item: DashboardAcl;
   onRemoveItem: (item: DashboardAcl) => void;
   onPermissionChanged: (item: DashboardAcl, level: PermissionLevel) => void;
   folderInfo?: FolderInfo;
 }
 
-class PermissionsListItem extends PureComponent<Props> {
+export default class PermissionsListItem extends PureComponent<Props> {
   onPermissionChanged = (option: SelectableValue<PermissionLevel>) => {
     this.props.onPermissionChanged(this.props.item, option.value!);
   };
@@ -52,9 +49,9 @@ class PermissionsListItem extends PureComponent<Props> {
   };
 
   render() {
-    const { item, folderInfo, t } = this.props;
+    const { item, folderInfo } = this.props;
     const inheritedFromRoot = item.dashboardId === -1 && !item.inherited;
-    const currentPermissionLevel = dashboardPermissionLevels.find(dp => dp.value === item.permission);
+    const currentPermissionLevel = dashboardPermissionLevels.find((dp) => dp.value === item.permission);
 
     return (
       <tr className={setClassNameHelper(Boolean(item?.inherited))}>
@@ -67,26 +64,24 @@ class PermissionsListItem extends PureComponent<Props> {
         <td>
           {item.inherited && folderInfo && (
             <em className="muted no-wrap">
-              {t('Inherited from folder')}{' '}
+              Inherited from folder{' '}
               <a className="text-link" href={`${folderInfo.url}/permissions`}>
                 {folderInfo.title}
               </a>{' '}
             </em>
           )}
-          {inheritedFromRoot && <em className="muted no-wrap">{t('Default Permission')}</em>}
+          {inheritedFromRoot && <em className="muted no-wrap">Default Permission</em>}
         </td>
-        <td className="query-keyword">{t('Can')}</td>
+        <td className="query-keyword">Can</td>
         <td>
-          <div className="gf-form">
-            <Select
-              isSearchable={false}
-              options={dashboardPermissionLevels}
-              onChange={this.onPermissionChanged}
-              isDisabled={item.inherited}
-              className="gf-form-select-box__control--menu-right"
-              value={currentPermissionLevel}
-            />
-          </div>
+          <Select
+            isSearchable={false}
+            options={dashboardPermissionLevels}
+            onChange={this.onPermissionChanged}
+            disabled={item.inherited}
+            value={currentPermissionLevel}
+            width={25}
+          />
         </td>
         <td>
           {!item.inherited ? (
@@ -103,5 +98,3 @@ class PermissionsListItem extends PureComponent<Props> {
     );
   }
 }
-
-export default withTranslation()(PermissionsListItem);

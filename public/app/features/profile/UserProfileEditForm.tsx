@@ -1,12 +1,11 @@
 import React, { FC } from 'react';
 import { Button, Tooltip, Icon, Form, Input, Field, FieldSet } from '@grafana/ui';
-import { User } from 'app/types';
+import { UserDTO } from 'app/types';
 import config from 'app/core/config';
 import { ProfileUpdateFields } from 'app/core/utils/UserProvider';
-import { useTranslation } from 'react-i18next';
 
 export interface Props {
-  user: User;
+  user: UserDTO;
   isSavingUser: boolean;
   updateProfile: (payload: ProfileUpdateFields) => void;
 }
@@ -17,17 +16,22 @@ export const UserProfileEditForm: FC<Props> = ({ user, isSavingUser, updateProfi
   const onSubmitProfileUpdate = (data: ProfileUpdateFields) => {
     updateProfile(data);
   };
-  const { t } = useTranslation();
 
   return (
     <Form onSubmit={onSubmitProfileUpdate} validateOn="onBlur">
       {({ register, errors }) => {
         return (
-          <FieldSet label={t('Edit Profile')}>
-            <Field label="Name" invalid={!!errors.name} error={t('Name is required')}>
-              <Input name="name" ref={register({ required: true })} placeholder="Name" defaultValue={user.name} />
+          <FieldSet label="Edit Profile">
+            <Field label="Name" invalid={!!errors.name} error="Name is required" disabled={disableLoginForm}>
+              <Input
+                name="name"
+                ref={register({ required: true })}
+                placeholder="Name"
+                defaultValue={user.name}
+                suffix={<InputSuffix />}
+              />
             </Field>
-            <Field label="Email" invalid={!!errors.email} error={t('Email is required')} disabled={disableLoginForm}>
+            <Field label="Email" invalid={!!errors.email} error="Email is required" disabled={disableLoginForm}>
               <Input
                 name="email"
                 ref={register({ required: true })}
@@ -41,7 +45,7 @@ export const UserProfileEditForm: FC<Props> = ({ user, isSavingUser, updateProfi
                 name="login"
                 ref={register}
                 defaultValue={user.login}
-                placeholder={t('Username')}
+                placeholder="Username"
                 suffix={<InputSuffix />}
               />
             </Field>

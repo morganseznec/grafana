@@ -1,15 +1,11 @@
-// Libaries
+// Libraries
 import React, { Component } from 'react';
-import { dateMath, GrafanaTheme, TimeZone } from '@grafana/data';
+import { dateMath, GrafanaTheme, TimeZone, TimeRange } from '@grafana/data';
 import { css } from 'emotion';
 
 // Types
 import { DashboardModel } from '../../state';
 import { LocationState, CoreEvents } from 'app/types';
-import { TimeRange } from '@grafana/data';
-
-// State
-import { updateTimeZoneForSession } from 'app/features/profile/state/reducers';
 
 // Components
 import { RefreshPicker, withTheme, stylesFactory, Themeable, defaultIntervals } from '@grafana/ui';
@@ -18,21 +14,11 @@ import { TimePickerWithHistory } from 'app/core/components/TimePicker/TimePicker
 // Utils & Services
 import { getTimeSrv } from 'app/features/dashboard/services/TimeSrv';
 import { appEvents } from 'app/core/core';
-import { withTranslation, WithTranslation } from 'react-i18next';
 
-const getStyles = stylesFactory((theme: GrafanaTheme) => {
-  return {
-    container: css`
-      position: relative;
-      display: flex;
-    `,
-  };
-});
-
-export interface Props extends Themeable, WithTranslation {
+export interface Props extends Themeable {
   dashboard: DashboardModel;
   location: LocationState;
-  onChangeTimeZone: typeof updateTimeZoneForSession;
+  onChangeTimeZone: (timeZone: TimeZone) => void;
 }
 class UnthemedDashNavTimeControls extends Component<Props> {
   componentDidMount() {
@@ -116,20 +102,26 @@ class UnthemedDashNavTimeControls extends Component<Props> {
           onMoveForward={this.onMoveForward}
           onZoom={this.onZoom}
           onChangeTimeZone={this.onChangeTimeZone}
-          i18n={this.props.i18n}
-          tReady={this.props.tReady}
-          t={this.props.t}
         />
         <RefreshPicker
           onIntervalChanged={this.onChangeRefreshInterval}
           onRefresh={this.onRefresh}
           value={dashboard.refresh}
           intervals={intervals}
-          tooltip={this.props.t('Refresh dashboard')}
+          tooltip="Refresh dashboard"
         />
       </div>
     );
   }
 }
 
-export const DashNavTimeControls = withTheme(withTranslation()(UnthemedDashNavTimeControls));
+export const DashNavTimeControls = withTheme(UnthemedDashNavTimeControls);
+
+const getStyles = stylesFactory((theme: GrafanaTheme) => {
+  return {
+    container: css`
+      position: relative;
+      display: flex;
+    `,
+  };
+});

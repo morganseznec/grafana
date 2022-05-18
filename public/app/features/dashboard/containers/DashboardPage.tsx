@@ -13,7 +13,7 @@ import { DashboardGrid } from '../dashgrid/DashboardGrid';
 import { DashNav } from '../components/DashNav';
 import { DashboardSettings } from '../components/DashboardSettings';
 import { PanelEditor } from '../components/PanelEditor/PanelEditor';
-import { Alert, Button, CustomScrollbar, HorizontalGroup, Icon, VerticalGroup } from '@grafana/ui';
+import { Alert, Button, CustomScrollbar, HorizontalGroup, Spinner, VerticalGroup } from '@grafana/ui';
 // Redux
 import { initDashboard } from '../state/initDashboard';
 import { notifyApp, updateLocation } from 'app/core/actions';
@@ -27,7 +27,7 @@ import {
 } from 'app/types';
 
 import { DashboardModel, PanelModel } from 'app/features/dashboard/state';
-import { InspectTab } from '../components/Inspector/types';
+import { InspectTab } from 'app/features/inspector/types';
 import { PanelInspector } from '../components/Inspector/PanelInspector';
 import { SubMenu } from '../components/SubMenu/SubMenu';
 import { cleanUpDashboardAndVariables } from '../state/actions';
@@ -119,7 +119,7 @@ export class DashboardPage extends PureComponent<Props, State> {
     if (!editPanel && urlEditPanelId) {
       dashboardWatcher.setEditingState(true);
 
-      this.getPanelByIdFromUrlParam(urlEditPanelId, panel => {
+      this.getPanelByIdFromUrlParam(urlEditPanelId, (panel) => {
         // if no edit permission show error
         if (!dashboard.canEditPanel(panel)) {
           this.props.notifyApp(createErrorNotification('Permission to edit panel denied'));
@@ -139,7 +139,7 @@ export class DashboardPage extends PureComponent<Props, State> {
 
     // entering view mode
     if (!viewPanel && urlViewPanelId) {
-      this.getPanelByIdFromUrlParam(urlViewPanelId, panel => {
+      this.getPanelByIdFromUrlParam(urlViewPanelId, (panel) => {
         this.setPanelFullscreenClass(true);
         dashboard.initViewPanel(panel);
         this.setState({
@@ -235,7 +235,7 @@ export class DashboardPage extends PureComponent<Props, State> {
         <div className="dashboard-loading__text">
           <VerticalGroup spacing="md">
             <HorizontalGroup align="center" justify="center" spacing="xs">
-              <Icon name="fa fa-spinner" className="fa-spin" /> {this.props.initPhase}
+              <Spinner inline={true} /> {this.props.initPhase}
             </HorizontalGroup>{' '}
             <HorizontalGroup align="center" justify="center">
               <Button variant="secondary" size="md" icon="repeat" onClick={this.cancelVariables}>
@@ -257,11 +257,9 @@ export class DashboardPage extends PureComponent<Props, State> {
 
     return (
       <div className="dashboard-loading">
-        <Alert
-          severity={AppNotificationSeverity.Error}
-          title={initError.message}
-          children={getMessageFromError(initError.error)}
-        />
+        <Alert severity={AppNotificationSeverity.Error} title={initError.message}>
+          {getMessageFromError(initError.error)}
+        </Alert>
       </div>
     );
   }
@@ -310,9 +308,7 @@ export class DashboardPage extends PureComponent<Props, State> {
     return (
       <div className="dashboard-container">
         <DashNav dashboard={dashboard} isFullscreen={!!viewPanel} $injector={$injector} onAddPanel={this.onAddPanel} />
-        {!editPanel && (
-          <SubMenu dashboard={dashboard} annotations={dashboard.annotations.list} links={dashboard.links} />
-        )}
+
         <div className="dashboard-scroll">
           <CustomScrollbar
             autoHeightMin="100%"
@@ -320,10 +316,13 @@ export class DashboardPage extends PureComponent<Props, State> {
             scrollTop={updateScrollTop}
             hideHorizontalTrack={true}
             updateAfterMountMs={500}
-            className="custom-scrollbar--page"
           >
             <div className="dashboard-content">
               {initError && this.renderInitFailedState()}
+              {!editPanel && (
+                <SubMenu dashboard={dashboard} annotations={dashboard.annotations.list} links={dashboard.links} />
+              )}
+
               <DashboardGrid
                 dashboard={dashboard}
                 viewPanel={viewPanel}
@@ -337,7 +336,7 @@ export class DashboardPage extends PureComponent<Props, State> {
 
         {inspectPanel && <PanelInspector dashboard={dashboard} panel={inspectPanel} defaultTab={inspectTab} />}
         {editPanel && <PanelEditor dashboard={dashboard} sourcePanel={editPanel} />}
-        {editview && <DashboardSettings dashboard={dashboard} updateLocation={updateLocation} />}
+        {editview && <DashboardSettings dashboard={dashboard} updateLocation={updateLocation} editview={editview} />}
       </div>
     );
   }

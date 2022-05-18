@@ -1,14 +1,14 @@
 import React, { PureComponent } from 'react';
 import { hot } from 'react-hot-loader';
 import { connect } from 'react-redux';
+import { Icon, Tooltip } from '@grafana/ui';
+import { NavModel } from '@grafana/data';
 import { StoreState } from 'app/types';
 import { getNavModel } from 'app/core/selectors/navModel';
-import { getServerStats, ServerStat } from './state/apis';
 import Page from 'app/core/components/Page/Page';
-import { NavModel } from '@grafana/data';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { getServerStats, ServerStat } from './state/apis';
 
-interface Props extends WithTranslation {
+interface Props {
   navModel: NavModel;
   getServerStats: () => Promise<ServerStat[]>;
 }
@@ -37,16 +37,14 @@ export class ServerStats extends PureComponent<Props, State> {
     const { navModel } = this.props;
     const { stats, isLoading } = this.state;
 
-    translateNames(this.props.t, stats);
-
     return (
       <Page navModel={navModel}>
         <Page.Contents isLoading={isLoading}>
           <table className="filter-table form-inline">
             <thead>
               <tr>
-                <th>{this.props.t('Name')}</th>
-                <th>{this.props.t('Value')}</th>
+                <th>Name</th>
+                <th>Value</th>
               </tr>
             </thead>
             <tbody>{stats.map(StatItem)}</tbody>
@@ -57,16 +55,17 @@ export class ServerStats extends PureComponent<Props, State> {
   }
 }
 
-function translateNames(t: any, stats: ServerStat[]) {
-  for (let stat of stats) {
-    stat.name = t(stat.name);
-  }
-}
-
 function StatItem(stat: ServerStat) {
   return (
     <tr key={stat.name}>
-      <td>{stat.name}</td>
+      <td>
+        {stat.name}{' '}
+        {stat.tooltip && (
+          <Tooltip content={stat.tooltip} placement={'top'}>
+            <Icon name={'info-circle'} />
+          </Tooltip>
+        )}
+      </td>
       <td>{stat.value}</td>
     </tr>
   );
@@ -77,4 +76,4 @@ const mapStateToProps = (state: StoreState) => ({
   getServerStats: getServerStats,
 });
 
-export default hot(module)(connect(mapStateToProps)(withTranslation()(ServerStats)));
+export default hot(module)(connect(mapStateToProps)(ServerStats));

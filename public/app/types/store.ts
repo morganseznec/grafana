@@ -3,7 +3,7 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { NavIndex } from '@grafana/data';
 
 import { LocationState } from './location';
-import { AlertRulesState, NotificationChannelState } from './alerting';
+import { AlertDefinitionState, AlertRulesState, NotificationChannelState } from './alerting';
 import { TeamsState, TeamState } from './teams';
 import { FolderState } from './folders';
 import { DashboardState } from './dashboard';
@@ -19,7 +19,6 @@ import { PanelEditorState } from '../features/dashboard/components/PanelEditor/s
 import { ApiKeysState } from './apiKeys';
 import { TemplatingState } from '../features/variables/state/reducers';
 import { ImportDashboardState } from '../features/manage-dashboards/state/reducers';
-import { AuditRecordsState } from './audit';
 
 export interface StoreState {
   navIndex: NavIndex;
@@ -46,7 +45,7 @@ export interface StoreState {
   templating: TemplatingState;
   importDashboard: ImportDashboardState;
   notificationChannel: NotificationChannelState;
-  records: AuditRecordsState;
+  alertDefinition: AlertDefinitionState;
 }
 
 /*
