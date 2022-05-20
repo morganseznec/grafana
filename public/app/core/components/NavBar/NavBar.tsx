@@ -14,6 +14,7 @@ import { KioskMode, StoreState } from 'app/types';
 
 import { OrgSwitcher } from '../OrgSwitcher';
 
+import { IdleTimer } from './IdleTimer';
 import NavBarItem from './NavBarItem';
 import { NavBarItemWithoutMenu } from './NavBarItemWithoutMenu';
 import { NavBarMenu } from './NavBarMenu';
@@ -80,6 +81,7 @@ export const NavBarUnconnected = React.memo(({ navBarTree }: Props) => {
         <NavBarItem className={styles.search} isActive={activeItem === searchItem} link={searchItem}>
           <Icon name="search" size="xl" />
         </NavBarItem>
+        <IdleTimer />
       </NavBarSection>
 
       <NavBarSection>
