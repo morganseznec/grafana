@@ -213,6 +213,17 @@ func (hs *HTTPServer) LoginPost(c *models.ReqContext) response.Response {
 	authModule = authQuery.AuthModule
 	if err != nil {
 		resp = response.Error(401, "Invalid username or password", err)
+
+		createAuditRecordCmd := models.CreateAuditRecordCommand{
+			Username:  cmd.User,
+			Action:    err.Error(),
+			IpAddress: c.RemoteAddr(),
+		}
+
+		if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+			c.Logger.Error("Could not create audit record.", "error", err)
+		}
+
 		if errors.Is(err, login.ErrInvalidCredentials) || errors.Is(err, login.ErrTooManyLoginAttempts) || errors.Is(err,
 			models.ErrUserNotFound) {
 			return resp
@@ -280,6 +291,16 @@ func (hs *HTTPServer) loginUserWithUser(user *models.User, c *models.ReqContext)
 	}
 	c.UserToken = userToken
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  user.Login,
+		Action:    "Successful Login",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	hs.log.Info("Successful Login", "User", user.Email)
 	cookies.WriteSessionCookie(c, hs.Cfg, userToken.UnhashedToken, hs.Cfg.LoginMaxLifetime)
 	return nil
@@ -303,6 +324,16 @@ func (hs *HTTPServer) Logout(c *models.ReqContext) {
 	} else {
 		hs.log.Info("Successful Logout", "User", c.Email)
 		c.Redirect(hs.Cfg.AppSubURL + "/login")
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.Login,
+		Action:    "Successful Logout",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 }
 

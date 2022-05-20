@@ -91,7 +91,7 @@ func (hs *HTTPServer) UpdateSignedInUser(c *models.ReqContext) response.Response
 		}
 	}
 	cmd.UserId = c.UserId
-	return hs.handleUpdateUser(c.Req.Context(), cmd)
+	return hs.handleUpdateUser(c, cmd)
 }
 
 // POST /api/users/:id
@@ -105,7 +105,7 @@ func (hs *HTTPServer) UpdateUser(c *models.ReqContext) response.Response {
 	if err != nil {
 		return response.Error(http.StatusBadRequest, "id is invalid", err)
 	}
-	return hs.handleUpdateUser(c.Req.Context(), cmd)
+	return hs.handleUpdateUser(c, cmd)
 }
 
 // POST /api/users/:id/using/:orgId
@@ -132,7 +132,7 @@ func (hs *HTTPServer) UpdateUserActiveOrg(c *models.ReqContext) response.Respons
 	return response.Success("Active organization changed")
 }
 
-func (hs *HTTPServer) handleUpdateUser(ctx context.Context, cmd models.UpdateUserCommand) response.Response {
+func (hs *HTTPServer) handleUpdateUser(c *models.ReqContext, cmd models.UpdateUserCommand) response.Response {
 	if len(cmd.Login) == 0 {
 		cmd.Login = cmd.Email
 		if len(cmd.Login) == 0 {
@@ -140,8 +140,18 @@ func (hs *HTTPServer) handleUpdateUser(ctx context.Context, cmd models.UpdateUse
 		}
 	}
 
-	if err := hs.SQLStore.UpdateUser(ctx, &cmd); err != nil {
+	if err := hs.SQLStore.UpdateUser(c.Req.Context(), &cmd); err != nil {
 		return response.Error(500, "Failed to update user", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User updated: " + cmd.Login,
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.Success("User updated")
@@ -293,6 +303,16 @@ func (hs *HTTPServer) ChangeUserPassword(c *models.ReqContext) response.Response
 
 	if err := hs.SQLStore.ChangeUserPassword(c.Req.Context(), &cmd); err != nil {
 		return response.Error(500, "Failed to change user password", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User password changed",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.Success("User password changed")

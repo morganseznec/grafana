@@ -289,6 +289,9 @@ const (
 	// Server actions
 	ActionServerStatsRead = "server.stats:read"
 
+	// Server actions
+	ActionServerAuditRead = "server.audit:read"
+
 	// Settings actions
 	ActionSettingsRead = "settings:read"
 

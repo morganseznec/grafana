@@ -104,6 +104,16 @@ func (hs *HTTPServer) CreateOrg(c *models.ReqContext) response.Response {
 
 	metrics.MApiOrgCreate.Inc()
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Organization created: " + cmd.Name,
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.JSON(200, &util.DynMap{
 		"orgId":   cmd.Result.Id,
 		"message": "Organization created",
@@ -116,7 +126,7 @@ func (hs *HTTPServer) UpdateCurrentOrg(c *models.ReqContext) response.Response {
 	if err := web.Bind(c.Req, &form); err != nil {
 		return response.Error(http.StatusBadRequest, "bad request data", err)
 	}
-	return hs.updateOrgHelper(c.Req.Context(), form, c.OrgId)
+	return hs.updateOrgHelper(c, form, c.OrgId)
 }
 
 // PUT /api/orgs/:orgId
@@ -129,16 +139,26 @@ func (hs *HTTPServer) UpdateOrg(c *models.ReqContext) response.Response {
 	if err != nil {
 		return response.Error(http.StatusBadRequest, "orgId is invalid", err)
 	}
-	return hs.updateOrgHelper(c.Req.Context(), form, orgId)
+	return hs.updateOrgHelper(c, form, orgId)
 }
 
-func (hs *HTTPServer) updateOrgHelper(ctx context.Context, form dtos.UpdateOrgForm, orgID int64) response.Response {
+func (hs *HTTPServer) updateOrgHelper(c *models.ReqContext, form dtos.UpdateOrgForm, orgID int64) response.Response {
 	cmd := models.UpdateOrgCommand{Name: form.Name, OrgId: orgID}
-	if err := hs.SQLStore.UpdateOrg(ctx, &cmd); err != nil {
+	if err := hs.SQLStore.UpdateOrg(c.Req.Context(), &cmd); err != nil {
 		if errors.Is(err, models.ErrOrgNameTaken) {
 			return response.Error(400, "Organization name taken", err)
 		}
 		return response.Error(500, "Failed to update organization", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Organization updated: " + cmd.Name,
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.Success("Organization updated")
@@ -150,7 +170,7 @@ func (hs *HTTPServer) UpdateCurrentOrgAddress(c *models.ReqContext) response.Res
 	if err := web.Bind(c.Req, &form); err != nil {
 		return response.Error(http.StatusBadRequest, "bad request data", err)
 	}
-	return hs.updateOrgAddressHelper(c.Req.Context(), form, c.OrgId)
+	return hs.updateOrgAddressHelper(c, form, c.OrgId)
 }
 
 // PUT /api/orgs/:orgId/address
@@ -163,10 +183,10 @@ func (hs *HTTPServer) UpdateOrgAddress(c *models.ReqContext) response.Response {
 	if err != nil {
 		return response.Error(http.StatusBadRequest, "orgId is invalid", err)
 	}
-	return hs.updateOrgAddressHelper(c.Req.Context(), form, orgId)
+	return hs.updateOrgAddressHelper(c, form, orgId)
 }
 
-func (hs *HTTPServer) updateOrgAddressHelper(ctx context.Context, form dtos.UpdateOrgAddressForm, orgID int64) response.Response {
+func (hs *HTTPServer) updateOrgAddressHelper(c *models.ReqContext, form dtos.UpdateOrgAddressForm, orgID int64) response.Response {
 	cmd := models.UpdateOrgAddressCommand{
 		OrgId: orgID,
 		Address: models.Address{
@@ -179,8 +199,18 @@ func (hs *HTTPServer) updateOrgAddressHelper(ctx context.Context, form dtos.Upda
 		},
 	}
 
-	if err := hs.SQLStore.UpdateOrgAddress(ctx, &cmd); err != nil {
+	if err := hs.SQLStore.UpdateOrgAddress(c.Req.Context(), &cmd); err != nil {
 		return response.Error(500, "Failed to update org address", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Org Address updated",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.Success("Address updated")
@@ -203,6 +233,17 @@ func (hs *HTTPServer) DeleteOrgByID(c *models.ReqContext) response.Response {
 		}
 		return response.Error(500, "Failed to update organization", err)
 	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Organization deleted",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("Organization deleted")
 }
 

@@ -78,6 +78,7 @@ func (hs *HTTPServer) registerRoutes() {
 	r.Get("/admin/stats", authorize(reqGrafanaAdmin, ac.EvalPermission(ac.ActionServerStatsRead)), hs.Index)
 	r.Get("/admin/ldap", authorize(reqGrafanaAdmin, ac.EvalPermission(ac.ActionLDAPStatusRead)), hs.Index)
 	r.Get("/styleguide", reqSignedIn, hs.Index)
+	r.Get("/admin/audit", reqGrafanaAdmin, hs.Index)
 
 	r.Get("/live", reqGrafanaAdmin, hs.Index)
 	r.Get("/live/pipeline", reqGrafanaAdmin, hs.Index)
@@ -506,6 +507,7 @@ func (hs *HTTPServer) registerRoutes() {
 			adminRoute.Get("/settings/features", authorize(reqGrafanaAdmin, ac.EvalPermission(ac.ActionSettingsRead)), hs.Features.HandleGetSettings)
 		}
 		adminRoute.Get("/stats", authorize(reqGrafanaAdmin, ac.EvalPermission(ac.ActionServerStatsRead)), routing.Wrap(hs.AdminGetStats))
+		adminRoute.Get("/audit", authorize(reqGrafanaAdmin, ac.EvalPermission(ac.ActionServerAuditRead)), routing.Wrap(hs.AdminGetAudit))
 		adminRoute.Post("/pause-all-alerts", reqGrafanaAdmin, routing.Wrap(hs.PauseAllAlerts))
 
 		if hs.ThumbService != nil && hs.Features.IsEnabled(featuremgmt.FlagDashboardPreviewsAdmin) {

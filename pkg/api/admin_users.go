@@ -58,6 +58,16 @@ func (hs *HTTPServer) AdminCreateUser(c *models.ReqContext) response.Response {
 		Id:      user.Id,
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User created: {ID:" + strconv.Itoa(int(user.Id)) + ", Login:" + form.Login + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.JSON(200, result)
 }
 
@@ -96,6 +106,16 @@ func (hs *HTTPServer) AdminUpdateUserPassword(c *models.ReqContext) response.Res
 		return response.Error(500, "Failed to update user password", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User password updated: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("User password updated")
 }
 
@@ -119,6 +139,16 @@ func (hs *HTTPServer) AdminUpdateUserPermissions(c *models.ReqContext) response.
 		return response.Error(500, "Failed to update user permissions", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User permissions updated: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("User permissions updated")
 }
 
@@ -135,6 +165,16 @@ func (hs *HTTPServer) AdminDeleteUser(c *models.ReqContext) response.Response {
 			return response.Error(404, models.ErrUserNotFound.Error(), nil)
 		}
 		return response.Error(500, "Failed to delete user", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User deleted: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.Success("User deleted")
@@ -166,6 +206,16 @@ func (hs *HTTPServer) AdminDisableUser(c *models.ReqContext) response.Response {
 		return response.Error(500, "Failed to disable user", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User disabled: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("User disabled")
 }
 
@@ -190,6 +240,16 @@ func (hs *HTTPServer) AdminEnableUser(c *models.ReqContext) response.Response {
 		return response.Error(500, "Failed to enable user", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User enabled: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("User enabled")
 }
 
@@ -202,6 +262,16 @@ func (hs *HTTPServer) AdminLogoutUser(c *models.ReqContext) response.Response {
 
 	if c.UserId == userID {
 		return response.Error(400, "You cannot logout yourself", nil)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Attempting to log out user: {UserID:" + strconv.Itoa(int(userID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return hs.logoutUserFromAllDevicesInternal(c.Req.Context(), userID)

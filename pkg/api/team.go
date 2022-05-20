@@ -43,6 +43,17 @@ func (hs *HTTPServer) CreateTeam(c *models.ReqContext) response.Response {
 			c.Logger.Warn("Could not add creator to team because is not a real user")
 		}
 	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Team created: {TeamId:" + strconv.Itoa(int(cmd.Result.Id)) + ",Name:" + cmd.Result.Name + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.JSON(200, &util.DynMap{
 		"teamId":  team.Id,
 		"message": "Team created",
@@ -75,6 +86,16 @@ func (hs *HTTPServer) UpdateTeam(c *models.ReqContext) response.Response {
 		return response.Error(500, "Failed to update Team", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Team updated: {TeamId:" + strconv.Itoa(int(cmd.Id)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("Team updated")
 }
 
@@ -99,6 +120,17 @@ func (hs *HTTPServer) DeleteTeamByID(c *models.ReqContext) response.Response {
 		}
 		return response.Error(500, "Failed to delete Team", err)
 	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Team delete: {TeamId:" + strconv.Itoa(int(teamId)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("Team deleted")
 }
 
@@ -236,6 +268,16 @@ func (hs *HTTPServer) UpdateTeamPreferences(c *models.ReqContext) response.Respo
 		if err := hs.teamGuardian.CanAdmin(c.Req.Context(), orgId, teamId, c.SignedInUser); err != nil {
 			return response.Error(403, "Not allowed to update team preferences.", err)
 		}
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Team preferences updated: {TeamId:" + strconv.Itoa(int(teamId)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return hs.updatePreferencesFor(c.Req.Context(), orgId, 0, teamId, &dtoCmd)

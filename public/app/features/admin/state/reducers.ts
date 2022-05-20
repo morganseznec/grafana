@@ -13,6 +13,8 @@ import {
   UserSession,
   UserListAdminState,
   UserFilter,
+  AuditRecordsState,
+  AuditRecord,
 } from 'app/types';
 
 const initialLdapState: LdapState = {
@@ -196,8 +198,27 @@ export const { usersFetched, usersFetchBegin, usersFetchEnd, queryChanged, pageC
   userListAdminSlice.actions;
 export const userListAdminReducer = userListAdminSlice.reducer;
 
+export const initialAuditRecordsState: AuditRecordsState = { records: [], searchQuery: '', hasFetched: false };
+
+const auditRecordsSlice = createSlice({
+  name: 'auditRecords',
+  initialState: initialAuditRecordsState,
+  reducers: {
+    auditRecordsLoaded: (state, action: PayloadAction<AuditRecord[]>): AuditRecordsState => {
+      return { ...state, hasFetched: true, records: action.payload };
+    },
+    setSearchQuery: (state, action: PayloadAction<string>): AuditRecordsState => {
+      return { ...state, searchQuery: action.payload };
+    },
+  },
+});
+
+export const { auditRecordsLoaded, setSearchQuery } = auditRecordsSlice.actions;
+export const auditRecordsReducer = auditRecordsSlice.reducer;
+
 export default {
   ldap: ldapReducer,
   userAdmin: userAdminReducer,
   userListAdmin: userListAdminReducer,
+  records: auditRecordsReducer,
 };

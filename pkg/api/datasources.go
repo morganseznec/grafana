@@ -137,6 +137,16 @@ func (hs *HTTPServer) DeleteDataSourceById(c *models.ReqContext) response.Respon
 
 	hs.Live.HandleDatasourceDelete(c.OrgId, ds.Uid)
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Data source with ID " + strconv.Itoa(int(id)) + " deleted",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("Data source deleted")
 }
 
@@ -193,6 +203,16 @@ func (hs *HTTPServer) DeleteDataSourceByUID(c *models.ReqContext) response.Respo
 
 	hs.Live.HandleDatasourceDelete(c.OrgId, ds.Uid)
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Data source with Uid " + ds.Uid + " deleted",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.JSON(200, util.DynMap{
 		"message": "Data source deleted",
 		"id":      ds.Id,
@@ -226,6 +246,16 @@ func (hs *HTTPServer) DeleteDataSourceByName(c *models.ReqContext) response.Resp
 	}
 
 	hs.Live.HandleDatasourceDelete(c.OrgId, getCmd.Result.Uid)
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Data source with Name " + name + " deleted",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
 
 	return response.JSON(200, util.DynMap{
 		"message": "Data source deleted",
@@ -266,6 +296,17 @@ func (hs *HTTPServer) AddDataSource(c *models.ReqContext) response.Response {
 	}
 
 	ds := convertModelToDtos(cmd.Result)
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Data source with Name " + cmd.Result.Name + " added",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.JSON(200, util.DynMap{
 		"message":    "Datasource added",
 		"id":         cmd.Result.Id,
@@ -330,6 +371,16 @@ func (hs *HTTPServer) UpdateDataSource(c *models.ReqContext) response.Response {
 	datasourceDTO := convertModelToDtos(query.Result)
 
 	hs.Live.HandleDatasourceUpdate(c.OrgId, datasourceDTO.UID)
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Data source with Name " + cmd.Result.Name + " updated",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
 
 	return response.JSON(200, util.DynMap{
 		"message":    "Datasource updated",
