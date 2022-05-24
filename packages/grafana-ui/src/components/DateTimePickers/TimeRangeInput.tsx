@@ -1,4 +1,5 @@
 import { css, cx } from '@emotion/css';
+import { t } from '@lingui/macro';
 import React, { FC, FormEvent, MouseEvent, useState } from 'react';
 
 import { dateMath, dateTime, getDefaultTimeRange, GrafanaTheme2, TimeRange, TimeZone } from '@grafana/data';
@@ -40,7 +41,7 @@ export const TimeRangeInput: FC<TimeRangeInputProps> = ({
   clearable,
   hideTimeZone = true,
   timeZone = 'browser',
-  placeholder = 'Select time range',
+  placeholder = t({ id: 'timerange-input.placeholder', message: `Select time range` }),
   isReversed = true,
   hideQuickRanges = false,
   disabled = false,

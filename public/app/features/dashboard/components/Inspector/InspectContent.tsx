@@ -1,3 +1,4 @@
+import { t } from '@lingui/macro';
 import React, { useState } from 'react';
 
 import { DataSourceApi, formattedValueToString, getValueFormat, PanelData, PanelPlugin } from '@grafana/data';
@@ -19,7 +20,7 @@ interface Props {
   panel: PanelModel;
   plugin?: PanelPlugin | null;
   defaultTab?: InspectTab;
-  tabs: Array<{ label: string; value: InspectTab }>;
+  tabs: Array<{ label: string; id: string; value: InspectTab }>;
   // The last raw response
   data?: PanelData;
   isDataLoading: boolean;
@@ -61,7 +62,7 @@ export const InspectContent: React.FC<Props> = ({
 
   return (
     <Drawer
-      title={`Inspect: ${title || 'Panel'}`}
+      title={`${t({ id: 'inspect-content.title', message: 'Inspect' })}: ${title || 'Panel'}`}
       subtitle={data && formatStats(data)}
       width="50%"
       onClose={onClose}
@@ -69,13 +70,13 @@ export const InspectContent: React.FC<Props> = ({
       scrollableContent
       tabs={
         <TabsBar>
-          {tabs.map((t, index) => {
+          {tabs.map((tab, index) => {
             return (
               <Tab
-                key={`${t.value}-${index}`}
-                label={t.label}
-                active={t.value === activeTab}
-                onChangeTab={() => setCurrentTab(t.value || InspectTab.Data)}
+                key={`${tab.value}-${index}`}
+                label={t({ id: tab.id, message: tab.label })}
+                active={tab.value === activeTab}
+                onChangeTab={() => setCurrentTab(tab.value || InspectTab.Data)}
               />
             );
           })}
@@ -118,5 +119,8 @@ function formatStats(data: PanelData) {
   const requestTime = request.endTime ? request.endTime - request.startTime : 0;
   const formatted = formattedValueToString(getValueFormat('ms')(requestTime));
 
-  return `${queryCount} queries with total query time of ${formatted}`;
+  return `${queryCount} ${t({
+    id: 'inspect-content.stats',
+    message: 'queries with total query time of',
+  })} ${formatted}`;
 }

@@ -1,3 +1,4 @@
+import { MessageDescriptor } from '@lingui/core';
 import { defaultsDeep } from 'lodash';
 
 import { EventBus } from '../events';
@@ -156,6 +157,8 @@ export interface PanelOptionsEditorConfig<TOptions, TSettings = any, TValue = an
 export interface PanelMenuItem {
   type?: 'submenu' | 'divider';
   text: string;
+  id?: string;
+  definedMessage?: MessageDescriptor;
   iconClassName?: string;
   onClick?: (event: React.MouseEvent<any>) => void;
   shortcut?: string;

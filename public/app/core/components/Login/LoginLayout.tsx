@@ -3,9 +3,12 @@ import React, { FC, useEffect, useState } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2, styleMixins } from '@grafana/ui';
+import { dynamicActivate } from 'app/core/localisation';
 
 import { Branding } from '../Branding/Branding';
 import { Footer } from '../Footer/Footer';
+
+import { LanguagePicker } from './LanguagePicker';
 
 interface InnerBoxProps {
   enterAnimation?: boolean;
@@ -19,12 +22,20 @@ export const LoginLayout: FC = ({ children }) => {
   const loginStyles = useStyles2(getLoginStyles);
   const subTitle = Branding.GetLoginSubTitle();
   const [startAnim, setStartAnim] = useState(false);
+  const [currentLang, setCurrentLang] = useState<string>(window.localStorage.lang || 'en');
 
   useEffect(() => setStartAnim(true), []);
+
+  const setLanguage = (locale: string) => {
+    localStorage.setItem('lang', locale);
+    setCurrentLang(locale);
+    dynamicActivate(locale);
+  };
 
   return (
     <Branding.LoginBackground className={cx(loginStyles.container, startAnim && loginStyles.loginAnim)}>
       <div className={cx(loginStyles.loginContent, Branding.LoginBoxBackground(), 'login-content-box')}>
+        <LanguagePicker value={currentLang} onChange={(language: string) => setLanguage(language)} />
         <div className={loginStyles.loginLogoWrapper}>
           <Branding.LoginLogo className={loginStyles.loginLogo} />
           <div className={loginStyles.titleWrapper}>

@@ -1,3 +1,4 @@
+import { t } from '@lingui/macro';
 import { each, has } from 'lodash';
 
 import { RawTimeRange, TimeRange, TimeZone, IntervalValues, RelativeTimeRange, TimeOption } from '../types/time';
@@ -18,52 +19,66 @@ const spans: { [key: string]: { display: string; section?: number } } = {
 };
 
 const rangeOptions: TimeOption[] = [
-  { from: 'now/d', to: 'now/d', display: 'Today' },
-  { from: 'now/d', to: 'now', display: 'Today so far' },
-  { from: 'now/w', to: 'now/w', display: 'This week' },
-  { from: 'now/w', to: 'now', display: 'This week so far' },
-  { from: 'now/M', to: 'now/M', display: 'This month' },
-  { from: 'now/M', to: 'now', display: 'This month so far' },
-  { from: 'now/y', to: 'now/y', display: 'This year' },
-  { from: 'now/y', to: 'now', display: 'This year so far' },
+  { from: 'now/d', to: 'now/d', id: 'datetime-pickers.options.today', display: 'Today' },
+  { from: 'now/d', to: 'now', id: 'datetime-pickers.options.today-so-far', display: 'Today so far' },
+  { from: 'now/w', to: 'now/w', id: 'datetime-pickers.options.this-week', display: 'This week' },
+  { from: 'now/w', to: 'now', id: 'datetime-pickers.options.this-week-so-far', display: 'This week so far' },
+  { from: 'now/M', to: 'now/M', id: 'datetime-pickers.options.this-month', display: 'This month' },
+  { from: 'now/M', to: 'now', id: 'datetime-pickers.options.this-month-so-far', display: 'This month so far' },
+  { from: 'now/y', to: 'now/y', id: 'datetime-pickers.options.this-year', display: 'This year' },
+  { from: 'now/y', to: 'now', id: 'datetime-pickers.options.this-year-so-far', display: 'This year so far' },
 
-  { from: 'now-1d/d', to: 'now-1d/d', display: 'Yesterday' },
-  {
-    from: 'now-2d/d',
-    to: 'now-2d/d',
-    display: 'Day before yesterday',
-  },
-  {
-    from: 'now-7d/d',
-    to: 'now-7d/d',
-    display: 'This day last week',
-  },
-  { from: 'now-1w/w', to: 'now-1w/w', display: 'Previous week' },
-  { from: 'now-1M/M', to: 'now-1M/M', display: 'Previous month' },
-  { from: 'now-1Q/fQ', to: 'now-1Q/fQ', display: 'Previous fiscal quarter' },
-  { from: 'now-1y/y', to: 'now-1y/y', display: 'Previous year' },
-  { from: 'now-1y/fy', to: 'now-1y/fy', display: 'Previous fiscal year' },
+  { from: 'now-1d/d', to: 'now-1d/d', id: 'datetime-pickers.options.yesterday', display: 'Yesterday' },
+  { from: 'now-2d/d', to: 'now-2d/d', id: 'datetime-pickers.options.day-b-yesterday', display: 'Day before yesterday' },
 
-  { from: 'now-5m', to: 'now', display: 'Last 5 minutes' },
-  { from: 'now-15m', to: 'now', display: 'Last 15 minutes' },
-  { from: 'now-30m', to: 'now', display: 'Last 30 minutes' },
-  { from: 'now-1h', to: 'now', display: 'Last 1 hour' },
-  { from: 'now-3h', to: 'now', display: 'Last 3 hours' },
-  { from: 'now-6h', to: 'now', display: 'Last 6 hours' },
-  { from: 'now-12h', to: 'now', display: 'Last 12 hours' },
-  { from: 'now-24h', to: 'now', display: 'Last 24 hours' },
-  { from: 'now-2d', to: 'now', display: 'Last 2 days' },
-  { from: 'now-7d', to: 'now', display: 'Last 7 days' },
-  { from: 'now-30d', to: 'now', display: 'Last 30 days' },
-  { from: 'now-90d', to: 'now', display: 'Last 90 days' },
-  { from: 'now-6M', to: 'now', display: 'Last 6 months' },
-  { from: 'now-1y', to: 'now', display: 'Last 1 year' },
-  { from: 'now-2y', to: 'now', display: 'Last 2 years' },
-  { from: 'now-5y', to: 'now', display: 'Last 5 years' },
-  { from: 'now/fQ', to: 'now', display: 'This fiscal quarter so far' },
-  { from: 'now/fQ', to: 'now/fQ', display: 'This fiscal quarter' },
-  { from: 'now/fy', to: 'now', display: 'This fiscal year so far' },
-  { from: 'now/fy', to: 'now/fy', display: 'This fiscal year' },
+  { from: 'now-7d/d', to: 'now-7d/d', id: 'datetime-pickers.options.this-day-last-w', display: 'This day last week' },
+
+  { from: 'now-1w/w', to: 'now-1w/w', id: 'datetime-pickers.options.previous-week', display: 'Previous week' },
+  { from: 'now-1M/M', to: 'now-1M/M', id: 'datetime-pickers.options.previous-month', display: 'Previous month' },
+  {
+    from: 'now-1Q/fQ',
+    to: 'now-1Q/fQ',
+    id: 'datetime-pickers.options.previous-fiscal-quarter',
+    display: 'Previous fiscal quarter',
+  },
+  { from: 'now-1y/y', to: 'now-1y/y', id: 'datetime-pickers.options.previous-year', display: 'Previous year' },
+  {
+    from: 'now-1y/fy',
+    to: 'now-1y/fy',
+    id: 'datetime-pickers.options.previous-fiscal-year',
+    display: 'Previous fiscal year',
+  },
+
+  { from: 'now-5m', to: 'now', id: 'datetime-pickers.options.last-5-mins', display: 'Last 5 minutes' },
+  { from: 'now-15m', to: 'now', id: 'datetime-pickers.options.last-15-mins', display: 'Last 15 minutes' },
+  { from: 'now-30m', to: 'now', id: 'datetime-pickers.options.last-30-mins', display: 'Last 30 minutes' },
+  { from: 'now-1h', to: 'now', id: 'datetime-pickers.options.last-1-hour', display: 'Last 1 hour' },
+  { from: 'now-3h', to: 'now', id: 'datetime-pickers.options.last-3-hours', display: 'Last 3 hours' },
+  { from: 'now-6h', to: 'now', id: 'datetime-pickers.options.last-6-hours', display: 'Last 6 hours' },
+  { from: 'now-12h', to: 'now', id: 'datetime-pickers.options.last-12-hours', display: 'Last 12 hours' },
+  { from: 'now-24h', to: 'now', id: 'datetime-pickers.options.last-24-hours', display: 'Last 24 hours' },
+  { from: 'now-2d', to: 'now', id: 'datetime-pickers.options.last-2-days', display: 'Last 2 days' },
+  { from: 'now-7d', to: 'now', id: 'datetime-pickers.options.last-7-days', display: 'Last 7 days' },
+  { from: 'now-30d', to: 'now', id: 'datetime-pickers.options.last-30-days', display: 'Last 30 days' },
+  { from: 'now-90d', to: 'now', id: 'datetime-pickers.options.last-90-days', display: 'Last 90 days' },
+  { from: 'now-6M', to: 'now', id: 'datetime-pickers.options.last-6-months', display: 'Last 6 months' },
+  { from: 'now-1y', to: 'now', id: 'datetime-pickers.options.last-1-year', display: 'Last 1 year' },
+  { from: 'now-2y', to: 'now', id: 'datetime-pickers.options.last-2-years', display: 'Last 2 years' },
+  { from: 'now-5y', to: 'now', id: 'datetime-pickers.options.last-5-years', display: 'Last 5 years' },
+  {
+    from: 'now/fQ',
+    to: 'now',
+    id: 'datetime-pickers.options.this-fiscal-quarter-so-far',
+    display: 'This fiscal quarter so far',
+  },
+  { from: 'now/fQ', to: 'now/fQ', id: 'datetime-pickers.options.this-fiscal-quarter', display: 'This fiscal quarter' },
+  {
+    from: 'now/fy',
+    to: 'now',
+    id: 'datetime-pickers.options.this-fiscal-year-so-far',
+    display: 'This fiscal year so far',
+  },
+  { from: 'now/fy', to: 'now/fy', id: 'datetime-pickers.options.this-fiscal-year', display: 'This fiscal year' },
 ];
 
 const hiddenRangeOptions: TimeOption[] = [
@@ -154,7 +169,7 @@ export function describeTimeRange(range: RawTimeRange, timeZone?: TimeZone): str
   const option = rangeIndex[range.from.toString() + ' to ' + range.to.toString()];
 
   if (option) {
-    return option.display;
+    return t({ id: option.id, message: option.display });
   }
 
   const options = { timeZone };
@@ -175,7 +190,7 @@ export function describeTimeRange(range: RawTimeRange, timeZone?: TimeZone): str
 
   if (range.to.toString() === 'now') {
     const res = describeTextRange(range.from);
-    return res.display;
+    return t({ id: res.id, message: res.display });
   }
 
   return range.from.toString() + ' to ' + range.to.toString();

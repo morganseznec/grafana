@@ -3989,6 +3989,11 @@ __metadata:
     "@braintree/sanitize-url": 6.0.0
     "@grafana/schema": 8.5.3
     "@grafana/tsconfig": ^1.2.0-rc1
+    "@lingui/cli": 3.13.2
+    "@lingui/core": 3.13.2
+    "@lingui/detect-locale": ^3.13.3
+    "@lingui/macro": 3.13.2
+    "@lingui/react": 3.13.2
     "@rollup/plugin-commonjs": 21.0.2
     "@rollup/plugin-json": 4.1.0
     "@rollup/plugin-node-resolve": 13.1.3
@@ -4356,6 +4361,11 @@ __metadata:
     "@grafana/schema": 8.5.3
     "@grafana/slate-react": 0.22.10-grafana
     "@grafana/tsconfig": ^1.2.0-rc1
+    "@lingui/cli": 3.13.2
+    "@lingui/core": 3.13.2
+    "@lingui/detect-locale": ^3.13.3
+    "@lingui/macro": 3.13.2
+    "@lingui/react": 3.13.2
     "@mdx-js/react": 1.6.22
     "@monaco-editor/react": 4.3.1
     "@popperjs/core": 2.11.4
@@ -4399,6 +4409,7 @@ __metadata:
     "@types/is-hotkey": 0.1.7
     "@types/jest": 27.4.1
     "@types/jquery": 3.5.14
+    "@types/lingui__macro": ^3
     "@types/lodash": 4.14.181
     "@types/mock-raf": 1.0.3
     "@types/node": 16.11.26
@@ -6106,6 +6117,13 @@ __metadata:
     make-plural: ^6.2.2
     messageformat-parser: ^4.1.3
   checksum: 16d7ee047c9e431426956051ad0b29c3bbca46632ad8181c4e9d0294d5d76831ca1623ff900e8bfd1aeef395b5c9b95be81c3dc591f75c3c46f91fc5fa8d8167
+  languageName: node
+  linkType: hard
+
+"@lingui/detect-locale@npm:^3.13.3":
+  version: 3.13.3
+  resolution: "@lingui/detect-locale@npm:3.13.3"
+  checksum: bca476040ea52370dba507c8df53cec34f4c5c7542f3db843a4a4d61f384ce26d2e6c6d413326985d85507ed9db4db64f5144affc82695056bacc91a9d02d4af
   languageName: node
   linkType: hard
 
@@ -14410,24 +14428,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30000981, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001271":
-  version: 1.0.30001271
-  resolution: "caniuse-lite@npm:1.0.30001271"
-  checksum: 0271e234e17c588fa203a34523f90c5a21ab62f41a2c3acabe96f0251593ac92f192cadd7a3dcbcf49bb28de4f57ca274d775c75700c3f38e9c42028d3becb0f
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001286":
-  version: 1.0.30001297
-  resolution: "caniuse-lite@npm:1.0.30001297"
-  checksum: 4f0d298cf32c050aa1d8a7bb33ef6ff5f289e6dd6dad48b364bc2db91e03b5f0089ffa9950d6228dbd43446695cecd1990601b432a8d03c1d5b2e945cb67bade
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001317":
-  version: 1.0.30001319
-  resolution: "caniuse-lite@npm:1.0.30001319"
-  checksum: 1c03cc4ca019c410d197b76604cd8605077ef124906f3debd3f026568e01a1aa3888cdfcb0d23c0786115b0b3f790486f2aa8e0cce361d3dcc5c92ff3611f73e
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30000981, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001271, caniuse-lite@npm:^1.0.30001286, caniuse-lite@npm:^1.0.30001317":
+  version: 1.0.30001342
+  resolution: "caniuse-lite@npm:1.0.30001342"
+  checksum: 9ad47aec82e85017c59aaa0acee8027d910a715c7481cf66c9b4e296f3d10cc5d96df86d3c3033326b0110f5792b3f117a1dc935e3299abf2139fa345bb326f1
   languageName: node
   linkType: hard
 
@@ -20531,6 +20535,7 @@ __metadata:
     "@lezer/lr": 0.15.8
     "@lingui/cli": 3.13.2
     "@lingui/core": 3.13.2
+    "@lingui/detect-locale": ^3.13.3
     "@lingui/macro": 3.13.2
     "@lingui/react": 3.13.2
     "@microsoft/api-extractor": 7.19.5

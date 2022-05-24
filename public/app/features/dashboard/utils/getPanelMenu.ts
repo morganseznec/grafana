@@ -1,3 +1,5 @@
+import { defineMessage } from '@lingui/macro';
+
 import { PanelMenuItem } from '@grafana/data';
 import { AngularComponent, getDataSourceSrv, locationService } from '@grafana/runtime';
 import { PanelCtrl } from 'app/angular/panel/panel_ctrl';
@@ -92,7 +94,9 @@ export function getPanelMenu(
   if (!panel.isEditing) {
     menu.push({
       text: 'View',
+      definedMessage: defineMessage({ message: 'View' }),
       iconClassName: 'eye',
+      id: 'panel-menu.view',
       onClick: onViewPanel,
       shortcut: 'v',
     });
@@ -101,7 +105,9 @@ export function getPanelMenu(
   if (dashboard.canEditPanel(panel) && !panel.isEditing) {
     menu.push({
       text: 'Edit',
+      definedMessage: defineMessage({ message: 'Edit' }),
       iconClassName: 'edit',
+      id: 'panel-menu.edit',
       onClick: onEditPanel,
       shortcut: 'e',
     });
@@ -109,7 +115,9 @@ export function getPanelMenu(
 
   menu.push({
     text: 'Share',
+    definedMessage: defineMessage({ message: 'Share' }),
     iconClassName: 'share-alt',
+    id: 'panel-menu.share',
     onClick: onSharePanel,
     shortcut: 'p s',
   });
@@ -117,7 +125,9 @@ export function getPanelMenu(
   if (contextSrv.hasAccessToExplore() && !(panel.plugin && panel.plugin.meta.skipDataQuery)) {
     menu.push({
       text: 'Explore',
+      definedMessage: defineMessage({ message: 'Explore' }),
       iconClassName: 'compass',
+      id: 'panel-menu.explore',
       shortcut: 'x',
       onClick: onNavigateToExplore,
     });
@@ -129,12 +139,14 @@ export function getPanelMenu(
   if (panel.plugin && !panel.plugin.meta.skipDataQuery) {
     inspectMenu.push({
       text: 'Data',
+      definedMessage: defineMessage({ message: 'Data' }),
       onClick: (e: React.MouseEvent<any>) => onInspectPanel('data'),
     });
 
     if (dashboard.meta.canEdit) {
       inspectMenu.push({
         text: 'Query',
+        definedMessage: defineMessage({ message: 'Query' }),
         onClick: (e: React.MouseEvent<any>) => onInspectPanel('query'),
       });
     }
@@ -142,11 +154,13 @@ export function getPanelMenu(
 
   inspectMenu.push({
     text: 'Panel JSON',
+    definedMessage: defineMessage({ message: 'Panel JSON' }),
     onClick: (e: React.MouseEvent<any>) => onInspectPanel('json'),
   });
 
   menu.push({
     type: 'submenu',
+    definedMessage: defineMessage({ message: 'Inspect' }),
     text: 'Inspect',
     iconClassName: 'info-circle',
     onClick: (e: React.MouseEvent<any>) => onInspectPanel(),
@@ -159,23 +173,31 @@ export function getPanelMenu(
   if (dashboard.canEditPanel(panel) && !(panel.isViewing || panel.isEditing)) {
     subMenu.push({
       text: 'Duplicate',
+      definedMessage: defineMessage({ message: 'Duplicate' }),
+      id: 'panel-menu.duplicate',
       onClick: onDuplicatePanel,
       shortcut: 'p d',
     });
 
     subMenu.push({
       text: 'Copy',
+      definedMessage: defineMessage({ message: 'Copy' }),
+      id: 'panel-menu.copy',
       onClick: onCopyPanel,
     });
 
     if (isPanelModelLibraryPanel(panel)) {
       subMenu.push({
         text: 'Unlink library panel',
+        definedMessage: defineMessage({ message: 'Unlink library panel' }),
+        id: 'panel-menu.unlink',
         onClick: onUnlinkLibraryPanel,
       });
     } else {
       subMenu.push({
         text: 'Create library panel',
+        definedMessage: defineMessage({ message: 'Create library panel' }),
+        id: 'panel-menu.create-library',
         onClick: onAddLibraryPanel,
       });
     }
@@ -208,6 +230,8 @@ export function getPanelMenu(
     menu.push({
       type: 'submenu',
       text: 'More...',
+      definedMessage: defineMessage({ message: 'More...' }),
+      id: 'panel-menu.more',
       iconClassName: 'cube',
       subMenu,
       onClick: onMore,
@@ -219,6 +243,8 @@ export function getPanelMenu(
 
     menu.push({
       text: 'Remove',
+      definedMessage: defineMessage({ message: 'Remove' }),
+      id: 'panel-menu.remove',
       iconClassName: 'trash-alt',
       onClick: onRemovePanel,
       shortcut: 'p r',

@@ -1,8 +1,9 @@
 import { css, cx } from '@emotion/css';
+import { t, Trans } from '@lingui/macro';
 import { isString } from 'lodash';
 import React, { FC, useCallback, useState } from 'react';
 
-import { getTimeZoneInfo, GrafanaTheme2, TimeZone } from '@grafana/data';
+import { getTimeZoneInfo, GrafanaTheme2, SelectableValue, TimeZone } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
 
 import { Field, RadioButtonGroup, Select } from '../..';
@@ -52,6 +53,17 @@ export const TimePickerFooter: FC<Props> = (props) => {
 
   const info = getTimeZoneInfo(timeZone, timestamp);
 
+  const getMonthOptions = () => {
+    let selectableOptions: Array<SelectableValue<number>> = [];
+    for (let k in monthOptions) {
+      selectableOptions.push({
+        label: t({ id: monthOptions[k].id, message: monthOptions[k].label }),
+        value: monthOptions[k].value,
+      });
+    }
+    return selectableOptions;
+  };
+
   if (!info) {
     return null;
   }
@@ -69,7 +81,7 @@ export const TimePickerFooter: FC<Props> = (props) => {
         </div>
         <div className={style.spacer} />
         <Button variant="secondary" onClick={onToggleChangeTimeSettings} size="sm">
-          Change time settings
+          <Trans id="timepicker-footer.button">Change time settings</Trans>
         </Button>
       </section>
       {isEditing ? (
@@ -109,7 +121,7 @@ export const TimePickerFooter: FC<Props> = (props) => {
               <Field className={style.fiscalYearField} label={'Fiscal year start month'}>
                 <Select
                   value={fiscalYearStartMonth}
-                  options={monthOptions}
+                  options={getMonthOptions()}
                   onChange={(value) => {
                     if (onChangeFiscalYearStartMonth) {
                       onChangeFiscalYearStartMonth(value.value ?? 0);

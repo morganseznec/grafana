@@ -39,6 +39,7 @@ export const DefaultTimeZone: TimeZone = 'browser';
 export interface TimeOption {
   from: string;
   to: string;
+  id?: string;
   display: string;
 }
 

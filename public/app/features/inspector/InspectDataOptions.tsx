@@ -1,3 +1,4 @@
+import { t } from '@lingui/macro';
 import React, { FC } from 'react';
 
 import { DataFrame, DataTransformerID, getFrameDisplayName, SelectableValue } from '@grafana/data';
@@ -97,14 +98,14 @@ export const InspectDataOptions: FC<Props> = ({
       <QueryOperationRow
         id="Data options"
         index={0}
-        title="Data options"
+        title={t({ id: 'inspectdata-options.data-options-title', message: 'Data options' })}
         headerElement={<DetailText>{getActiveString()}</DetailText>}
         isOpen={false}
       >
         <div className={styles.options} data-testid="dataOptions">
           <VerticalGroup spacing="none">
             {data!.length > 1 && (
-              <Field label="Show data frame">
+              <Field label={t({ id: 'inspectdata-options.show-dataframe', message: 'Show data frame' })}>
                 <Select
                   menuShouldPortal
                   options={selectableOptions}
@@ -119,8 +120,14 @@ export const InspectDataOptions: FC<Props> = ({
             <HorizontalGroup>
               {showPanelTransformationsOption && onOptionsChange && (
                 <Field
-                  label="Apply panel transformations"
-                  description="Table data is displayed with transformations defined in the panel Transform tab."
+                  label={t({
+                    id: 'inspectdata-options.apply-panel-trans-label',
+                    message: 'Apply panel transformations',
+                  })}
+                  description={t({
+                    id: 'inspectdata-options.apply-panel-trans-desc',
+                    message: 'Table data is displayed with transformations defined in the panel Transform tab.',
+                  })}
                 >
                   <Switch
                     value={!!options.withTransforms}
@@ -130,8 +137,11 @@ export const InspectDataOptions: FC<Props> = ({
               )}
               {showFieldConfigsOption && onOptionsChange && (
                 <Field
-                  label="Formatted data"
-                  description="Table data is formatted with options defined in the Field and Override tabs."
+                  label={t({ id: 'inspectdata-options.formatted-data-label', message: 'Formatted data' })}
+                  description={t({
+                    id: 'inspectdata-options.formatted-data-desc',
+                    message: 'Table data is formatted with options defined in the Field and Override tabs.',
+                  })}
                 >
                   <Switch
                     id="formatted-data-toggle"
@@ -140,7 +150,13 @@ export const InspectDataOptions: FC<Props> = ({
                   />
                 </Field>
               )}
-              <Field label="Download for Excel" description="Adds header to CSV for use with Excel">
+              <Field
+                label={t({ id: 'inspectdata-options.download-for-xls-label', message: 'Download for Excel' })}
+                description={t({
+                  id: 'inspectdata-options.download-for-xls-desc',
+                  message: 'Adds header to CSV for use with Excel',
+                })}
+              >
                 <Switch id="excel-toggle" value={downloadForExcel} onChange={toggleDownloadForExcel} />
               </Field>
             </HorizontalGroup>

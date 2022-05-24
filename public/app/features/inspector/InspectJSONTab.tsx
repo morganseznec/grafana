@@ -1,3 +1,4 @@
+import { t, Trans } from '@lingui/macro';
 import React, { PureComponent } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
@@ -124,7 +125,7 @@ export class InspectJSONTab extends PureComponent<Props, State> {
     return (
       <div className={styles.wrap}>
         <div className={styles.toolbar} aria-label={selectors.components.PanelInspector.Json.content}>
-          <Field label="Select source" className="flex-grow-1">
+          <Field label={t({ id: 'inspectjson-tab.select-source', message: 'Select source' })} className="flex-grow-1">
             <Select
               inputId="select-source-dropdown"
               options={jsonOptions}
@@ -135,7 +136,7 @@ export class InspectJSONTab extends PureComponent<Props, State> {
           </Field>
           {this.hasPanelJSON && isPanelJSON && canEdit && (
             <Button className={styles.toolbarItem} onClick={this.onApplyPanelModel}>
-              Apply
+              <Trans id="common.apply">Apply</Trans>
             </Button>
           )}
         </div>

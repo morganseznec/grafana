@@ -1,3 +1,4 @@
+import { t } from '@lingui/macro';
 import { toLower, isEmpty, isString } from 'lodash';
 import React, { useMemo, useCallback } from 'react';
 
@@ -58,7 +59,7 @@ export const TimeZonePicker: React.FC<Props> = (props) => {
     <Select
       inputId={inputId}
       value={selected}
-      placeholder="Type to search (country, city, abbreviation)"
+      placeholder={t({ id: 'timezone-picker.placeholder', message: `Type to search (country, city, abbreviation)` })}
       autoFocus={autoFocus}
       openMenuOnFocus={true}
       width={width}
