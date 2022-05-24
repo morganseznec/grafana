@@ -1,16 +1,12 @@
 import { I18n, i18n } from '@lingui/core';
+import { detect, fromStorage } from '@lingui/detect-locale';
 import { I18nProvider as LinguiI18nProvider } from '@lingui/react';
 import React, { useState } from 'react';
 
-import { messages } from '../../locales/en/messages';
-
 let i18nInstance: I18n;
 
-export function getI18n(locale = 'en') {
-  if (i18nInstance) {
-    return i18nInstance;
-  }
-
+export async function dynamicActivate(locale: string) {
+  const { messages } = await import(`../../locales/${locale}/messages`);
   i18n.load(locale, messages);
 
   // Browser support for Intl.PluralRules is good and covers what we support in .browserlistrc,
@@ -27,6 +23,17 @@ export function getI18n(locale = 'en') {
       },
     });
   }
+
+  i18n.activate(locale);
+}
+
+export function getI18n() {
+  if (i18nInstance) {
+    return i18nInstance;
+  }
+  const locale = `${detect(fromStorage('lang'), 'en')}`;
+
+  dynamicActivate(locale);
 
   i18n.activate(locale);
   i18nInstance = i18n;

@@ -1,3 +1,4 @@
+import { t } from '@lingui/macro';
 import React, { useCallback } from 'react';
 
 import { SelectableValue } from '@grafana/data';
@@ -18,9 +19,9 @@ export interface Props {
 
 const weekStarts: Array<SelectableValue<string>> = [
   { value: '', label: 'Default' },
-  { value: 'saturday', label: 'Saturday' },
-  { value: 'sunday', label: 'Sunday' },
-  { value: 'monday', label: 'Monday' },
+  { value: 'saturday', label: t({ id: 'week-start-picker.saturday', message: `Saturday` }) },
+  { value: 'sunday', label: t({ id: 'week-start-picker.sunday', message: `Sunday` }) },
+  { value: 'monday', label: t({ id: 'week-start-picker.monday', message: `Monday` }) },
 ];
 
 export const WeekStartPicker: React.FC<Props> = (props) => {

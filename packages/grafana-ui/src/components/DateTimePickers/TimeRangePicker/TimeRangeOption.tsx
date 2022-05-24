@@ -1,4 +1,5 @@
 import { css, cx } from '@emotion/css';
+import { t } from '@lingui/macro';
 import React, { memo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -64,7 +65,7 @@ export const TimeRangeOption = memo<Props>(({ value, onSelect, selected = false,
         onChange={() => onSelect(value)}
       />
       <label className={styles.label} htmlFor={id}>
-        {value.display}
+        {t({ id: value.id, message: value.display })}
       </label>
     </li>
   );

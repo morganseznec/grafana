@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { Trans } from '@lingui/macro';
 import React, { FC, useState } from 'react';
 
 import { PanelMenuItem } from '@grafana/data';
@@ -34,7 +35,7 @@ export const PanelHeaderMenuItem: FC<Props & PanelMenuItem> = (props) => {
       <a onClick={props.onClick} href={props.href}>
         {props.iconClassName && <Icon name={props.iconClassName as IconName} className={menuIconClassName} />}
         <span className="dropdown-item-text" aria-label={selectors.components.Panels.Panel.headerItems(props.text)}>
-          {props.text}
+          {props.definedMessage ? <Trans id={props.definedMessage.id}></Trans> : props.text}
           {isSubMenu && <Icon name="angle-right" className={shortcutIconClassName} />}
         </span>
         {props.shortcut && (

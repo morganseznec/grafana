@@ -1,5 +1,6 @@
 // Libraries
 import { css } from '@emotion/css';
+import { Trans } from '@lingui/macro';
 import React, { FC } from 'react';
 
 // Components
@@ -55,7 +56,7 @@ export const LoginPage: FC = () => {
                           fill="text"
                           href={`${config.appSubUrl}/user/password/send-reset-email`}
                         >
-                          Forgot your password?
+                          <Trans id={'login.forgot-your-password'}>Forgot your password?</Trans>
                         </LinkButton>
                       </HorizontalGroup>
                     ) : (

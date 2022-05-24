@@ -1,3 +1,4 @@
+import { t } from '@lingui/macro';
 import React, { FC, SyntheticEvent } from 'react';
 
 import { selectors } from '@grafana/e2e-selectors';
@@ -23,36 +24,54 @@ export const ChangePassword: FC<Props> = ({ onSubmit, onSkip }) => {
     <Form onSubmit={submit}>
       {({ errors, register, getValues }) => (
         <>
-          <Field label="New password" invalid={!!errors.newPassword} error={errors?.newPassword?.message}>
+          <Field
+            label={t({ id: 'forgotten-password.new-password', message: `New password` })}
+            invalid={!!errors.newPassword}
+            error={errors?.newPassword?.message}
+          >
             <PasswordField
               id="new-password"
               autoFocus
               autoComplete="new-password"
-              {...register('newPassword', { required: 'New Password is required' })}
+              {...register('newPassword', {
+                required: t({ id: 'forgotten-password.new-password-is-required', message: `New Password is required` }),
+              })}
             />
           </Field>
-          <Field label="Confirm new password" invalid={!!errors.confirmNew} error={errors?.confirmNew?.message}>
+          <Field
+            label={t({ id: 'forgotten-password.confirm-new-password', message: `Confirm new password` })}
+            invalid={!!errors.confirmNew}
+            error={errors?.confirmNew?.message}
+          >
             <PasswordField
               id="confirm-new-password"
               autoComplete="new-password"
               {...register('confirmNew', {
-                required: 'Confirmed Password is required',
-                validate: (v: string) => v === getValues().newPassword || 'Passwords must match!',
+                required: t({
+                  id: 'forgotten-password.password-is-required',
+                  message: `Confirmed Password is required`,
+                }),
+                validate: (v: string) =>
+                  v === getValues().newPassword ||
+                  t({ id: 'forgotten-password.password-must-match', message: `Passwords must match!` }),
               })}
             />
           </Field>
           <VerticalGroup>
             <Button type="submit" className={submitButton}>
-              Submit
+              {t({ id: 'forgotten-password.submit', message: `Submit` })}
             </Button>
 
             {onSkip && (
               <Tooltip
-                content="If you skip you will be prompted to change password next time you log in."
+                content={t({
+                  id: 'forgotten-password.skip-description',
+                  message: `If you skip you will be prompted to change password next time you log in.`,
+                })}
                 placement="bottom"
               >
                 <Button fill="text" onClick={onSkip} type="button" aria-label={selectors.pages.Login.skip}>
-                  Skip
+                  {t({ id: 'forgotten-password.skip', message: `Skip` })}
                 </Button>
               </Tooltip>
             )}

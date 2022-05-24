@@ -262,6 +262,7 @@
     "@lezer/common": "0.15.12",
     "@lezer/lr": "0.15.8",
     "@lingui/core": "3.13.2",
+    "@lingui/detect-locale": "^3.13.3",
     "@lingui/react": "3.13.2",
     "@opentelemetry/api": "1.1.0",
     "@opentelemetry/exporter-collector": "0.25.0",

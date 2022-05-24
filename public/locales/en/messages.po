@@ -13,10 +13,459 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Copy"
+msgstr "Copy"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Create library panel"
+msgstr "Create library panel"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Data"
+msgstr "Data"
+
+#: public/app/features/inspector/InspectJSONTab.tsx
+msgid "DataFrame JSON"
+msgstr "DataFrame JSON"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Duplicate"
+msgstr "Duplicate"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Edit"
+msgstr "Edit"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Explore"
+msgstr "Explore"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Inspect"
+msgstr "Inspect"
+
+#: public/app/features/inspector/InspectJSONTab.tsx
+msgid "JSON formatted DataFrames"
+msgstr "JSON formatted DataFrames"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "More..."
+msgstr "More..."
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+#: public/app/features/inspector/InspectJSONTab.tsx
+msgid "Panel JSON"
+msgstr "Panel JSON"
+
+#: public/app/features/inspector/InspectJSONTab.tsx
+msgid "Panel data"
+msgstr "Panel data"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Query"
+msgstr "Query"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Remove"
+msgstr "Remove"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Share"
+msgstr "Share"
+
+#: public/app/features/inspector/InspectJSONTab.tsx
+msgid "The model saved in the dashboard JSON that configures how everything works."
+msgstr "The model saved in the dashboard JSON that configures how everything works."
+
+#: public/app/features/inspector/InspectJSONTab.tsx
+msgid "The raw model passed to the panel visualization"
+msgstr "The raw model passed to the panel visualization"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "Unlink library panel"
+msgstr "Unlink library panel"
+
+#: public/app/features/dashboard/utils/getPanelMenu.ts
+msgid "View"
+msgstr "View"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/CalendarHeader.tsx
+msgid "calendar-header.title"
+msgstr "Select a time range"
+
+#: public/app/features/inspector/InspectJSONTab.tsx
+msgid "common.apply"
+msgstr "Apply"
+
+#: public/app/features/inspector/InspectDataTab.tsx
+msgid "common.loading"
+msgstr "Loading"
+
 #: public/app/core/components/SharedPreferences/SharedPreferences.tsx
 #: public/app/features/profile/UserProfileEditForm.tsx
 msgid "common.save"
 msgstr "Save"
+
+#: public/app/features/dashboard/components/DashNav/DashNavTimeControls.tsx
+msgid "dashnav-time-controls.refresh-dashboard"
+msgstr "Refresh dashboard"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.add-panel"
+msgstr "Add panel"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.cycle-view-mode"
+msgstr "Cycle view mode"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.dashboard-settings"
+msgstr "Dashboard settings"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.go-to-next-dashboard"
+msgstr "Go to next dashboard"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.go-to-previous-dashboard"
+msgstr "Go to previous dashboard"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.mark-as-favorite"
+msgstr "Mark as favorite"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.open-original-dashboard"
+msgstr "Open original dashboard"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.save-dashboard"
+msgstr "Save dashboard"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.share-dashboard-or-panel"
+msgstr "Share dashboard or panel"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.show-dashboard-comments"
+msgstr "Show dashboard comments"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.stop-playlist"
+msgstr "Stop playlist"
+
+#: public/app/features/dashboard/components/DashNav/DashNav.tsx
+msgid "dashnav.unmark-as-favorite"
+msgstr "Unmark as favorite"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.april"
+#~ msgstr "April"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.august"
+#~ msgstr "August"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.december"
+#~ msgstr "December"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.february"
+#~ msgstr "February"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.january"
+#~ msgstr "January"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.july"
+#~ msgstr "July"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.june"
+#~ msgstr "June"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.march"
+#~ msgstr "March"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.may"
+#~ msgstr "May"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.november"
+#~ msgstr "November"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.october"
+#~ msgstr "October"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.month.september"
+#~ msgstr "September"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.day-b-yesterday"
+#~ msgstr "Day before yesterday"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-1-hour"
+#~ msgstr "Last 1 hour"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-1-year"
+#~ msgstr "Last 1 year"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-12-hours"
+#~ msgstr "Last 12 hours"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-15-mins"
+#~ msgstr "Last 15 minutes"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-2-days"
+#~ msgstr "Last 2 days"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-2-years"
+#~ msgstr "Last 2 years"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-24-hours"
+#~ msgstr "Last 24 hours"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-3-hours"
+#~ msgstr "Last 3 hours"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-30-days"
+#~ msgstr "Last 30 days"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-30-mins"
+#~ msgstr "Last 30 minutes"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-5-mins"
+#~ msgstr "Last 5 minutes"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-5-years"
+#~ msgstr "Last 5 years"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-6-hours"
+#~ msgstr "Last 6 hours"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-6-months"
+#~ msgstr "Last 6 months"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-7-days"
+#~ msgstr "Last 7 days"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.last-90-days"
+#~ msgstr "Last 90 days"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.previous-fiscal-quarter"
+#~ msgstr "Previous fiscal quarter"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.previous-fiscal-year"
+#~ msgstr "Previous fiscal year"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.previous-month"
+#~ msgstr "Previous month"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.previous-week"
+#~ msgstr "Previous week"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.previous-year"
+#~ msgstr "Previous year"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-day-last-w"
+#~ msgstr "This day last week"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-fiscal-quarter"
+#~ msgstr "This fiscal quarter"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-fiscal-quarter-so-far"
+#~ msgstr "This fiscal quarter so far"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-fiscal-year"
+#~ msgstr "This fiscal year"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-fiscal-year-so-far"
+#~ msgstr "This fiscal year so far"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-month"
+#~ msgstr "This month"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-month-so-far"
+#~ msgstr "This month so far"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-week"
+#~ msgstr "This week"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-week-so-far"
+#~ msgstr "This week so far"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-year"
+#~ msgstr "This year"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.this-year-so-far"
+#~ msgstr "This year so far"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.today"
+#~ msgstr "Today"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.today-so-far"
+#~ msgstr "Today so far"
+
+#: packages/grafana-ui/src/components/DateTimePickers/options.ts
+#~ msgid "datetime-pickers.options.yesterday"
+#~ msgstr "Yesterday"
+
+#: public/app/core/components/ForgottenPassword/ChangePassword.tsx
+msgid "forgotten-password.confirm-new-password"
+msgstr "Confirm new password"
+
+#: public/app/core/components/ForgottenPassword/ChangePassword.tsx
+msgid "forgotten-password.new-password"
+msgstr "New password"
+
+#: public/app/core/components/ForgottenPassword/ChangePassword.tsx
+msgid "forgotten-password.new-password-is-required"
+msgstr "New Password is required"
+
+#: public/app/core/components/ForgottenPassword/ChangePassword.tsx
+msgid "forgotten-password.password-is-required"
+msgstr "Confirmed Password is required"
+
+#: public/app/core/components/ForgottenPassword/ChangePassword.tsx
+msgid "forgotten-password.password-must-match"
+msgstr "Passwords must match!"
+
+#: public/app/core/components/ForgottenPassword/ChangePassword.tsx
+msgid "forgotten-password.skip"
+msgstr "Skip"
+
+#: public/app/core/components/ForgottenPassword/ChangePassword.tsx
+msgid "forgotten-password.skip-description"
+msgstr "If you skip you will be prompted to change password next time you log in."
+
+#: public/app/core/components/ForgottenPassword/ChangePassword.tsx
+msgid "forgotten-password.submit"
+msgstr "Submit"
+
+#: public/app/features/dashboard/components/Inspector/InspectContent.tsx
+msgid "inspect-content.stats"
+msgstr "queries with total query time of"
+
+#: public/app/features/dashboard/components/Inspector/InspectContent.tsx
+msgid "inspect-content.title"
+msgstr "Inspect"
+
+#: public/app/features/inspector/InspectDataOptions.tsx
+msgid "inspectdata-options.apply-panel-trans-desc"
+msgstr "Table data is displayed with transformations defined in the panel Transform tab."
+
+#: public/app/features/inspector/InspectDataOptions.tsx
+msgid "inspectdata-options.apply-panel-trans-label"
+msgstr "Apply panel transformations"
+
+#: public/app/features/inspector/InspectDataOptions.tsx
+msgid "inspectdata-options.data-options-title"
+msgstr "Data options"
+
+#: public/app/features/inspector/InspectDataOptions.tsx
+msgid "inspectdata-options.download-for-xls-desc"
+msgstr "Adds header to CSV for use with Excel"
+
+#: public/app/features/inspector/InspectDataOptions.tsx
+msgid "inspectdata-options.download-for-xls-label"
+msgstr "Download for Excel"
+
+#: public/app/features/inspector/InspectDataOptions.tsx
+msgid "inspectdata-options.formatted-data-desc"
+msgstr "Table data is formatted with options defined in the Field and Override tabs."
+
+#: public/app/features/inspector/InspectDataOptions.tsx
+msgid "inspectdata-options.formatted-data-label"
+msgstr "Formatted data"
+
+#: public/app/features/inspector/InspectDataOptions.tsx
+msgid "inspectdata-options.show-dataframe"
+msgstr "Show data frame"
+
+#: public/app/features/inspector/InspectDataTab.tsx
+msgid "inspectdata-tab.download-csv"
+msgstr "Download CSV"
+
+#: public/app/features/inspector/InspectDataTab.tsx
+msgid "inspectdata-tab.download-logs"
+msgstr "Download logs"
+
+#: public/app/features/inspector/InspectDataTab.tsx
+msgid "inspectdata-tab.download-traces"
+msgstr "Download traces"
+
+#: public/app/features/inspector/InspectJSONTab.tsx
+msgid "inspectjson-tab.select-source"
+msgstr "Select source"
+
+#: public/app/core/components/Login/LoginForm.tsx
+msgid "login.email-or-username"
+msgstr "Email or username"
+
+#: public/app/core/components/Login/LoginForm.tsx
+msgid "login.email-or-username-required"
+msgstr "Email or username is required"
+
+#: public/app/core/components/Login/LoginPage.tsx
+msgid "login.forgot-your-password"
+msgstr "Forgot your password?"
+
+#: public/app/core/components/Login/LoginForm.tsx
+msgid "login.log-in"
+msgstr "Log in"
+
+#: public/app/core/components/Login/LoginForm.tsx
+msgid "login.logging-in"
+msgstr "Logging in..."
+
+#: public/app/core/components/Login/LoginForm.tsx
+msgid "login.password"
+msgstr "Password"
+
+#: public/app/core/components/Login/LoginForm.tsx
+msgid "login.password-required"
+msgstr "Password is required"
 
 #: public/app/core/components/NavBar/navBarItem-translations.ts
 msgid "nav.alerting"
@@ -178,6 +627,43 @@ msgstr "Teams"
 msgid "nav.users"
 msgstr "Users"
 
+#: public/app/core/components/ForgottenPassword/ForgottenPassword.tsx
+#: public/app/core/components/ForgottenPassword/ForgottenPassword.tsx
+msgid "reset-password.back-to-login"
+msgstr "Back to login"
+
+#: public/app/core/components/ForgottenPassword/ForgottenPassword.tsx
+msgid "reset-password.description"
+msgstr "An email with a reset link has been sent to the email address. You should receive it shortly."
+
+#: public/app/core/components/ForgottenPassword/ForgottenPassword.tsx
+msgid "reset-password.email-or-username-required"
+msgstr "Email or username is required"
+
+#: public/app/core/components/ForgottenPassword/ForgottenPassword.tsx
+msgid "reset-password.field-description"
+msgstr "Enter your information to get a reset link sent to you"
+
+#: public/app/core/components/ForgottenPassword/ForgottenPassword.tsx
+msgid "reset-password.forget-username"
+msgstr "Did you forget your username or email? Contact your Grafana administrator."
+
+#: public/app/core/components/ForgottenPassword/ForgottenPassword.tsx
+msgid "reset-password.label"
+msgstr "User"
+
+#: public/app/core/components/ForgottenPassword/ForgottenPassword.tsx
+msgid "reset-password.legend"
+msgstr "Reset password"
+
+#: public/app/core/components/ForgottenPassword/ForgottenPassword.tsx
+msgid "reset-password.placeholder"
+msgstr "Email or username"
+
+#: public/app/core/components/ForgottenPassword/ForgottenPassword.tsx
+msgid "reset-password.send-reset-email"
+msgstr "Send reset email"
+
 #: public/app/core/components/SharedPreferences/SharedPreferences.tsx
 msgid "shared-dashboard.fields.timezone-label"
 msgstr "Timezone"
@@ -217,6 +703,64 @@ msgstr "Light"
 #: public/app/core/components/SharedPreferences/SharedPreferences.tsx
 msgid "shared-preferences.title"
 msgstr "Preferences"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimePickerContent.tsx
+msgid "timepicker-content.find-more"
+msgstr "to find out more about how to enter custom time ranges."
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimePickerContent.tsx
+msgid "timepicker-content.not-used-before"
+msgstr "It looks like you haven't used this time picker before. As soon as you enter some time intervals, recently used intervals will appear here."
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimePickerContent.tsx
+msgid "timepicker-content.placeholder"
+msgstr "Search quick ranges"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimePickerContent.tsx
+msgid "timepicker-content.read-the-docs"
+msgstr "Read the documentation"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimePickerContent.tsx
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimePickerContent.tsx
+msgid "timepicker-content.recently-used-abs-ranges"
+msgstr "Recently used absolute ranges"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimePickerContent.tsx
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimePickerContent.tsx
+msgid "timepicker-content.title"
+msgstr "Absolute time range"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimePickerFooter.tsx
+msgid "timepicker-footer.button"
+msgstr "Change time settings"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimeRangeForm.tsx
+msgid "timerange-form.apply"
+msgstr "Apply time range"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimeRangeForm.tsx
+msgid "timerange-form.from"
+msgstr "From"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker/TimeRangeForm.tsx
+msgid "timerange-form.to"
+msgstr "To"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangeInput.tsx
+msgid "timerange-input.placeholder"
+msgstr "Select time range"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker.tsx
+msgid "timerange-picker.to"
+msgstr "to"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeRangePicker.tsx
+msgid "timerange-picker.zoom-out"
+msgstr "Time range zoom out"
+
+#: packages/grafana-ui/src/components/DateTimePickers/TimeZonePicker.tsx
+msgid "timezone-picker.placeholder"
+msgstr "Type to search (country, city, abbreviation)"
 
 #: public/app/features/profile/UserOrganizations.tsx
 msgid "user-orgs.current-org-button"
@@ -288,3 +832,19 @@ msgstr "Last seen"
 #: public/app/features/profile/UserSessions.tsx
 msgid "user-sessions.loading"
 msgstr "Loading sessions..."
+
+#: packages/grafana-ui/src/components/DateTimePickers/WeekStartPicker.tsx
+msgid "week-start-picker.monday"
+msgstr "Monday"
+
+#: packages/grafana-ui/src/components/DateTimePickers/WeekStartPicker.tsx
+msgid "week-start-picker.saturday"
+msgstr "Saturday"
+
+#: packages/grafana-ui/src/components/DateTimePickers/WeekStartPicker.tsx
+msgid "week-start-picker.sunday"
+msgstr "Sunday"
+
+#: public/app/features/inspector/InspectJSONTab.tsx
+msgid "{0}"
+msgstr "{0}"

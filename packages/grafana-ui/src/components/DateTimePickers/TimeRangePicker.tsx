@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { Trans } from '@lingui/macro';
 import { useDialog } from '@react-aria/dialog';
 import { FocusScope } from '@react-aria/focus';
 import { useOverlay } from '@react-aria/overlays';
@@ -154,7 +155,7 @@ export function UnthemedTimeRangePicker(props: TimeRangePickerProps): ReactEleme
 
 const ZoomOutTooltip = () => (
   <>
-    Time range zoom out <br /> CTRL+Z
+    <Trans id="timerange-picker.zoom-out">Time range zoom out</Trans> <br /> CTRL+Z
   </>
 );
 
@@ -165,7 +166,9 @@ const TimePickerTooltip = ({ timeRange, timeZone }: { timeRange: TimeRange; time
   return (
     <>
       {dateTimeFormat(timeRange.from, { timeZone })}
-      <div className="text-center">to</div>
+      <div className="text-center">
+        <Trans id="timerange-picker.to">to</Trans>
+      </div>
       {dateTimeFormat(timeRange.to, { timeZone })}
       <div className="text-center">
         <span className={styles.utc}>{timeZoneFormatUserFriendly(timeZone)}</span>

@@ -35,6 +35,7 @@ export * from './legacyEvents';
 export * from './live';
 export * from './variables';
 export * from './geometry';
+export * from './languages';
 export { isUnsignedPluginSignature } from './pluginSignature';
 export {
   CurrentUserDTO,

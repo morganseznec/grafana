@@ -18,6 +18,7 @@ export class PanelHeaderMenu extends PureComponent<Props> {
               key={`${menuItem.text}${idx}`}
               type={menuItem.type}
               text={menuItem.text}
+              definedMessage={menuItem.definedMessage}
               iconClassName={menuItem.iconClassName}
               onClick={menuItem.onClick}
               shortcut={menuItem.shortcut}

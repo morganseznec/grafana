@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { useLingui } from '@lingui/react';
 import React, { useCallback } from 'react';
 import Calendar from 'react-calendar';
 
@@ -14,6 +15,8 @@ export function Body({ onChange, from, to, timeZone }: TimePickerCalendarProps) 
   const onCalendarChange = useOnCalendarChange(onChange, timeZone);
   const styles = useStyles2(getBodyStyles);
 
+  const { i18n } = useLingui();
+
   return (
     <Calendar
       selectRange={true}
@@ -25,7 +28,7 @@ export function Body({ onChange, from, to, timeZone }: TimePickerCalendarProps) 
       nextLabel={<Icon name="angle-right" />}
       prevLabel={<Icon name="angle-left" />}
       onChange={onCalendarChange}
-      locale="en"
+      locale={i18n.locale}
     />
   );
 }

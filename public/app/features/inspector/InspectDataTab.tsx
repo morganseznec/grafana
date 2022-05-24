@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { Trans } from '@lingui/macro';
 import { saveAs } from 'file-saver';
 import React, { PureComponent } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -216,7 +217,7 @@ export class InspectDataTab extends PureComponent<Props, State> {
     if (isLoading) {
       return (
         <div>
-          <Spinner inline={true} /> Loading
+          <Spinner inline={true} /> <Trans id="common.loading">Loading</Trans>
         </div>
       );
     }
@@ -256,7 +257,7 @@ export class InspectDataTab extends PureComponent<Props, State> {
               margin-bottom: 10px;
             `}
           >
-            Download CSV
+            <Trans id="inspectdata-tab.download-csv">Download CSV</Trans>
           </Button>
           {hasLogs && (
             <Button
@@ -267,7 +268,7 @@ export class InspectDataTab extends PureComponent<Props, State> {
                 margin-left: 10px;
               `}
             >
-              Download logs
+              <Trans id="inspectdata-tab.download-logs">Download logs</Trans>
             </Button>
           )}
           {hasTraces && (
@@ -279,7 +280,7 @@ export class InspectDataTab extends PureComponent<Props, State> {
                 margin-left: 10px;
               `}
             >
-              Download traces
+              <Trans id="inspectdata-tab.download-traces">Download traces</Trans>
             </Button>
           )}
         </div>
