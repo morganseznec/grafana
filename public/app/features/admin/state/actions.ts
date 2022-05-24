@@ -26,6 +26,7 @@ import {
   filterChanged,
   usersFetchBegin,
   usersFetchEnd,
+  auditRecordsLoaded,
 } from './reducers';
 // UserAdminPage
 
@@ -310,5 +311,13 @@ export function changePage(page: number): ThunkResult<void> {
     dispatch(usersFetchBegin());
     dispatch(pageChanged(page));
     dispatch(fetchUsers());
+  };
+}
+
+export function loadAuditRecords(): ThunkResult<void> {
+  return async (dispatch) => {
+    const response = await getBackendSrv().get('/api/admin/audit', { perpage: 1000, page: 1 });
+    console.log(response);
+    dispatch(auditRecordsLoaded(response.records));
   };
 }

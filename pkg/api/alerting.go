@@ -453,6 +453,16 @@ func (hs *HTTPServer) DeleteAlertNotification(c *models.ReqContext) response.Res
 		return response.Error(500, "Failed to delete alert notification", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Notification deleted: {NotificationID:" + web.Params(c.Req)[":notificationId"] + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("Notification deleted")
 }
 
@@ -467,6 +477,16 @@ func (hs *HTTPServer) DeleteAlertNotificationByUID(c *models.ReqContext) respons
 			return response.Error(404, err.Error(), nil)
 		}
 		return response.Error(500, "Failed to delete alert notification", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Notification deleted: {Uid:" + web.Params(c.Req)[":uid"] + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.JSON(200, util.DynMap{
@@ -562,6 +582,17 @@ func (hs *HTTPServer) PauseAlert(c *models.ReqContext) response.Response {
 
 	result["state"] = resp
 	result["message"] = "Alert " + pausedState
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    pausedState + " alert: {AlertID:" + strconv.Itoa(int(alertID)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.JSON(200, result)
 }
 
@@ -590,6 +621,16 @@ func (hs *HTTPServer) PauseAllAlerts(c *models.ReqContext) response.Response {
 		"state":          resp,
 		"message":        "alerts " + pausedState,
 		"alertsAffected": updateCmd.ResultCount,
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Paused all alerts",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.JSON(200, result)

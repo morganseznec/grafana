@@ -28,6 +28,31 @@ func (hs *HTTPServer) AdminGetStats(c *models.ReqContext) response.Response {
 	return response.JSON(200, statsQuery.Result)
 }
 
+func (hs *HTTPServer) AdminGetAudit(c *models.ReqContext) response.Response {
+	perPage := c.QueryInt("perpage")
+	if perPage <= 0 {
+		perPage = 1000
+	}
+	page := c.QueryInt("page")
+	if page < 1 {
+		page = 1
+	}
+
+	query := models.SearchAuditRecordsQuery{
+		Page:  page,
+		Limit: perPage,
+	}
+
+	if err := hs.SQLStore.SearchAuditRecords(c.Req.Context(), &query); err != nil {
+		return response.Error(500, "Failed to search audit records", err)
+	}
+
+	query.Result.Page = page
+	query.Result.PerPage = perPage
+
+	return response.JSON(200, query.Result)
+}
+
 func (hs *HTTPServer) getAuthorizedSettings(ctx context.Context, user *models.SignedInUser, bag setting.SettingsBag) (setting.SettingsBag, error) {
 	if hs.AccessControl.IsDisabled() {
 		return bag, nil

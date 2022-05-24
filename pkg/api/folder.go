@@ -72,6 +72,17 @@ func (hs *HTTPServer) CreateFolder(c *models.ReqContext) response.Response {
 	}
 
 	g := guardian.New(c.Req.Context(), folder.Id, c.OrgId, c.SignedInUser)
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Folder created: {FolderId:" + strconv.Itoa(int(cmd.Result.Id)) + ",Name:'" + cmd.Result.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.JSON(200, hs.toFolderDto(c.Req.Context(), g, folder))
 }
 
@@ -86,6 +97,17 @@ func (hs *HTTPServer) UpdateFolder(c *models.ReqContext) response.Response {
 	}
 
 	g := guardian.New(c.Req.Context(), cmd.Result.Id, c.OrgId, c.SignedInUser)
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Folder updated: {FolderId:" + strconv.Itoa(int(cmd.Result.Id)) + ",Name:'" + cmd.Result.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.JSON(200, hs.toFolderDto(c.Req.Context(), g, cmd.Result))
 }
 
@@ -101,6 +123,16 @@ func (hs *HTTPServer) DeleteFolder(c *models.ReqContext) response.Response { // 
 	f, err := hs.folderService.DeleteFolder(c.Req.Context(), c.SignedInUser, c.OrgId, web.Params(c.Req)[":uid"], c.QueryBool("forceDeleteRules"))
 	if err != nil {
 		return apierrors.ToFolderErrorResponse(err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Folder deleted: {Name:'" + f.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.JSON(200, util.DynMap{

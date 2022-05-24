@@ -76,5 +76,15 @@ func (hs *HTTPServer) ResetPassword(c *models.ReqContext) response.Response {
 		return response.Error(500, "Failed to change user password", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "User password changed",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("User password changed")
 }

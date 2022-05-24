@@ -88,6 +88,16 @@ func (hs *HTTPServer) AddTeamMember(c *models.ReqContext) response.Response {
 		return response.Error(500, "Failed to add Member to Team", err)
 	}
 
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Member added to Team: {UserId:" + strconv.Itoa(int(cmd.UserId)) + ",TeamID:" + strconv.Itoa(int(cmd.TeamId)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.JSON(200, &util.DynMap{
 		"message": "Member added to Team",
 	})
@@ -127,6 +137,17 @@ func (hs *HTTPServer) UpdateTeamMember(c *models.ReqContext) response.Response {
 	if err != nil {
 		return response.Error(500, "Failed to update team member.", err)
 	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Team member updated: {UserId:" + strconv.Itoa(int(cmd.UserId)) + ",TeamID:" + strconv.Itoa(int(cmd.TeamId)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("Team member updated")
 }
 
@@ -170,6 +191,17 @@ func (hs *HTTPServer) RemoveTeamMember(c *models.ReqContext) response.Response {
 
 		return response.Error(500, "Failed to remove Member from Team", err)
 	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Team Member removed: {UserId:" + strconv.Itoa(int(userId)) + ",TeamID:" + strconv.Itoa(int(teamId)) + "}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.Success("Team Member removed")
 }
 

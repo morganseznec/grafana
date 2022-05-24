@@ -110,6 +110,19 @@ var (
 		},
 	}
 
+	auditReaderRole = RoleDTO{
+		Name:        "fixed:audit:reader",
+		DisplayName: "Audit reader",
+		Description: "Read Grafana instance audit logs.",
+		Group:       "Audit",
+		Version:     1,
+		Permissions: []Permission{
+			{
+				Action: ActionServerAuditRead,
+			},
+		},
+	}
+
 	usersReaderRole = RoleDTO{
 		Name:        "fixed:users:reader",
 		DisplayName: "User reader",
@@ -212,6 +225,10 @@ func DeclareFixedRoles(ac AccessControl) error {
 		Role:   statsReaderRole,
 		Grants: []string{RoleGrafanaAdmin},
 	}
+	auditReader := RoleRegistration{
+		Role:   auditReaderRole,
+		Grants: []string{RoleGrafanaAdmin},
+	}
 	usersReader := RoleRegistration{
 		Role:   usersReaderRole,
 		Grants: []string{RoleGrafanaAdmin},
@@ -222,7 +239,7 @@ func DeclareFixedRoles(ac AccessControl) error {
 	}
 
 	return ac.DeclareFixedRoles(ldapReader, ldapWriter, orgUsersReader, orgUsersWriter,
-		settingsReader, statsReader, usersReader, usersWriter)
+		settingsReader, statsReader, auditReader, usersReader, usersWriter)
 }
 
 func ConcatPermissions(permissions ...[]Permission) []Permission {

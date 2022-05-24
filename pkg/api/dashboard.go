@@ -282,6 +282,17 @@ func (hs *HTTPServer) deleteDashboard(c *models.ReqContext) response.Response {
 			hs.log.Error("Failed to broadcast delete info", "dashboard", dash.Uid, "error", err)
 		}
 	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Dashboard deleted: {ID:" + dash.Uid + ",Name:'" + dash.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	return response.JSON(200, util.DynMap{
 		"title":   dash.Title,
 		"message": fmt.Sprintf("Dashboard %s deleted", dash.Title),
@@ -393,6 +404,16 @@ func (hs *HTTPServer) postDashboard(c *models.ReqContext, cmd models.SaveDashboa
 	err = hs.LibraryPanelService.ConnectLibraryPanelsForDashboard(ctx, c.SignedInUser, dashboard)
 	if err != nil {
 		return response.Error(500, "Error while connecting library panels", err)
+	}
+
+	createAuditRecordCmd := models.CreateAuditRecordCommand{
+		Username:  c.SignedInUser.Login,
+		Action:    "Dashboard updated: {ID:" + dashboard.Uid + ",Name:'" + dashboard.Title + "'}",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.SQLStore.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	c.TimeRequest(metrics.MApiDashboardSave)
