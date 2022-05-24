@@ -57,7 +57,7 @@ export const DashboardPrompt = React.memo(({ dashboard }: Props) => {
         return;
       }
       if (hasChanges(dashboard, original)) {
-        event.preventDefault();
+        //event.preventDefault();
         // No browser actually displays this message anymore.
         // But Chrome requires it to be defined else the popup won't show.
         event.returnValue = '';
