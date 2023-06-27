@@ -33,6 +33,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/provisioning"
 	"github.com/grafana/grafana/pkg/services/publicdashboards"
 	publicdashboardsService "github.com/grafana/grafana/pkg/services/publicdashboards/service"
+	"github.com/grafana/grafana/pkg/services/searchaudit"
 	"github.com/grafana/grafana/pkg/services/searchusers"
 	"github.com/grafana/grafana/pkg/services/searchusers/filters"
 	"github.com/grafana/grafana/pkg/services/sqlstore/migrations"
@@ -71,6 +72,8 @@ var wireExtsBasicSet = wire.NewSet(
 	wire.Bind(new(encryption.Provider), new(encryptionprovider.Provider)),
 	filters.ProvideOSSSearchUserFilter,
 	wire.Bind(new(user.SearchUserFilter), new(*filters.OSSSearchUserFilter)),
+	searchaudit.ProvideAuditRecordsService,
+	wire.Bind(new(searchaudit.Service), new(*searchaudit.OSSService)),
 	searchusers.ProvideUsersService,
 	wire.Bind(new(searchusers.Service), new(*searchusers.OSSService)),
 	osskmsproviders.ProvideService,

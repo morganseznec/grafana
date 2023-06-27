@@ -15,6 +15,7 @@ import (
 	"github.com/grafana/grafana/pkg/infra/network"
 	"github.com/grafana/grafana/pkg/login"
 	"github.com/grafana/grafana/pkg/middleware/cookies"
+	"github.com/grafana/grafana/pkg/services/audit"
 	"github.com/grafana/grafana/pkg/services/auth"
 	"github.com/grafana/grafana/pkg/services/authn"
 	contextmodel "github.com/grafana/grafana/pkg/services/contexthandler/model"
@@ -247,6 +248,17 @@ func (hs *HTTPServer) LoginPost(c *contextmodel.ReqContext) response.Response {
 	authModule = authQuery.AuthModule
 	if err != nil {
 		resp = response.Error(401, "Invalid username or password", err)
+
+		createAuditRecordCmd := audit.CreateAuditRecordCommand{
+			Username:  cmd.User,
+			Action:    err.Error(),
+			IpAddress: c.RemoteAddr(),
+		}
+
+		if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+			c.Logger.Error("Could not create audit record.", "error", err)
+		}
+
 		if errors.Is(err, login.ErrInvalidCredentials) || errors.Is(err, login.ErrTooManyLoginAttempts) || errors.Is(err,
 			user.ErrUserNotFound) {
 			return resp
@@ -309,6 +321,16 @@ func (hs *HTTPServer) loginUserWithUser(user *user.User, c *contextmodel.ReqCont
 	}
 	c.UserToken = userToken
 
+	createAuditRecordCmd := audit.CreateAuditRecordCommand{
+		Username:  user.Login,
+		Action:    "Successful Login",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	hs.log.Info("Successful Login", "User", user.Email)
 	authn.WriteSessionCookie(c.Resp, hs.Cfg, userToken)
 	return nil
@@ -345,6 +367,16 @@ func (hs *HTTPServer) Logout(c *contextmodel.ReqContext) {
 	} else {
 		hs.log.Info("Successful Logout", "User", c.Email)
 		c.Redirect(hs.Cfg.AppSubURL + "/login")
+	}
+
+	createAuditRecordCmd := audit.CreateAuditRecordCommand{
+		Username:  c.Login,
+		Action:    "Successful Logout",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 }
 

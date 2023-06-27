@@ -39,6 +39,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/alerting"
 	"github.com/grafana/grafana/pkg/services/annotations"
 	"github.com/grafana/grafana/pkg/services/apikey"
+	"github.com/grafana/grafana/pkg/services/audit"
 	"github.com/grafana/grafana/pkg/services/auth"
 	"github.com/grafana/grafana/pkg/services/authn"
 	"github.com/grafana/grafana/pkg/services/cleanup"
@@ -79,6 +80,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/rendering"
 	"github.com/grafana/grafana/pkg/services/search"
 	"github.com/grafana/grafana/pkg/services/searchV2"
+	"github.com/grafana/grafana/pkg/services/searchaudit"
 	"github.com/grafana/grafana/pkg/services/searchusers"
 	"github.com/grafana/grafana/pkg/services/secrets"
 	secretsKV "github.com/grafana/grafana/pkg/services/secrets/kvstore"
@@ -111,61 +113,63 @@ type HTTPServer struct {
 	namedMiddlewares []routing.RegisterNamedMiddleware
 	bus              bus.Bus
 
-	PluginContextProvider        *plugincontext.Provider
-	RouteRegister                routing.RouteRegister
-	RenderService                rendering.Service
-	Cfg                          *setting.Cfg
-	Features                     *featuremgmt.FeatureManager
-	SettingsProvider             setting.Provider
-	HooksService                 *hooks.HooksService
-	navTreeService               navtree.Service
-	CacheService                 *localcache.CacheService
-	DataSourceCache              datasources.CacheService
-	AuthTokenService             auth.UserTokenService
-	QuotaService                 quota.Service
-	RemoteCacheService           *remotecache.RemoteCache
-	ProvisioningService          provisioning.ProvisioningService
-	Login                        login.Service
-	License                      licensing.Licensing
-	AccessControl                accesscontrol.AccessControl
-	DataProxy                    *datasourceproxy.DataSourceProxyService
-	PluginRequestValidator       validations.PluginRequestValidator
-	pluginClient                 plugins.Client
-	pluginStore                  plugins.Store
-	pluginInstaller              plugins.Installer
-	pluginFileStore              plugins.FileStore
-	pluginDashboardService       plugindashboards.Service
-	pluginStaticRouteResolver    plugins.StaticRouteResolver
-	pluginErrorResolver          plugins.ErrorResolver
-	SearchService                search.Service
-	ShortURLService              shorturls.Service
-	QueryHistoryService          queryhistory.Service
-	CorrelationsService          correlations.Service
-	Live                         *live.GrafanaLive
-	LivePushGateway              *pushhttp.Gateway
-	StorageService               store.StorageService
-	httpEntityStore              httpentitystore.HTTPEntityStore
-	SearchV2HTTPService          searchV2.SearchHTTPService
-	ContextHandler               *contexthandler.ContextHandler
-	LoggerMiddleware             loggermw.Logger
-	SQLStore                     db.DB
-	AlertEngine                  *alerting.AlertEngine
-	AlertNG                      *ngalert.AlertNG
-	LibraryPanelService          librarypanels.Service
-	LibraryElementService        libraryelements.Service
-	SocialService                social.Service
-	Listener                     net.Listener
-	EncryptionService            encryption.Internal
-	SecretsService               secrets.Service
-	secretsPluginManager         plugins.SecretsPluginManager
-	secretsStore                 secretsKV.SecretsKVStore
-	secretsMigrator              secrets.Migrator
-	secretsPluginMigrator        spm.SecretMigrationProvider
-	DataSourcesService           datasources.DataSourceService
-	cleanUpService               *cleanup.CleanUpService
-	tracer                       tracing.Tracer
-	grafanaUpdateChecker         *updatechecker.GrafanaService
-	pluginsUpdateChecker         *updatechecker.PluginsService
+	PluginContextProvider     *plugincontext.Provider
+	RouteRegister             routing.RouteRegister
+	RenderService             rendering.Service
+	Cfg                       *setting.Cfg
+	Features                  *featuremgmt.FeatureManager
+	SettingsProvider          setting.Provider
+	HooksService              *hooks.HooksService
+	navTreeService            navtree.Service
+	CacheService              *localcache.CacheService
+	DataSourceCache           datasources.CacheService
+	AuthTokenService          auth.UserTokenService
+	QuotaService              quota.Service
+	RemoteCacheService        *remotecache.RemoteCache
+	ProvisioningService       provisioning.ProvisioningService
+	Login                     login.Service
+	License                   licensing.Licensing
+	AccessControl             accesscontrol.AccessControl
+	DataProxy                 *datasourceproxy.DataSourceProxyService
+	PluginRequestValidator    validations.PluginRequestValidator
+	pluginClient              plugins.Client
+	pluginStore               plugins.Store
+	pluginInstaller           plugins.Installer
+	pluginFileStore           plugins.FileStore
+	pluginDashboardService    plugindashboards.Service
+	pluginStaticRouteResolver plugins.StaticRouteResolver
+	pluginErrorResolver       plugins.ErrorResolver
+	SearchService             search.Service
+	ShortURLService           shorturls.Service
+	QueryHistoryService       queryhistory.Service
+	CorrelationsService       correlations.Service
+	Live                      *live.GrafanaLive
+	LivePushGateway           *pushhttp.Gateway
+	StorageService            store.StorageService
+	httpEntityStore           httpentitystore.HTTPEntityStore
+	SearchV2HTTPService       searchV2.SearchHTTPService
+	ContextHandler            *contexthandler.ContextHandler
+	LoggerMiddleware          loggermw.Logger
+	SQLStore                  db.DB
+	AlertEngine               *alerting.AlertEngine
+	AlertNG                   *ngalert.AlertNG
+	LibraryPanelService       librarypanels.Service
+	LibraryElementService     libraryelements.Service
+	SocialService             social.Service
+	Listener                  net.Listener
+	EncryptionService         encryption.Internal
+	SecretsService            secrets.Service
+	secretsPluginManager      plugins.SecretsPluginManager
+	secretsStore              secretsKV.SecretsKVStore
+	secretsMigrator           secrets.Migrator
+	secretsPluginMigrator     spm.SecretMigrationProvider
+	DataSourcesService        datasources.DataSourceService
+	cleanUpService            *cleanup.CleanUpService
+	tracer                    tracing.Tracer
+	grafanaUpdateChecker      *updatechecker.GrafanaService
+	pluginsUpdateChecker      *updatechecker.PluginsService
+
+	searchAuditRecordsService    searchaudit.Service
 	searchUsersService           searchusers.Service
 	teamGuardian                 teamguardian.TeamGuardian
 	queryDataService             query.Service
@@ -195,6 +199,7 @@ type HTTPServer struct {
 	kvStore                      kvstore.KVStore
 	pluginsCDNService            *pluginscdn.Service
 
+	auditService         audit.Service
 	userService          user.Service
 	tempUserService      tempUser.Service
 	loginAttemptService  loginAttempt.Service
@@ -228,7 +233,7 @@ func ProvideHTTPServer(opts ServerOptions, cfg *setting.Cfg, routeRegister routi
 	alertNG *ngalert.AlertNG, libraryPanelService librarypanels.Service, libraryElementService libraryelements.Service,
 	quotaService quota.Service, socialService social.Service, tracer tracing.Tracer,
 	encryptionService encryption.Internal, grafanaUpdateChecker *updatechecker.GrafanaService,
-	pluginsUpdateChecker *updatechecker.PluginsService, searchUsersService searchusers.Service,
+	pluginsUpdateChecker *updatechecker.PluginsService, searchAuditRecordsService searchaudit.Service, searchUsersService searchusers.Service,
 	dataSourcesService datasources.DataSourceService, queryDataService query.Service, pluginFileStore plugins.FileStore,
 	teamGuardian teamguardian.TeamGuardian, serviceaccountsService serviceaccounts.Service,
 	authInfoService login.AuthInfoService, storageService store.StorageService, httpEntityStore httpentitystore.HTTPEntityStore,
@@ -312,6 +317,7 @@ func ProvideHTTPServer(opts ServerOptions, cfg *setting.Cfg, routeRegister routi
 		secretsStore:                 secretsStore,
 		httpEntityStore:              httpEntityStore,
 		DataSourcesService:           dataSourcesService,
+		searchAuditRecordsService:    searchAuditRecordsService,
 		searchUsersService:           searchUsersService,
 		teamGuardian:                 teamGuardian,
 		queryDataService:             queryDataService,

@@ -116,6 +116,7 @@ func (hs *HTTPServer) registerRoutes() {
 		r.Get("/admin/storage/*", reqSignedIn, hs.Index)
 	}
 	r.Get("/styleguide", reqSignedIn, hs.Index)
+	r.Get("/admin/audit", reqGrafanaAdmin, hs.Index)
 
 	r.Get("/live", reqGrafanaAdmin, hs.Index)
 	r.Get("/live/pipeline", reqGrafanaAdmin, hs.Index)
@@ -603,6 +604,8 @@ func (hs *HTTPServer) registerRoutes() {
 		adminRoute.Get("/settings", authorize(reqGrafanaAdmin, ac.EvalPermission(ac.ActionSettingsRead)), routing.Wrap(hs.AdminGetSettings))
 		adminRoute.Get("/settings-verbose", authorize(reqGrafanaAdmin, ac.EvalPermission(ac.ActionSettingsRead)), routing.Wrap(hs.AdminGetVerboseSettings))
 		adminRoute.Get("/stats", authorize(reqGrafanaAdmin, ac.EvalPermission(ac.ActionServerStatsRead)), routing.Wrap(hs.AdminGetStats))
+		adminRoute.Get("/audit", authorize(reqGrafanaAdmin, ac.EvalPermission(ac.ActionServerAuditRead)), routing.Wrap(hs.searchAuditRecordsService.SearchAuditRecordsWithPaging))
+
 		adminRoute.Post("/pause-all-alerts", reqGrafanaAdmin, routing.Wrap(hs.PauseAllAlerts(setting.AlertingEnabled)))
 
 		adminRoute.Post("/encryption/rotate-data-keys", reqGrafanaAdmin, routing.Wrap(hs.AdminRotateDataEncryptionKeys))
