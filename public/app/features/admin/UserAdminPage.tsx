@@ -107,6 +107,8 @@ export class UserAdminPage extends PureComponent<Props> {
     const canReadSessions = contextSrv.hasPermission(AccessControlAction.UsersAuthTokenList);
     const canReadLDAPStatus = contextSrv.hasPermission(AccessControlAction.LDAPStatusRead);
     const isUserSynced = !config.auth.DisableSyncLock && user?.isExternallySynced;
+    const authSource = user?.authLabels?.[0];
+    const lockMessage = authSource ? `Synced via ${authSource}` : '';
 
     const pageNav: NavModelItem = {
       text: user?.login ?? '',
@@ -130,7 +132,12 @@ export class UserAdminPage extends PureComponent<Props> {
               {isLDAPUser && isUserSynced && featureEnabled('ldapsync') && ldapSyncInfo && canReadLDAPStatus && (
                 <UserLdapSyncInfo ldapSyncInfo={ldapSyncInfo} user={user} onUserSync={this.onUserSync} />
               )}
-              <UserPermissions isGrafanaAdmin={user.isGrafanaAdmin} onGrafanaAdminChange={this.onGrafanaAdminChange} />
+              <UserPermissions
+                isGrafanaAdmin={user.isGrafanaAdmin}
+                isExternalUser={user?.isGrafanaAdminExternallySynced}
+                lockMessage={lockMessage}
+                onGrafanaAdminChange={this.onGrafanaAdminChange}
+              />
             </>
           )}
 

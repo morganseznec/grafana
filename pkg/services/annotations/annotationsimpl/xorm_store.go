@@ -143,7 +143,13 @@ func (r *xormRepositoryImpl) synchronizeTags(ctx context.Context, item *annotati
 }
 
 func (r *xormRepositoryImpl) Update(ctx context.Context, item *annotations.Item) error {
-	return r.db.WithTransactionalDbSession(ctx, func(sess *db.Session) error {
+	return r.db.InTransaction(ctx, func(ctx context.Context) error {
+		return r.update(ctx, item)
+	})
+}
+
+func (r *xormRepositoryImpl) update(ctx context.Context, item *annotations.Item) error {
+	return r.db.WithDbSession(ctx, func(sess *db.Session) error {
 		var (
 			isExist bool
 			err     error
@@ -377,7 +383,11 @@ func (r *xormRepositoryImpl) getAccessControlFilter(user *user.SignedInUser) (ac
 			filterRBAC := permissions.NewAccessControlDashboardPermissionFilter(user, dashboards.PERMISSION_VIEW, searchstore.TypeDashboard, r.features, recursiveQueriesAreSupported)
 			dashboardFilter, dashboardParams := filterRBAC.Where()
 			recQueries, recQueriesParams = filterRBAC.With()
+			leftJoin := filterRBAC.LeftJoin()
 			filter := fmt.Sprintf("a.dashboard_id IN(SELECT id FROM dashboard WHERE %s)", dashboardFilter)
+			if leftJoin != "" {
+				filter = fmt.Sprintf("a.dashboard_id IN(SELECT dashboard.id FROM dashboard LEFT OUTER JOIN %s WHERE %s)", leftJoin, dashboardFilter)
+			}
 			filters = append(filters, filter)
 			params = dashboardParams
 		}

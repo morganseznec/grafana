@@ -11,6 +11,8 @@
 
 import * as ui from '@grafana/schema';
 
+export const pluginVersion = "10.1.1";
+
 export enum HorizontalConstraint {
   Center = 'center',
   Left = 'left',
