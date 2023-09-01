@@ -292,6 +292,16 @@ func (hs *HTTPServer) LoginPost(c *contextmodel.ReqContext) response.Response {
 		return resp
 	}
 
+	createAuditRecordCmd := audit.CreateAuditRecordCommand{
+		Username:  cmd.User,
+		Action:    "Successful Login",
+		IpAddress: c.RemoteAddr(),
+	}
+
+	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
+		c.Logger.Error("Could not create audit record.", "error", err)
+	}
+
 	metrics.MApiLoginPost.Inc()
 	resp = response.JSON(http.StatusOK, map[string]any{
 		"message":     "Logged in",

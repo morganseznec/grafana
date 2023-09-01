@@ -1,3 +1,4 @@
+/* eslint-disable */
 import moment, { Moment, MomentInput, DurationInputArg1, DurationInputArg2 } from 'moment';
 
 import { TimeZone } from '../types/time';
@@ -113,7 +114,11 @@ export const toDuration = (input?: DurationInput, unit?: DurationUnit): DateTime
   return moment.duration(input as DurationInputArg1, unit as DurationInputArg2) as DateTimeDuration;
 };
 
-export const dateTime = (input?: DateTimeInput, formatInput?: FormatInput): DateTime => {
+export const dateTime = (input?: DateTimeInput, formatInput?: FormatInput, timezone?: TimeZone): DateTime => {
+  if (timezone !== undefined && timezone !== 'browser') {
+    return moment(input as MomentInput, formatInput).tz(timezone as string) as DateTime;
+  }
+
   return moment(input as MomentInput, formatInput) as DateTime;
 };
 
@@ -130,7 +135,7 @@ export const dateTimeForTimeZone = (
     return toUtc(input, formatInput);
   }
 
-  return dateTime(input, formatInput);
+  return dateTime(input, formatInput, timezone);
 };
 
 export const getWeekdayIndex = (day: string) => {

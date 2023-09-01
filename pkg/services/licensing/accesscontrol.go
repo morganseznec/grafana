@@ -13,5 +13,4 @@ const (
 var PageAccess = accesscontrol.EvalAny(
 	accesscontrol.EvalPermission(ActionRead),
 	accesscontrol.EvalPermission(accesscontrol.ActionServerStatsRead),
-	accesscontrol.EvalPermission(accesscontrol.ActionServerAuditRead),
 )

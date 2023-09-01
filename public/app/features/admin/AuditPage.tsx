@@ -62,7 +62,7 @@ export const AuditRecordsListPageUnconnected = ({
 
 const AuditRecordsListPageContent = connector(AuditRecordsListPageUnconnected);
 
-export default function UserListPage() {
+export default function AuditRecordListPage() {
   return (
     <Page navId={'audit'}>
       <AuditRecordsListPageContent />

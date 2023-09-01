@@ -1012,12 +1012,6 @@ export const mockNavModel: NavIndex = {
           url: '/admin/settings',
         },
         {
-          id: 'audit',
-          text: 'Audit',
-          icon: 'unlock',
-          url: '/admin/audit',
-        },
-        {
           id: 'upgrading',
           text: 'Stats and license',
           icon: 'unlock',
@@ -1056,12 +1050,6 @@ export const mockNavModel: NavIndex = {
           text: 'Settings',
           icon: 'sliders-v-alt',
           url: '/admin/settings',
-        },
-        {
-          id: 'audit',
-          text: 'Audit',
-          icon: 'unlock',
-          url: '/admin/audit',
         },
         {
           id: 'upgrading',

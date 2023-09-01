@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import XLSX from 'xlsx';
+import { utils, write } from 'xlsx';
 
 import { getFieldDisplayName } from '../field';
 import { DataFrame, Field } from '../types';
@@ -80,8 +80,8 @@ export function toExcel(data: DataFrame[]): any {
 
   array.unshift(headers);
 
-  const ws = XLSX.utils.aoa_to_sheet(array, { dateNF: 'yyyy"-"mm"-"dd" "HH":"MM":"SS' });
-  const wb = XLSX.utils.book_new();
+  const ws = utils.aoa_to_sheet(array, { dateNF: 'yyyy"-"mm"-"dd" "HH":"MM":"SS' });
+  const wb = utils.book_new();
 
   /**
    console.log(ws);
@@ -96,7 +96,7 @@ export function toExcel(data: DataFrame[]): any {
   }
    */
 
-  XLSX.utils.book_append_sheet(wb, ws, 'Grafana');
+  utils.book_append_sheet(wb, ws, 'Grafana');
 
-  return XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+  return write(wb, { type: 'array', bookType: 'xlsx' });
 }

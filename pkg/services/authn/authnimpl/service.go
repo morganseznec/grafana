@@ -32,6 +32,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/quota"
 	"github.com/grafana/grafana/pkg/services/rendering"
 	"github.com/grafana/grafana/pkg/services/signingkeys"
+	"github.com/grafana/grafana/pkg/services/team"
 	"github.com/grafana/grafana/pkg/services/user"
 	"github.com/grafana/grafana/pkg/setting"
 	"github.com/grafana/grafana/pkg/util/errutil"
@@ -55,7 +56,7 @@ func ProvideService(
 	orgService org.Service, sessionService auth.UserTokenService,
 	accessControlService accesscontrol.Service,
 	apikeyService apikey.Service, userService user.Service,
-	jwtService auth.JWTVerifierService,
+	teamService team.Service, jwtService auth.JWTVerifierService,
 	usageStats usagestats.Service,
 	anonSessionService anonymous.Service,
 	userProtectionService login.UserProtectionService,
@@ -152,10 +153,13 @@ func ProvideService(
 	// FIXME (jguer): move to User package
 	userSyncService := sync.ProvideUserSync(userService, userProtectionService, authInfoService, quotaService)
 	orgUserSyncService := sync.ProvideOrgSync(userService, orgService, accessControlService)
+	teamUserSyncService := sync.ProvideTeamSync(userService, teamService, accessControlService)
+
 	s.RegisterPostAuthHook(userSyncService.SyncUserHook, 10)
 	s.RegisterPostAuthHook(userSyncService.EnableDisabledUserHook, 20)
 	s.RegisterPostAuthHook(orgUserSyncService.SyncOrgRolesHook, 30)
 	s.RegisterPostAuthHook(userSyncService.SyncLastSeenHook, 40)
+	s.RegisterPostAuthHook(teamUserSyncService.SyncTeamRolesHook, 50)
 
 	if features.IsEnabled(featuremgmt.FlagAccessTokenExpirationCheck) {
 		s.RegisterPostAuthHook(sync.ProvideOAuthTokenSync(oauthTokenService, sessionService).SyncOauthTokenHook, 60)
