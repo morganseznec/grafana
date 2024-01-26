@@ -10,7 +10,7 @@ ARG JS_SRC=js-builder
 
 FROM --platform=${JS_PLATFORM} ${JS_IMAGE} as js-builder
 
-ENV NODE_OPTIONS=--max_old_space_size=8000
+ENV NODE_OPTIONS=--max_old_space_size=16000
 
 WORKDIR /tmp/grafana
 

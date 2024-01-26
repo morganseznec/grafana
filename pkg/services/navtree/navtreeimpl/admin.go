@@ -78,14 +78,6 @@ func (s *ServiceImpl) getAdminNode(c *contextmodel.ReqContext) (*navtree.NavLink
 		})
 	}
 
-	configNodes = append(configNodes, &navtree.NavLink{
-		Text:     "Audit",
-		Id:       "audit",
-		SubTitle: "Audit user actions",
-		Icon:     "sliders-v-alt",
-		Url:      s.cfg.AppSubURL + "/admin/audit",
-	})
-
 	if authConfigUIAvailable && hasAccess(evalAuthenticationSettings()) {
 		configNodes = append(configNodes, &navtree.NavLink{
 			Text:     "Authentication",
@@ -105,6 +97,16 @@ func (s *ServiceImpl) getAdminNode(c *contextmodel.ReqContext) (*navtree.NavLink
 	if hasGlobalAccess(orgsAccessEvaluator) {
 		configNodes = append(configNodes, &navtree.NavLink{
 			Text: "Organizations", SubTitle: "Isolated instances of Grafana running on the same server", Id: "global-orgs", Url: s.cfg.AppSubURL + "/admin/orgs", Icon: "building",
+		})
+	}
+
+	if hasAccess(ac.EvalPermission(ac.ActionSettingsRead, ac.ScopeSettingsAll)) {
+		configNodes = append(configNodes, &navtree.NavLink{
+			Text:     "Audit",
+			Id:       "audit",
+			SubTitle: "Audit user actions",
+			Icon:     "sliders-v-alt",
+			Url:      s.cfg.AppSubURL + "/admin/audit",
 		})
 	}
 

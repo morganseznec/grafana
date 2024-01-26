@@ -10,7 +10,7 @@ import { Page } from '../../core/components/Page/Page';
 import { AuditRecordsTable } from './audit/AuditRecordsTable';
 import { loadAuditRecords } from './audit/state/actions';
 import { getAuditRecords } from './audit/state/selectors';
-import { changePage } from './state/actions';
+import { changeAuditPage } from './state/actions';
 
 function mapStateToProps(state: StoreState) {
   return {
@@ -25,14 +25,14 @@ function mapStateToProps(state: StoreState) {
 
 const mapDispatchToProps = {
   loadAuditRecords,
-  changePage,
+  changeAuditPage,
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 export type Props = ConnectedProps<typeof connector>;
 
-const selectors = e2eSelectors.pages.AuditRecordListPage.AuditRecordsListPage;
+const selectors = e2eSelectors.pages.AuditRecordListPage.AuditRecordListAdminPage;
 
 export const AuditRecordsListPageUnconnected = ({
   records,
@@ -40,7 +40,7 @@ export const AuditRecordsListPageUnconnected = ({
   totalPages,
   isLoading,
   loadAuditRecords,
-  changePage,
+  changeAuditPage,
 }: Props): JSX.Element => {
   useEffect(() => {
     loadAuditRecords();
@@ -51,7 +51,7 @@ export const AuditRecordsListPageUnconnected = ({
       <VerticalGroup spacing="md" data-testid={selectors.container}>
         <AuditRecordsTable records={records} />
         <HorizontalGroup justify="flex-end">
-          <Pagination onNavigate={changePage} currentPage={page} numberOfPages={totalPages} hideWhenSinglePage={true} />
+          <Pagination onNavigate={changeAuditPage} currentPage={page} numberOfPages={totalPages} hideWhenSinglePage={true} />
         </HorizontalGroup>
       </VerticalGroup>
     );

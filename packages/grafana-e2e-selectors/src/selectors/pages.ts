@@ -295,9 +295,6 @@ export const Pages = {
       url: '/admin/audit',
     },
     AuditRecordListAdminPage: {
-      container: 'data-testid user-list-admin-page',
-    },
-    AuditRecordsListPage: {
       container: 'data-testid audit-records-list-page',
     },
   },

@@ -7,6 +7,8 @@ import { contextSrv } from 'app/core/core';
 import { accessControlQueryParam } from 'app/core/utils/accessControl';
 import { ThunkResult, LdapUser, UserSession, UserDTO, AccessControlAction, UserFilter } from 'app/types';
 
+import { auditRecordsFetchBegin, auditRecordsFetchEnd, auditRecordsLoaded, auditPageChanged } from '../audit/state/reducers';
+
 import {
   userAdminPageLoadedAction,
   userProfileLoadedAction,
@@ -27,6 +29,7 @@ import {
   usersFetchBegin,
   usersFetchEnd,
 } from './reducers';
+
 // UserAdminPage
 
 export function loadAdminUserPage(userId: number): ThunkResult<void> {
@@ -293,6 +296,21 @@ export function fetchUsers(): ThunkResult<void> {
   };
 }
 
+export function fetchAuditRecords(): ThunkResult<void> {
+  return async (dispatch, getState) => {
+    try {
+      const { perPage, page } = getState().records;
+      const result = await getBackendSrv().get(
+        `/api/admin/audit?perpage=${perPage}&page=${page}`
+      );
+      dispatch(auditRecordsLoaded(result));
+    } catch (error) {
+      auditRecordsFetchEnd();
+      console.error(error);
+    }
+  };
+}
+
 const fetchUsersWithDebounce = debounce((dispatch) => dispatch(fetchUsers()), 500);
 
 export function changeQuery(query: string): ThunkResult<void> {
@@ -316,5 +334,13 @@ export function changePage(page: number): ThunkResult<void> {
     dispatch(usersFetchBegin());
     dispatch(pageChanged(page));
     dispatch(fetchUsers());
+  };
+}
+
+export function changeAuditPage(page: number): ThunkResult<void> {
+  return async (dispatch) => {
+    dispatch(auditRecordsFetchBegin());
+    dispatch(auditPageChanged(page));
+    dispatch(fetchAuditRecords());
   };
 }

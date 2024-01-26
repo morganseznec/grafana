@@ -45,7 +45,7 @@ const auditRecordsSlice = createSlice({
     setAuditRecordsSearchPage: (state, action: PayloadAction<number>): AuditRecordsState => {
       return { ...state, page: action.payload };
     },
-    pageChanged: (state, action: PayloadAction<number>) => ({
+    auditPageChanged: (state, action: PayloadAction<number>) => ({
       ...state,
       page: action.payload,
     }),
@@ -64,7 +64,7 @@ export const {
   auditRecordsLoaded,
   auditRecordsFetchBegin,
   auditRecordsFetchEnd,
-  pageChanged,
+  auditPageChanged,
 } = auditRecordsSlice.actions;
 
 export const auditRecordsReducer = auditRecordsSlice.reducer;

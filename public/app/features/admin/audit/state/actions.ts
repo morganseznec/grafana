@@ -8,7 +8,7 @@ import {
   auditRecordsLoaded,
   auditRecordsFetchBegin,
   auditRecordsFetchEnd,
-  pageChanged,
+  auditPageChanged,
   searchQueryChanged,
 } from './reducers';
 
@@ -32,7 +32,7 @@ const fetchAuditRecordsWithDebounce = debounce((dispatch) => dispatch(loadAuditR
 export function changePage(page: number): ThunkResult<void> {
   return async (dispatch) => {
     dispatch(auditRecordsFetchBegin());
-    dispatch(pageChanged(page));
+    dispatch(auditPageChanged(page));
     dispatch(loadAuditRecords());
   };
 }
