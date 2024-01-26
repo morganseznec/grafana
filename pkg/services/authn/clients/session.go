@@ -21,7 +21,7 @@ var _ authn.HookClient = new(Session)
 var _ authn.ContextAwareClient = new(Session)
 
 func ProvideSession(cfg *setting.Cfg, sessionService auth.UserTokenService,
-	features *featuremgmt.FeatureManager, anonDeviceService anonymous.Service) *Session {
+	features *featuremgmt.FeatureManager) *Session {
 	return &Session{
 		cfg:               cfg,
 		features:          features,
@@ -61,7 +61,7 @@ func (s *Session) Authenticate(ctx context.Context, r *authn.Request) (*authn.Id
 		return nil, err
 	}
 
-	if s.features.IsEnabled(featuremgmt.FlagClientTokenRotation) {
+	if s.features.IsEnabled(ctx, featuremgmt.FlagClientTokenRotation) {
 		if token.NeedsRotation(time.Duration(s.cfg.TokenRotationIntervalMinutes) * time.Minute) {
 			return nil, authn.ErrTokenNeedsRotation.Errorf("token needs to be rotated")
 		}
@@ -117,7 +117,7 @@ func (s *Session) Priority() uint {
 }
 
 func (s *Session) Hook(ctx context.Context, identity *authn.Identity, r *authn.Request) error {
-	if identity.SessionToken == nil || s.features.IsEnabled(featuremgmt.FlagClientTokenRotation) {
+	if identity.SessionToken == nil || s.features.IsEnabled(ctx, featuremgmt.FlagClientTokenRotation) {
 		return nil
 	}
 
@@ -133,18 +133,18 @@ func (s *Session) Hook(ctx context.Context, identity *authn.Identity, r *authn.R
 		// addr := reqContext.RemoteAddr()
 		ip, err := network.GetIPFromAddress(addr)
 		if err != nil {
-			s.log.Debug("failed to get client IP address", "addr", addr, "err", err)
+			s.log.Debug("Failed to get client IP address", "addr", addr, "err", err)
 			ip = nil
 		}
 		rotated, newToken, err := s.sessionService.TryRotateToken(ctx, identity.SessionToken, ip, userAgent)
 		if err != nil {
-			s.log.Error("failed to rotate token", "error", err)
+			s.log.Error("Failed to rotate token", "error", err)
 			return
 		}
 
 		if rotated {
 			identity.SessionToken = newToken
-			s.log.Debug("rotated session token", "user", identity.ID)
+			s.log.Debug("Rotated session token", "user", identity.ID)
 
 			authn.WriteSessionCookie(w, s.cfg, identity.SessionToken)
 		}

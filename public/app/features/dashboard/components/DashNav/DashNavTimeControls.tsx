@@ -17,6 +17,9 @@ export interface Props {
   dashboard: DashboardModel;
   onChangeTimeZone: (timeZone: TimeZone) => void;
   isOnCanvas?: boolean;
+  onToolbarRefreshClick?: () => void;
+  onToolbarZoomClick?: () => void;
+  onToolbarTimePickerClick?: () => void;
 }
 
 export class DashNavTimeControls extends Component<Props> {
@@ -80,7 +83,17 @@ export class DashNavTimeControls extends Component<Props> {
   };
 
   onZoom = () => {
+    if (this.props.onToolbarZoomClick) {
+      this.props.onToolbarZoomClick();
+    }
     appEvents.publish(new ZoomOutEvent({ scale: 2 }));
+  };
+
+  onRefreshClick = () => {
+    if (this.props.onToolbarRefreshClick) {
+      this.props.onToolbarRefreshClick();
+    }
+    this.onRefresh();
   };
 
   render() {
@@ -111,10 +124,11 @@ export class DashNavTimeControls extends Component<Props> {
           onChangeTimeZone={this.onChangeTimeZone}
           onChangeFiscalYearStartMonth={this.onChangeFiscalYearStartMonth}
           isOnCanvas={isOnCanvas}
+          onToolbarTimePickerClick={this.props.onToolbarTimePickerClick}
         />
         <RefreshPicker
           onIntervalChanged={this.onChangeRefreshInterval}
-          onRefresh={this.onRefresh}
+          onRefresh={this.onRefreshClick}
           value={dashboard.refresh}
           intervals={intervals}
           isOnCanvas={isOnCanvas}

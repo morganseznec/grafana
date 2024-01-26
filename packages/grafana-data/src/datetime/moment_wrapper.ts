@@ -68,7 +68,7 @@ export interface DateTime extends Object {
   startOf: (unitOfTime: DurationUnit) => DateTime;
   subtract: (amount?: DateTimeInput, unit?: DurationUnit) => DateTime;
   toDate: () => Date;
-  toISOString: () => string;
+  toISOString: (keepOffset?: boolean) => string;
   isoWeekday: (day?: number | string) => number | string;
   valueOf: () => number;
   unix: () => number;
@@ -135,7 +135,21 @@ export const dateTimeForTimeZone = (
     return toUtc(input, formatInput);
   }
 
-  return dateTime(input, formatInput, timezone);
+  if (timezone && timezone !== 'browser') {
+    let result: moment.Moment;
+
+    if (typeof input === 'string' && formatInput) {
+      result = moment.tz(input, formatInput, timezone);
+    } else {
+      result = moment.tz(input, timezone);
+    }
+
+    if (isDateTime(result)) {
+      return result;
+    }
+  }
+
+  return dateTime(input, formatInput);
 };
 
 export const getWeekdayIndex = (day: string) => {

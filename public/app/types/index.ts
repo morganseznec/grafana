@@ -18,7 +18,6 @@ export * from './appEvent';
 export * from './query';
 export * from './accessControl';
 export * from './supportBundles';
-export * from './configAuth';
 export * from './settings';
 export * from './audit';
 

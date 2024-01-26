@@ -4,8 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { Space } from '@grafana/experimental';
-import { config } from '@grafana/runtime';
-import { Button, useStyles2 } from '@grafana/ui';
+import { Text, Box, Button, useStyles2 } from '@grafana/ui';
 import { SlideDown } from 'app/core/components/Animations/SlideDown';
 import { Trans, t } from 'app/core/internationalization';
 import { getBackendSrv } from 'app/core/services/backend_srv';
@@ -22,12 +21,13 @@ const INITIAL_DESCRIPTION: Description = {
   assignments: {
     teams: false,
     users: false,
+    serviceAccounts: false,
     builtInRoles: false,
   },
 };
 
 type ResourceId = string | number;
-type Type = 'users' | 'teams' | 'builtInRoles';
+type Type = 'users' | 'teams' | 'serviceAccounts' | 'builtInRoles';
 
 export type Props = {
   title?: string;
@@ -68,6 +68,8 @@ export const Permissions = ({
     let promise: Promise<void> | null = null;
     if (state.target === PermissionTarget.User) {
       promise = setUserPermission(resource, resourceId, state.userId!, state.permission);
+    } else if (state.target === PermissionTarget.ServiceAccount) {
+      promise = setUserPermission(resource, resourceId, state.userId!, state.permission);
     } else if (state.target === PermissionTarget.Team) {
       promise = setTeamPermission(resource, resourceId, state.teamId!, state.permission);
     } else if (state.target === PermissionTarget.BuiltInRole) {
@@ -85,6 +87,8 @@ export const Permissions = ({
       promise = setUserPermission(resource, resourceId, item.userId, EMPTY_PERMISSION);
     } else if (item.teamId) {
       promise = setTeamPermission(resource, resourceId, item.teamId, EMPTY_PERMISSION);
+    } else if (item.isServiceAccount && item.userId) {
+      promise = setUserPermission(resource, resourceId, item.userId, EMPTY_PERMISSION);
     } else if (item.builtInRole) {
       promise = setBuiltInRolePermission(resource, resourceId, item.builtInRole, EMPTY_PERMISSION);
     }
@@ -99,6 +103,8 @@ export const Permissions = ({
       return;
     }
     if (item.userId) {
+      onAdd({ permission, userId: item.userId, target: PermissionTarget.User });
+    } else if (item.isServiceAccount) {
       onAdd({ permission, userId: item.userId, target: PermissionTarget.User });
     } else if (item.teamId) {
       onAdd({ permission, teamId: item.teamId, target: PermissionTarget.Team });
@@ -118,7 +124,15 @@ export const Permissions = ({
   const users = useMemo(
     () =>
       sortBy(
-        items.filter((i) => i.userId),
+        items.filter((i) => i.userId && !i.isServiceAccount),
+        ['userLogin', 'isManaged']
+      ),
+    [items]
+  );
+  const serviceAccounts = useMemo(
+    () =>
+      sortBy(
+        items.filter((i) => i.userId && i.isServiceAccount),
         ['userLogin', 'isManaged']
       ),
     [items]
@@ -134,13 +148,14 @@ export const Permissions = ({
 
   const titleRole = t('access-control.permissions.role', 'Role');
   const titleUser = t('access-control.permissions.user', 'User');
+  const titleServiceAccount = t('access-control.permissions.serviceaccount', 'Service Account');
   const titleTeam = t('access-control.permissions.team', 'Team');
 
   return (
     <div>
       {canSetPermissions && (
         <>
-          {config.featureToggles.nestedFolders && resource === 'folders' && (
+          {resource === 'folders' && (
             <>
               <Trans i18nKey="access-control.permissions.permissions-change-warning">
                 This will change permissions for this folder and all its descendants. In total, this will affect:
@@ -176,13 +191,9 @@ export const Permissions = ({
         </>
       )}
       {items.length === 0 && (
-        <table className="filter-table gf-form-group">
-          <tbody>
-            <tr>
-              <th>{emptyLabel}</th>
-            </tr>
-          </tbody>
-        </table>
+        <Box>
+          <Text>{emptyLabel}</Text>
+        </Box>
       )}
       <PermissionList
         title={titleRole}
@@ -202,6 +213,16 @@ export const Permissions = ({
         onRemove={onRemove}
         canSet={canSetPermissions}
       />
+      <PermissionList
+        title={titleServiceAccount}
+        items={serviceAccounts}
+        compareKey={'userLogin'}
+        permissionLevels={desc.permissions}
+        onChange={onChange}
+        onRemove={onRemove}
+        canSet={canSetPermissions}
+      />
+
       <PermissionList
         title={titleTeam}
         items={teams}

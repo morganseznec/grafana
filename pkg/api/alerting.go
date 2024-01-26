@@ -14,6 +14,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/audit"
 	contextmodel "github.com/grafana/grafana/pkg/services/contexthandler/model"
 	"github.com/grafana/grafana/pkg/services/dashboards"
+	"github.com/grafana/grafana/pkg/services/dashboards/dashboardaccess"
 	"github.com/grafana/grafana/pkg/services/datasources"
 	"github.com/grafana/grafana/pkg/services/guardian"
 	"github.com/grafana/grafana/pkg/services/ngalert/notifier/channels_config"
@@ -39,7 +40,7 @@ func (hs *HTTPServer) ValidateOrgAlert(c *contextmodel.ReqContext) {
 		return
 	}
 
-	if c.OrgID != res.OrgID {
+	if c.SignedInUser.GetOrgID() != res.OrgID {
 		c.JsonApiErr(403, "You are not allowed to edit/view alert", nil)
 		return
 	}
@@ -62,7 +63,7 @@ func (hs *HTTPServer) GetAlertStatesForDashboard(c *contextmodel.ReqContext) res
 	}
 
 	query := alertmodels.GetAlertStatesForDashboardQuery{
-		OrgID:       c.OrgID,
+		OrgID:       c.SignedInUser.GetOrgID(),
 		DashboardID: c.QueryInt64("dashboardId"),
 	}
 
@@ -110,11 +111,11 @@ func (hs *HTTPServer) GetAlerts(c *contextmodel.ReqContext) response.Response {
 			Tags:         dashboardTags,
 			SignedInUser: c.SignedInUser,
 			Limit:        1000,
-			OrgId:        c.OrgID,
+			OrgId:        c.SignedInUser.GetOrgID(),
 			DashboardIds: dashboardIDs,
 			Type:         string(model.DashHitDB),
-			FolderIds:    folderIDs,
-			Permission:   dashboards.PERMISSION_VIEW,
+			FolderIds:    folderIDs, // nolint:staticcheck
+			Permission:   dashboardaccess.PERMISSION_VIEW,
 		}
 
 		hits, err := hs.SearchService.SearchHandler(c.Req.Context(), &searchQuery)
@@ -135,7 +136,7 @@ func (hs *HTTPServer) GetAlerts(c *contextmodel.ReqContext) response.Response {
 	}
 
 	query := alertmodels.GetAlertsQuery{
-		OrgID:        c.OrgID,
+		OrgID:        c.SignedInUser.GetOrgID(),
 		DashboardIDs: dashboardIDs,
 		PanelID:      c.QueryInt64("panelId"),
 		Limit:        c.QueryInt64("limit"),
@@ -179,7 +180,7 @@ func (hs *HTTPServer) AlertTest(c *contextmodel.ReqContext) response.Response {
 		return response.Error(400, "The dashboard needs to be saved at least once before you can test an alert rule", nil)
 	}
 
-	res, err := hs.AlertEngine.AlertTest(c.OrgID, dto.Dashboard, dto.PanelId, c.SignedInUser)
+	res, err := hs.AlertEngine.AlertTest(c.SignedInUser.GetOrgID(), dto.Dashboard, dto.PanelId, c.SignedInUser)
 	if err != nil {
 		var validationErr alerting.ValidationError
 		if errors.As(err, &validationErr) {
@@ -239,14 +240,15 @@ func (hs *HTTPServer) GetAlert(c *contextmodel.ReqContext) response.Response {
 	return response.JSON(http.StatusOK, &res)
 }
 
-func (hs *HTTPServer) GetAlertNotifiers(ngalertEnabled bool) func(*contextmodel.ReqContext) response.Response {
+func (hs *HTTPServer) GetLegacyAlertNotifiers() func(*contextmodel.ReqContext) response.Response {
 	return func(_ *contextmodel.ReqContext) response.Response {
-		if ngalertEnabled {
-			return response.JSON(http.StatusOK, channels_config.GetAvailableNotifiers())
-		}
-		// TODO(codesome): This wont be required in 8.0 since ngalert
-		// will be enabled by default with no disabling. This is to be removed later.
 		return response.JSON(http.StatusOK, alerting.GetNotifiers())
+	}
+}
+
+func (hs *HTTPServer) GetAlertNotifiers() func(*contextmodel.ReqContext) response.Response {
+	return func(_ *contextmodel.ReqContext) response.Response {
+		return response.JSON(http.StatusOK, channels_config.GetAvailableNotifiers())
 	}
 }
 
@@ -303,7 +305,7 @@ func (hs *HTTPServer) GetAlertNotifications(c *contextmodel.ReqContext) response
 }
 
 func (hs *HTTPServer) getAlertNotificationsInternal(c *contextmodel.ReqContext) ([]*alertmodels.AlertNotification, error) {
-	query := &alertmodels.GetAllAlertNotificationsQuery{OrgID: c.OrgID}
+	query := &alertmodels.GetAllAlertNotificationsQuery{OrgID: c.SignedInUser.GetOrgID()}
 	return hs.AlertNotificationService.GetAllAlertNotifications(c.Req.Context(), query)
 }
 
@@ -325,7 +327,7 @@ func (hs *HTTPServer) GetAlertNotificationByID(c *contextmodel.ReqContext) respo
 		return response.Error(http.StatusBadRequest, "notificationId is invalid", err)
 	}
 	query := &alertmodels.GetAlertNotificationsQuery{
-		OrgID: c.OrgID,
+		OrgID: c.SignedInUser.GetOrgID(),
 		ID:    notificationId,
 	}
 
@@ -359,7 +361,7 @@ func (hs *HTTPServer) GetAlertNotificationByID(c *contextmodel.ReqContext) respo
 // 500: internalServerError
 func (hs *HTTPServer) GetAlertNotificationByUID(c *contextmodel.ReqContext) response.Response {
 	query := &alertmodels.GetAlertNotificationsWithUidQuery{
-		OrgID: c.OrgID,
+		OrgID: c.SignedInUser.GetOrgID(),
 		UID:   web.Params(c.Req)[":uid"],
 	}
 
@@ -396,7 +398,7 @@ func (hs *HTTPServer) CreateAlertNotification(c *contextmodel.ReqContext) respon
 	if err := web.Bind(c.Req, &cmd); err != nil {
 		return response.Error(http.StatusBadRequest, "bad request data", err)
 	}
-	cmd.OrgID = c.OrgID
+	cmd.OrgID = c.SignedInUser.GetOrgID()
 
 	res, err := hs.AlertNotificationService.CreateAlertNotificationCommand(c.Req.Context(), &cmd)
 	if err != nil {
@@ -430,7 +432,7 @@ func (hs *HTTPServer) UpdateAlertNotification(c *contextmodel.ReqContext) respon
 	if err := web.Bind(c.Req, &cmd); err != nil {
 		return response.Error(http.StatusBadRequest, "bad request data", err)
 	}
-	cmd.OrgID = c.OrgID
+	cmd.OrgID = c.SignedInUser.GetOrgID()
 
 	err := hs.fillWithSecureSettingsData(c.Req.Context(), &cmd)
 	if err != nil {
@@ -449,7 +451,7 @@ func (hs *HTTPServer) UpdateAlertNotification(c *contextmodel.ReqContext) respon
 	}
 
 	query := alertmodels.GetAlertNotificationsQuery{
-		OrgID: c.OrgID,
+		OrgID: c.SignedInUser.GetOrgID(),
 		ID:    cmd.ID,
 	}
 
@@ -478,7 +480,7 @@ func (hs *HTTPServer) UpdateAlertNotificationByUID(c *contextmodel.ReqContext) r
 	if err := web.Bind(c.Req, &cmd); err != nil {
 		return response.Error(http.StatusBadRequest, "bad request data", err)
 	}
-	cmd.OrgID = c.OrgID
+	cmd.OrgID = c.SignedInUser.GetOrgID()
 	cmd.UID = web.Params(c.Req)[":uid"]
 
 	err := hs.fillWithSecureSettingsDataByUID(c.Req.Context(), &cmd)
@@ -583,7 +585,7 @@ func (hs *HTTPServer) DeleteAlertNotification(c *contextmodel.ReqContext) respon
 	}
 
 	cmd := alertmodels.DeleteAlertNotificationCommand{
-		OrgID: c.OrgID,
+		OrgID: c.SignedInUser.GetOrgID(),
 		ID:    notificationId,
 	}
 
@@ -621,7 +623,7 @@ func (hs *HTTPServer) DeleteAlertNotification(c *contextmodel.ReqContext) respon
 // 500: internalServerError
 func (hs *HTTPServer) DeleteAlertNotificationByUID(c *contextmodel.ReqContext) response.Response {
 	cmd := alertmodels.DeleteAlertNotificationWithUidCommand{
-		OrgID: c.OrgID,
+		OrgID: c.SignedInUser.GetOrgID(),
 		UID:   web.Params(c.Req)[":uid"],
 	}
 
@@ -667,7 +669,7 @@ func (hs *HTTPServer) NotificationTest(c *contextmodel.ReqContext) response.Resp
 		return response.Error(http.StatusBadRequest, "bad request data", err)
 	}
 	cmd := &alerting.NotificationTestCommand{
-		OrgID:          c.OrgID,
+		OrgID:          c.SignedInUser.GetOrgID(),
 		ID:             dto.ID,
 		Name:           dto.Name,
 		Type:           dto.Type,
@@ -716,7 +718,7 @@ func (hs *HTTPServer) PauseAlert(legacyAlertingEnabled *bool) func(c *contextmod
 		if err != nil {
 			return response.Error(http.StatusBadRequest, "alertId is invalid", err)
 		}
-		result := make(map[string]interface{})
+		result := make(map[string]any)
 		result["alertId"] = alertID
 
 		query := alertmodels.GetAlertByIdQuery{ID: alertID}
@@ -725,7 +727,7 @@ func (hs *HTTPServer) PauseAlert(legacyAlertingEnabled *bool) func(c *contextmod
 			return response.Error(500, "Get Alert failed", err)
 		}
 
-		guardian, err := guardian.New(c.Req.Context(), res.DashboardID, c.OrgID, c.SignedInUser)
+		guardian, err := guardian.New(c.Req.Context(), res.DashboardID, c.SignedInUser.GetOrgID(), c.SignedInUser)
 		if err != nil {
 			return response.ErrOrFallback(http.StatusInternalServerError, "Error while creating permission guardian", err)
 		}
@@ -749,7 +751,7 @@ func (hs *HTTPServer) PauseAlert(legacyAlertingEnabled *bool) func(c *contextmod
 		}
 
 		cmd := alertmodels.PauseAlertCommand{
-			OrgID:    c.OrgID,
+			OrgID:    c.SignedInUser.GetOrgID(),
 			AlertIDs: []int64{alertID},
 			Paused:   dto.Paused,
 		}
@@ -820,7 +822,7 @@ func (hs *HTTPServer) PauseAllAlerts(legacyAlertingEnabled *bool) func(c *contex
 			pausedState = "paused"
 		}
 
-		result := map[string]interface{}{
+		result := map[string]any{
 			"state":          resp,
 			"message":        "alerts " + pausedState,
 			"alertsAffected": updateCmd.ResultCount,
@@ -952,6 +954,8 @@ type GetAlertsParams struct {
 	// required:false
 	// type array
 	// collectionFormat: multi
+	//
+	// Deprecated: use FolderUID instead
 	FolderID []string `json:"folderId"`
 	// Limit response to alerts having a dashboard name like this value./ Limit response to alerts having a dashboard name like this value.
 	// in:query
