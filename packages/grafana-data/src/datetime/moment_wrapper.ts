@@ -114,11 +114,7 @@ export const toDuration = (input?: DurationInput, unit?: DurationUnit): DateTime
   return moment.duration(input as DurationInputArg1, unit as DurationInputArg2) as DateTimeDuration;
 };
 
-export const dateTime = (input?: DateTimeInput, formatInput?: FormatInput, timezone?: TimeZone): DateTime => {
-  if (timezone !== undefined && timezone !== 'browser') {
-    return moment(input as MomentInput, formatInput).tz(timezone as string) as DateTime;
-  }
-
+export const dateTime = (input?: DateTimeInput, formatInput?: FormatInput): DateTime => {
   return moment(input as MomentInput, formatInput) as DateTime;
 };
 
