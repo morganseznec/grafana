@@ -2,7 +2,7 @@
   "author": "Grafana Labs",
   "license": "Apache-2.0",
   "name": "@grafana/flamegraph",
-  "version": "10.3.2",
+    "version": "10.3.2",
   "description": "Grafana flamegraph visualization component",
   "keywords": [
     "grafana",

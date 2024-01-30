@@ -1,10 +1,6 @@
 {
   "name": "@grafana-plugins/input-datasource",
-<<<<<<< HEAD
-  "version": "10.3.1",
-=======
   "version": "10.3.2",
->>>>>>> upstream/v10.3.x
   "description": "Input Datasource",
   "private": true,
   "repository": {

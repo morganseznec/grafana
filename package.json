@@ -3,11 +3,7 @@
   "license": "AGPL-3.0-only",
   "private": true,
   "name": "grafana",
-<<<<<<< HEAD
-  "version": "10.3.1",
-=======
-  "version": "10.3.2",
->>>>>>> upstream/v10.3.x
+    "version": "10.3.2",
   "repository": "github:grafana/grafana",
   "scripts": {
     "prebuild": "yarn i18n:compile && yarn plugin:build",
