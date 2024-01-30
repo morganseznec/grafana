@@ -427,7 +427,7 @@ const urlDiff = (
 } => {
   const datasource = !isEqual(currentUrlState?.datasource, oldUrlState?.datasource);
   const queries = !isEqual(currentUrlState?.queries, oldUrlState?.queries);
-  const range = !areRangesEqual(currentUrlState?.range || DEFAULT_RANGE, oldUrlState?.range || DEFAULT_RANGE);
+  const range = !isEqual(currentUrlState?.range || DEFAULT_RANGE, oldUrlState?.range || DEFAULT_RANGE);
   const panelsState = !isEqual(currentUrlState?.panelsState, oldUrlState?.panelsState);
 
   return {
@@ -436,13 +436,6 @@ const urlDiff = (
     range,
     panelsState,
   };
-};
-
-const areRangesEqual = (a: RawTimeRange, b: RawTimeRange): boolean => {
-  const parsedA = toURLTimeRange(a);
-  const parsedB = toURLTimeRange(b);
-
-  return parsedA.from === parsedB.from && parsedA.to === parsedB.to;
 };
 
 export function getUrlStateFromPaneState(pane: ExploreItemState): ExploreUrlState {

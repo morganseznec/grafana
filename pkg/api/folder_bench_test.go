@@ -149,13 +149,13 @@ func BenchmarkFolderListAndSearch(b *testing.B) {
 			desc:        "impl=default nested_folders=off get root folders",
 			url:         "/api/folders?limit=5000",
 			expectedLen: withLimit(LEVEL0_FOLDER_NUM),
-			features:    featuremgmt.WithFeatures(featuremgmt.FlagPermissionsFilterRemoveSubquery),
+			features:    featuremgmt.WithFeatures(),
 		},
 		{
 			desc:        "impl=default nested_folders=off list all dashboards",
 			url:         "/api/search?type=dash-db&limit=5000",
 			expectedLen: withLimit(LEVEL0_FOLDER_NUM * LEVEL0_DASHBOARD_NUM),
-			features:    featuremgmt.WithFeatures(featuremgmt.FlagPermissionsFilterRemoveSubquery),
+			features:    featuremgmt.WithFeatures(),
 		},
 		{
 			desc:        "impl=permissionsFilterRemoveSubquery nested_folders=off list all dashboards",
@@ -167,7 +167,7 @@ func BenchmarkFolderListAndSearch(b *testing.B) {
 			desc:        "impl=default nested_folders=off search specific dashboard",
 			url:         "/api/search?type=dash-db&query=dashboard_0_0",
 			expectedLen: 1,
-			features:    featuremgmt.WithFeatures(featuremgmt.FlagPermissionsFilterRemoveSubquery),
+			features:    featuremgmt.WithFeatures(),
 		},
 		{
 			desc:        "impl=permissionsFilterRemoveSubquery nested_folders=off search specific dashboard",

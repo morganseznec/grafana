@@ -295,11 +295,9 @@ func TestBuilder_RBAC(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, tc := range testsCases {
-		for _, features := range []*featuremgmt.FeatureManager{featuremgmt.WithFeatures(tc.features...), featuremgmt.WithFeatures(append(tc.features, featuremgmt.FlagPermissionsFilterRemoveSubquery)...)} {
-			m := features.GetEnabled(context.Background())
-			keys := make([]string, 0, len(m))
-			for k := range m {
-				keys = append(keys, k)
+		t.Run(tc.desc, func(t *testing.T) {
+			if len(tc.userPermissions) > 0 {
+				user.Permissions = map[int64]map[string][]string{1: accesscontrol.GroupScopesByAction(tc.userPermissions)}
 			}
 
 			level := dashboardaccess.PERMISSION_EDIT
@@ -326,7 +324,10 @@ func TestBuilder_RBAC(t *testing.T) {
 				assert.Equal(t, tc.expectedParams, params)
 				return sess.SQL(sql, params...).Find(&res)
 			})
-		}
+			require.NoError(t, err)
+
+			assert.Len(t, res, 0)
+		})
 	}
 }
 

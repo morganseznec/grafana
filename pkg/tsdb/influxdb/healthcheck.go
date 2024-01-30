@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/drone/runner-go/logger"
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/tracing"
 

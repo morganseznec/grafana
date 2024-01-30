@@ -13,7 +13,6 @@ import {
   DataSourceApi,
   DataSourceInstanceSettings,
   dateTime,
-  Field,
   FieldType,
   isValidGoDuration,
   LoadingState,

@@ -229,12 +229,6 @@ func (d *Dynamic) randomSkew(maxSkew time.Duration) time.Duration {
 	return time.Duration(rand.Float64() * float64(maxSkew))
 }
 
-// randomSkew returns a random time.Duration between 0 and maxSkew.
-// This can be added to backgroundJobInterval to skew it by a random amount.
-func (d *Dynamic) randomSkew(maxSkew time.Duration) time.Duration {
-	return time.Duration(rand.Float64() * float64(maxSkew))
-}
-
 // Run is the function implementing the background service and updates the detectors periodically.
 func (d *Dynamic) Run(ctx context.Context) error {
 	d.log.Debug("Started background service")

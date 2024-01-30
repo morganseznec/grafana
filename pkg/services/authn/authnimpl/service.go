@@ -94,7 +94,7 @@ func ProvideService(
 	s.RegisterClient(clients.ProvideAPIKey(apikeyService, userService))
 
 	if cfg.LoginCookieName != "" {
-		s.RegisterClient(clients.ProvideSession(cfg, sessionService, features, anonDeviceService))
+		s.RegisterClient(clients.ProvideSession(cfg, sessionService, features))
 	}
 
 	var proxyClients []authn.ProxyClient

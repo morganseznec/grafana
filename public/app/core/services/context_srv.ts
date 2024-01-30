@@ -223,11 +223,6 @@ export class ContextSrv {
       return false;
     }
 
-    // skip if the user has been authenticated by authproxy and does not have a login token
-    if (this.user.authenticatedBy === 'authproxy' && !config.auth.AuthProxyEnableLoginToken) {
-      return false;
-    }
-
     return true;
   }
 

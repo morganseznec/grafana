@@ -24,13 +24,7 @@ import { dataFrameToLogsModel } from '../logs/logsModel';
 
 import { InspectDataOptions } from './InspectDataOptions';
 import { getPanelInspectorStyles } from './styles';
-import {
-  downloadAsJson,
-  downloadDataFrameAsCsv,
-  downloadDataFrameAsExcel,
-  downloadLogsModelAsTxt,
-  downloadTraceAsJson,
-} from './utils/download';
+import { downloadAsJson, downloadDataFrameAsCsv, downloadLogsModelAsTxt, downloadTraceAsJson } from './utils/download';
 
 interface Props {
   isLoading: boolean;
