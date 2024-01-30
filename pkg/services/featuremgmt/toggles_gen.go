@@ -379,10 +379,6 @@ const (
 	// Alternative permission filter implementation that does not use subqueries for fetching the dashboard folder
 	FlagPermissionsFilterRemoveSubquery = "permissionsFilterRemoveSubquery"
 
-	// FlagPermissionsFilterRemoveSubquery
-	// Alternative permission filter implementation that does not use subqueries for fetching the dashboard folder
-	FlagPermissionsFilterRemoveSubquery = "permissionsFilterRemoveSubquery"
-
 	// FlagPrometheusConfigOverhaulAuth
 	// Update the Prometheus configuration page with the new auth component
 	FlagPrometheusConfigOverhaulAuth = "prometheusConfigOverhaulAuth"

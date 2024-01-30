@@ -28,16 +28,11 @@ All requests to AWS APIs are performed on the server side by the Grafana backend
 
 This topic has the following sections:
 
-- [Configure AWS authentication](#configure-aws-authentication)
-  - [Select an authentication method](#select-an-authentication-method)
-  - [Assume a role](#assume-a-role)
-    - [Use an external ID](#use-an-external-id)
-  - [Use a custom endpoint](#use-a-custom-endpoint)
-  - [Use an AWS credentials file](#use-an-aws-credentials-file)
-    - [Credentials file example](#credentials-file-example)
-  - [Use EKS IAM roles for service accounts](#use-eks-iam-roles-for-service-accounts)
-    - [Security context example](#security-context-example)
-  - [Use Grafana Assume Role](#use-grafana-assume-role)
+- [Select an authentication method](#select-an-authentication-method)
+- [Assume a role](#assume-a-role)
+- [Use a custom endpoint](#use-a-custom-endpoint)
+- [Use an AWS credentials file](#use-an-aws-credentials-file)
+- [Use EKS IAM roles for service accounts](#use-eks-iam-roles-for-service-accounts)
 
 ## Select an authentication method
 
