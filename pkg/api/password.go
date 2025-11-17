@@ -7,7 +7,6 @@ import (
 
 	"github.com/grafana/grafana/pkg/api/dtos"
 	"github.com/grafana/grafana/pkg/api/response"
-	"github.com/grafana/grafana/pkg/services/audit"
 	contextmodel "github.com/grafana/grafana/pkg/services/contexthandler/model"
 	"github.com/grafana/grafana/pkg/services/login"
 	"github.com/grafana/grafana/pkg/services/notifications"
@@ -122,16 +121,6 @@ func (hs *HTTPServer) ResetPassword(c *contextmodel.ReqContext) response.Respons
 		userResult.ID); err != nil {
 		return response.Error(http.StatusExpectationFailed,
 			"User password updated but unable to revoke user sessions", err)
-	}
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "User password changed",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.Success("User password changed")

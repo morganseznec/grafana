@@ -59,8 +59,8 @@
     "tinycolor2": "1.6.0",
     "tslib": "2.6.0",
     "uplot": "1.6.28",
-    "xss": "^1.0.14",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.1/xlsx-0.19.1.tgz",
+    "xss": "^1.0.14"
   },
   "devDependencies": {
     "@grafana/tsconfig": "^1.2.0-rc1",

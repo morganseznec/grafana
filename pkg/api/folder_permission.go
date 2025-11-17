@@ -3,13 +3,11 @@ package api
 import (
 	"context"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/grafana/grafana/pkg/api/apierrors"
 	"github.com/grafana/grafana/pkg/api/dtos"
 	"github.com/grafana/grafana/pkg/api/response"
-	"github.com/grafana/grafana/pkg/services/audit"
 	"github.com/grafana/grafana/pkg/services/auth/identity"
 	contextmodel "github.com/grafana/grafana/pkg/services/contexthandler/model"
 	"github.com/grafana/grafana/pkg/services/dashboards"
@@ -116,16 +114,6 @@ func (hs *HTTPServer) UpdateFolderPermissions(c *contextmodel.ReqContext) respon
 
 	if err := hs.updateDashboardAccessControl(c.Req.Context(), c.SignedInUser.GetOrgID(), folder.UID, true, items, acl); err != nil {
 		return response.Error(http.StatusInternalServerError, "Failed to create permission", err)
-	}
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Folder permissions updated: {FolderId:" + strconv.Itoa(int(folder.ID)) + ",Name:'" + folder.Title + "'}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.Success("Folder permissions updated")

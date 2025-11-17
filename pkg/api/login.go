@@ -13,7 +13,6 @@ import (
 	"github.com/grafana/grafana/pkg/infra/metrics"
 	"github.com/grafana/grafana/pkg/infra/network"
 	"github.com/grafana/grafana/pkg/middleware/cookies"
-	"github.com/grafana/grafana/pkg/services/audit"
 	"github.com/grafana/grafana/pkg/services/auth"
 	"github.com/grafana/grafana/pkg/services/auth/identity"
 	"github.com/grafana/grafana/pkg/services/authn"
@@ -212,16 +211,6 @@ func (hs *HTTPServer) LoginPost(c *contextmodel.ReqContext) response.Response {
 		return response.Err(err)
 	}
 
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  cmd.User,
-		Action:    "Successful Login",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
 	metrics.MApiLoginPost.Inc()
 	return authn.HandleLoginResponse(c.Req, c.Resp, hs.Cfg, identity, hs.ValidateRedirectTo)
 }
@@ -246,16 +235,6 @@ func (hs *HTTPServer) loginUserWithUser(user *user.User, c *contextmodel.ReqCont
 	}
 	c.UserToken = userToken
 
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  user.Login,
-		Action:    "Successful Login",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
 	hs.log.Info("Successful Login", "User", user.Email)
 	authn.WriteSessionCookie(c.Resp, hs.Cfg, userToken)
 	return nil
@@ -278,16 +257,6 @@ func (hs *HTTPServer) Logout(c *contextmodel.ReqContext) {
 
 	redirect, err := hs.authnService.Logout(c.Req.Context(), c.SignedInUser, c.UserToken)
 	authn.DeleteSessionCookie(c.Resp, hs.Cfg)
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.Login,
-		Action:    "Successful Logout",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
 
 	if err != nil {
 		hs.log.Error("Failed perform proper logout", "error", err)

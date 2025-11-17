@@ -19,7 +19,6 @@ import (
 	"github.com/grafana/grafana/pkg/infra/metrics"
 	"github.com/grafana/grafana/pkg/services/accesscontrol"
 	"github.com/grafana/grafana/pkg/services/alerting"
-	"github.com/grafana/grafana/pkg/services/audit"
 	"github.com/grafana/grafana/pkg/services/auth/identity"
 	contextmodel "github.com/grafana/grafana/pkg/services/contexthandler/model"
 	"github.com/grafana/grafana/pkg/services/dashboards"
@@ -343,17 +342,6 @@ func (hs *HTTPServer) deleteDashboard(c *contextmodel.ReqContext) response.Respo
 			hs.log.Error("Failed to broadcast delete info", "dashboard", dash.UID, "error", err)
 		}
 	}
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Dashboard deleted: {ID:" + dash.UID + ",Name:'" + dash.Title + "'}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
 	return response.JSON(http.StatusOK, util.DynMap{
 		"title":   dash.Title,
 		"message": fmt.Sprintf("Dashboard %s deleted", dash.Title),
@@ -487,16 +475,6 @@ func (hs *HTTPServer) postDashboard(c *contextmodel.ReqContext, cmd dashboards.S
 	err = hs.LibraryPanelService.ConnectLibraryPanelsForDashboard(ctx, c.SignedInUser, dashboard)
 	if err != nil {
 		return response.Error(http.StatusInternalServerError, "Error while connecting library panels", err)
-	}
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Dashboard updated: {ID:" + dashboard.UID + ",Name:'" + dashboard.Title + "'}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	c.TimeRequest(metrics.MApiDashboardSave)

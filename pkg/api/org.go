@@ -9,7 +9,6 @@ import (
 	"github.com/grafana/grafana/pkg/api/dtos"
 	"github.com/grafana/grafana/pkg/api/response"
 	"github.com/grafana/grafana/pkg/infra/metrics"
-	"github.com/grafana/grafana/pkg/services/audit"
 	"github.com/grafana/grafana/pkg/services/auth/identity"
 	contextmodel "github.com/grafana/grafana/pkg/services/contexthandler/model"
 	"github.com/grafana/grafana/pkg/services/org"
@@ -154,16 +153,6 @@ func (hs *HTTPServer) CreateOrg(c *contextmodel.ReqContext) response.Response {
 
 	metrics.MApiOrgCreate.Inc()
 
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Organization created: " + cmd.Name,
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
 	return response.JSON(http.StatusOK, &util.DynMap{
 		"orgId":   result.ID,
 		"message": "Organization created",
@@ -210,26 +199,16 @@ func (hs *HTTPServer) UpdateOrg(c *contextmodel.ReqContext) response.Response {
 	if err != nil {
 		return response.Error(http.StatusBadRequest, "orgId is invalid", err)
 	}
-	return hs.updateOrgHelper(c, form, orgId)
+	return hs.updateOrgHelper(c.Req.Context(), form, orgId)
 }
 
-func (hs *HTTPServer) updateOrgHelper(c *contextmodel.ReqContext, form dtos.UpdateOrgForm, orgID int64) response.Response {
+func (hs *HTTPServer) updateOrgHelper(ctx context.Context, form dtos.UpdateOrgForm, orgID int64) response.Response {
 	cmd := org.UpdateOrgCommand{Name: form.Name, OrgId: orgID}
-	if err := hs.orgService.UpdateOrg(c.Req.Context(), &cmd); err != nil {
+	if err := hs.orgService.UpdateOrg(ctx, &cmd); err != nil {
 		if errors.Is(err, org.ErrOrgNameTaken) {
 			return response.Error(http.StatusBadRequest, "Organization name taken", err)
 		}
 		return response.Error(http.StatusInternalServerError, "Failed to update organization", err)
-	}
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Organization updated: " + cmd.Name,
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.Success("Organization updated")
@@ -272,10 +251,10 @@ func (hs *HTTPServer) UpdateOrgAddress(c *contextmodel.ReqContext) response.Resp
 	if err != nil {
 		return response.Error(http.StatusBadRequest, "orgId is invalid", err)
 	}
-	return hs.updateOrgAddressHelper(c, form, orgId)
+	return hs.updateOrgAddressHelper(c.Req.Context(), form, orgId)
 }
 
-func (hs *HTTPServer) updateOrgAddressHelper(c *contextmodel.ReqContext, form dtos.UpdateOrgAddressForm, orgID int64) response.Response {
+func (hs *HTTPServer) updateOrgAddressHelper(ctx context.Context, form dtos.UpdateOrgAddressForm, orgID int64) response.Response {
 	cmd := org.UpdateOrgAddressCommand{
 		OrgID: orgID,
 		Address: org.Address{
@@ -288,18 +267,8 @@ func (hs *HTTPServer) updateOrgAddressHelper(c *contextmodel.ReqContext, form dt
 		},
 	}
 
-	if err := hs.orgService.UpdateAddress(c.Req.Context(), &cmd); err != nil {
+	if err := hs.orgService.UpdateAddress(ctx, &cmd); err != nil {
 		return response.Error(http.StatusInternalServerError, "Failed to update org address", err)
-	}
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Org Address updated",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return response.Success("Address updated")
@@ -335,17 +304,6 @@ func (hs *HTTPServer) DeleteOrgByID(c *contextmodel.ReqContext) response.Respons
 		}
 		return response.Error(http.StatusInternalServerError, "Failed to update organization", err)
 	}
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Organization deleted",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
 	return response.Success("Organization deleted")
 }
 

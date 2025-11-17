@@ -125,18 +125,6 @@ var (
 		},
 	}
 
-	auditReaderRole = RoleDTO{
-		Name:        "fixed:audit:reader",
-		DisplayName: "Audit reader",
-		Description: "Read Grafana instance audit logs.",
-		Group:       "Audit",
-		Permissions: []Permission{
-			{
-				Action: ActionServerAuditRead,
-			},
-		},
-	}
-
 	usersReaderRole = RoleDTO{
 		Name:        "fixed:users:reader",
 		DisplayName: "User reader",
@@ -298,10 +286,6 @@ func DeclareFixedRoles(service Service, cfg *setting.Cfg) error {
 		Role:   statsReaderRole,
 		Grants: []string{RoleGrafanaAdmin},
 	}
-	auditReader := RoleRegistration{
-		Role:   auditReaderRole,
-		Grants: []string{RoleGrafanaAdmin},
-	}
 	usersReader := RoleRegistration{
 		Role:   usersReaderRole,
 		Grants: []string{RoleGrafanaAdmin},
@@ -322,7 +306,7 @@ func DeclareFixedRoles(service Service, cfg *setting.Cfg) error {
 	}
 
 	return service.DeclareFixedRoles(ldapReader, ldapWriter, orgUsersReader, orgUsersWriter,
-		settingsReader, statsReader, auditReader, usersReader, usersWriter, authenticationConfigWriter)
+		settingsReader, statsReader, usersReader, usersWriter, authenticationConfigWriter)
 }
 
 func ConcatPermissions(permissions ...[]Permission) []Permission {

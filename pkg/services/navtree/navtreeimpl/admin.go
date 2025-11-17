@@ -102,16 +102,6 @@ func (s *ServiceImpl) getAdminNode(c *contextmodel.ReqContext) (*navtree.NavLink
 		})
 	}
 
-	if hasAccess(ac.EvalPermission(ac.ActionSettingsRead, ac.ScopeSettingsAll)) {
-		configNodes = append(configNodes, &navtree.NavLink{
-			Text:     "Audit",
-			Id:       "audit",
-			SubTitle: "Audit user actions",
-			Icon:     "sliders-v-alt",
-			Url:      s.cfg.AppSubURL + "/admin/audit",
-		})
-	}
-
 	if s.features.IsEnabled(ctx, featuremgmt.FlagFeatureToggleAdminPage) && hasAccess(ac.EvalPermission(ac.ActionFeatureManagementRead)) {
 		configNodes = append(configNodes, &navtree.NavLink{
 			Text:     "Feature Toggles",

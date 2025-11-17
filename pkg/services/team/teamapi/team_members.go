@@ -10,7 +10,6 @@ import (
 	"github.com/grafana/grafana/pkg/api/dtos"
 	"github.com/grafana/grafana/pkg/api/response"
 	"github.com/grafana/grafana/pkg/services/accesscontrol"
-	"github.com/grafana/grafana/pkg/services/audit"
 	contextmodel "github.com/grafana/grafana/pkg/services/contexthandler/model"
 	"github.com/grafana/grafana/pkg/services/dashboards/dashboardaccess"
 	"github.com/grafana/grafana/pkg/services/login"
@@ -97,16 +96,6 @@ func (tapi *TeamAPI) addTeamMember(c *contextmodel.ReqContext) response.Response
 		return response.Error(http.StatusInternalServerError, "Failed to add Member to Team", err)
 	}
 
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Member added to Team: {UserId:" + strconv.Itoa(int(cmd.UserID)) + ",TeamID:" + strconv.Itoa(int(cmd.TeamID)) + "}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
 	return response.JSON(http.StatusOK, &util.DynMap{
 		"message": "Member added to Team",
 	})
@@ -149,17 +138,6 @@ func (tapi *TeamAPI) updateTeamMember(c *contextmodel.ReqContext) response.Respo
 	if err != nil {
 		return response.Error(http.StatusInternalServerError, "Failed to update team member.", err)
 	}
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Team member updated: {UserId:" + strconv.Itoa(int(cmd.UserID)) + ",TeamID:" + strconv.Itoa(int(cmd.TeamID)) + "}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
 	return response.Success("Team member updated")
 }
 
@@ -206,17 +184,6 @@ func (tapi *TeamAPI) removeTeamMember(c *contextmodel.ReqContext) response.Respo
 
 		return response.Error(http.StatusInternalServerError, "Failed to remove Member from Team", err)
 	}
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "Team Member removed: {UserId:" + strconv.Itoa(int(userId)) + ",TeamID:" + strconv.Itoa(int(teamId)) + "}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
-	}
-
 	return response.Success("Team Member removed")
 }
 

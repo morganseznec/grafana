@@ -43,7 +43,6 @@ import (
 	"github.com/grafana/grafana/pkg/services/annotations/annotationsimpl"
 	"github.com/grafana/grafana/pkg/services/anonymous/anonimpl/anonstore"
 	"github.com/grafana/grafana/pkg/services/apikey/apikeyimpl"
-	"github.com/grafana/grafana/pkg/services/audit/auditimpl"
 	"github.com/grafana/grafana/pkg/services/auth"
 	"github.com/grafana/grafana/pkg/services/auth/idimpl"
 	"github.com/grafana/grafana/pkg/services/auth/jwt"
@@ -335,7 +334,6 @@ var wireBasicSet = wire.NewSet(
 	publicdashboardsmetric.ProvideService,
 	publicdashboardsApi.ProvideApi,
 	starApi.ProvideApi,
-	auditimpl.ProvideService,
 	userimpl.ProvideService,
 	orgimpl.ProvideService,
 	statsimpl.ProvideService,

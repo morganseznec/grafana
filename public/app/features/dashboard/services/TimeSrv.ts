@@ -317,6 +317,7 @@ export class TimeSrv {
     }
     if (isDateTime(range.to)) {
       range.to = rangeUtil.adjustDateTimeToMaxMillis(range.to);
+      //range.to = range.to.valueOf().toString();
     }
 
     return range;

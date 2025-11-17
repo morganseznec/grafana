@@ -93,8 +93,6 @@ func (*OSSMigrations) AddMigration(mg *Migrator) {
 
 	AddExternalAlertmanagerToDatasourceMigration(mg)
 
-	addAuditMigrations(mg)
-
 	addFolderMigrations(mg)
 	// nolint:staticcheck
 	if mg.Cfg != nil && mg.Cfg.IsFeatureToggleEnabled != nil {

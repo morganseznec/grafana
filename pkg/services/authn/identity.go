@@ -131,6 +131,17 @@ func (i *Identity) GetNamespacedID() (namespace string, identifier string) {
 	return split[0], split[1]
 }
 
+func (i *Identity) IntIdentifier() int64 {
+	_, id := i.GetNamespacedID()
+	uid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		// FIXME (kalleep): Improve error handling
+		return -1
+	}
+
+	return uid
+}
+
 // GetOrgID implements identity.Requester.
 func (i *Identity) GetOrgID() int64 {
 	return i.OrgID

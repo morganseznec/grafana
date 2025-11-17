@@ -19,7 +19,6 @@ export * from './query';
 export * from './accessControl';
 export * from './supportBundles';
 export * from './settings';
-export * from './audit';
 
 import * as CoreEvents from './events';
 export { CoreEvents };

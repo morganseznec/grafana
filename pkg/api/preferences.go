@@ -3,12 +3,10 @@ package api
 import (
 	"context"
 	"net/http"
-	"strconv"
 
 	"github.com/grafana/grafana/pkg/api/dtos"
 	"github.com/grafana/grafana/pkg/api/response"
 	"github.com/grafana/grafana/pkg/kinds/preferences"
-	"github.com/grafana/grafana/pkg/services/audit"
 	"github.com/grafana/grafana/pkg/services/auth/identity"
 	contextmodel "github.com/grafana/grafana/pkg/services/contexthandler/model"
 	"github.com/grafana/grafana/pkg/services/dashboards"
@@ -94,16 +92,6 @@ func (hs *HTTPServer) UpdateUserPreferences(c *contextmodel.ReqContext) response
 	userID, errID := identity.UserIdentifier(c.SignedInUser.GetNamespacedID())
 	if errID != nil {
 		return response.Error(http.StatusInternalServerError, "Failed to update user preferences", errID)
-	}
-
-	createAuditRecordCmd := audit.CreateAuditRecordCommand{
-		Username:  c.SignedInUser.Login,
-		Action:    "User preferences updated: {TeamId:" + strconv.Itoa(int(teamId)) + "}",
-		IpAddress: c.RemoteAddr(),
-	}
-
-	if err := hs.auditService.CreateAuditRecord(c.Req.Context(), &createAuditRecordCmd); err != nil {
-		c.Logger.Error("Could not create audit record.", "error", err)
 	}
 
 	return prefapi.UpdatePreferencesFor(c.Req.Context(), hs.DashboardService,

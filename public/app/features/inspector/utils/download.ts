@@ -129,3 +129,4 @@ export function downloadTraceAsJson(frame: DataFrame, title: string): string {
   }
   return traceFormat;
 }
+

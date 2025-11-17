@@ -6,7 +6,7 @@ import (
 	"github.com/grafana/grafana/pkg/infra/log"
 	"github.com/grafana/grafana/pkg/services/accesscontrol"
 	"github.com/grafana/grafana/pkg/services/authn"
-	"github.com/grafana/grafana/pkg/services/dashboards"
+	"github.com/grafana/grafana/pkg/services/dashboards/dashboardaccess"
 	"github.com/grafana/grafana/pkg/services/team"
 	"github.com/grafana/grafana/pkg/services/user"
 )
@@ -26,11 +26,13 @@ type TeamSync struct {
 func (s *TeamSync) SyncTeamRolesHook(ctx context.Context, id *authn.Identity, _ *authn.Request) error {
 	ctxLogger := s.log.FromContext(ctx)
 
-	namespace, userID := id.NamespacedID()
-	if namespace != authn.NamespaceUser || userID <= 0 {
+	namespace, _ := id.GetNamespacedID()
+	if namespace != authn.NamespaceUser || id.IntIdentifier() <= 0 {
 		ctxLogger.Warn("Failed to sync teams, invalid namespace for identity", "id", id.ID, "namespace", namespace)
 		return nil
 	}
+
+	userID := id.IntIdentifier()
 
 	ctxLogger.Debug("Syncing teams", "id", id.ID, "teams", id.Groups)
 
@@ -85,7 +87,7 @@ func (s *TeamSync) SyncTeamRolesHook(ctx context.Context, id *authn.Identity, _ 
 		teamID, exists := teamNameToID[teamName]
 		if exists {
 			if _, isMember := currentTeamIDs[teamID]; !isMember {
-				err := s.teamService.AddTeamMember(userID, id.OrgID, teamID, true, dashboards.PERMISSION_VIEW)
+				err := s.teamService.AddTeamMember(userID, id.OrgID, teamID, true, dashboardaccess.PERMISSION_VIEW)
 				if err != nil {
 					ctxLogger.Error("Failed to add user to team", "id", id.ID, "teamId", teamID, "error", err)
 				}
