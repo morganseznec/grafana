@@ -9,6 +9,7 @@ import {
   type LogsModel,
   MutableDataFrame,
   toCSV,
+  toExcel,
 } from '@grafana/data';
 import { transformToOTLP } from '@grafana-plugins/tempo/resultTransformer';
 
@@ -84,6 +85,18 @@ export function downloadDataFrameAsCsv(
 
   const transformation = transformId !== DataTransformerID.noop ? '-as-' + transformId.toLocaleLowerCase() : '';
   const fileName = `${title}-data${transformation}-${dateTimeFormat(new Date())}.csv`;
+  saveAs(blob, fileName);
+}
+
+export function downloadDataFrameAsExcel(
+  dataFrame: DataFrame,
+  title: string,
+  transformId: DataTransformerID = DataTransformerID.noop
+) {
+  const wbout = toExcel([dataFrame]);
+  const blob = new Blob([wbout], { type: 'application/octet-stream' });
+  const transformation = transformId !== DataTransformerID.noop ? '-as-' + transformId.toLocaleLowerCase() : '';
+  const fileName = `${title}-data${transformation}-${dateTimeFormat(new Date())}.xlsx`;
   saveAs(blob, fileName);
 }
 

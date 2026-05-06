@@ -5899,6 +5899,7 @@
       "dataframe-aria-label": "Sélectionner la dataframe",
       "dataframe-label": "Afficher la dataframe",
       "download-csv": "Télécharger en format CSV",
+      "download-excel": "Télécharger en format Excel",
       "download-logs": "Télécharger les journaux",
       "download-service": "Télécharger le graphique de service",
       "download-traces": "Télécharger les traces",
