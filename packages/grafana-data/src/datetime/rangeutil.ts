@@ -17,6 +17,21 @@ import { dateTimeParse } from './parser';
 // `fQ` and `fy` are synthesized lookup keys matching the regex group `f[Qy]`
 // in `describeTextRange`; `datemath.parse` itself recognizes the base unit
 // (`Q` / `y`) with a separate fiscal flag, so these keys are local to display.
+
+/**
+ * When an absolute time range ends on an exact second boundary (typically when
+ * picked through the time range picker, which has second-level granularity),
+ * pad the upper bound to xx:xx:xx.999 so backends that filter half-open ranges
+ * (e.g. Elasticsearch with `lte`) include the entire final second.
+ */
+export const adjustDateTimeToMaxMillis = (datetime: DateTime): string => {
+  const value = datetime.valueOf();
+  if (value % 1000 === 0) {
+    return (value + 999).toString();
+  }
+  return value.toString();
+};
+
 const spans: { [key: string]: { display: string; section?: number } } = {
   s: { display: 'second' },
   m: { display: 'minute' },
