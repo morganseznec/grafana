@@ -2410,6 +2410,7 @@ __metadata:
     tsx: "npm:^4.21.0"
     typescript: "npm:6.0.2"
     uplot: "npm:1.6.32"
+    xlsx: "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
     xss: "npm:^1.0.14"
     zod: "npm:^4.3.0"
   peerDependencies:
@@ -18864,6 +18865,7 @@ __metadata:
     webpack-subresource-integrity: "npm:^5.2.0-rc.1"
     webpackbar: "npm:^7.0.0"
     whatwg-fetch: "npm:3.6.20"
+    xlsx: "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
     yargs: "npm:^18.0.0"
     zod: "npm:^4.3.0"
   dependenciesMeta:
@@ -33394,6 +33396,15 @@ __metadata:
   dependencies:
     is-wsl: "npm:^3.1.0"
   checksum: 10/de4c92187e04c3c27b4478f410a02e81c351dc85efa3447bf1666f34fc80baacd890a6698ec91995631714086992036013286aea3d77e6974020d40a08e00aec
+  languageName: node
+  linkType: hard
+
+"xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz":
+  version: 0.20.3
+  resolution: "xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  bin:
+    xlsx: ./bin/xlsx.njs
+  checksum: 10/895c589c5f6ffc665184165b5aa5d337de0e2ee24ccd53d517d2378f3a8a7df82405b023fdcfde9f49d7de3d4ef1622cf2ef145316c9732c634a86ee313bad4f
   languageName: node
   linkType: hard
 

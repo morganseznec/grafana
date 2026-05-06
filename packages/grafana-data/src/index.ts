@@ -258,6 +258,7 @@ export {
   CSVReader,
   toCSV,
 } from './utils/csv';
+export { toExcel } from './utils/excel';
 export {
   parseLabels,
   findCommonLabels,
