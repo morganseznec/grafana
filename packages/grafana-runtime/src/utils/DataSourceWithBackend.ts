@@ -15,6 +15,7 @@ import {
   getDataSourceRef,
   makeClassES5Compatible,
   parseLiveChannelAddress,
+  rangeUtil,
   type ScopedVars,
   type AdHocVariableFilter,
 } from '@grafana/data';
@@ -231,7 +232,7 @@ class DataSourceWithBackend<
     const body = {
       queries,
       from: range?.from.valueOf().toString(),
-      to: range?.to.valueOf().toString(),
+      to: range ? rangeUtil.adjustDateTimeToMaxMillis(range.to) : undefined,
     };
 
     const headers: Record<string, string> = request.headers ?? {};
