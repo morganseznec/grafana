@@ -70,7 +70,7 @@ export async function getDebugDashboard(panel: PanelModel, rand: Randomize, time
   const data = await firstValueFrom(
     panel.getQueryRunner().getData({
       withFieldConfig: false,
-      withTransforms: false,
+      withTransforms: true,
     })
   );
 

@@ -126,7 +126,7 @@ class UnThemedTransformationsEditor extends React.PureComponent<TransformationsE
   componentDidMount() {
     this.subscription = this.props.panel
       .getQueryRunner()
-      .getData({ withTransforms: false, withFieldConfig: false })
+      .getData({ withTransforms: true, withFieldConfig: false })
       .subscribe({
         next: (panelData: PanelData) => this.setState({ data: panelData }),
       });
