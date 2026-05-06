@@ -411,7 +411,8 @@
     "type-fest": "^4.18.2",
     "uplot": "1.6.32",
     "vis-data": "^8.0.0",
-    "vis-network": "10.1.2"
+    "vis-network": "10.1.2",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "resolutions": {
     "@types/slate": "0.47.16",

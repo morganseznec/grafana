@@ -25,7 +25,13 @@ import { CommonTableNG } from '../table/CommonTableNG';
 
 import { InspectDataOptions } from './InspectDataOptions';
 import { getPanelInspectorStyles2 } from './styles';
-import { downloadAsJson, downloadDataFrameAsCsv, downloadLogsModelAsTxt, downloadTraceAsJson } from './utils/download';
+import {
+  downloadAsJson,
+  downloadDataFrameAsCsv,
+  downloadDataFrameAsExcel,
+  downloadLogsModelAsTxt,
+  downloadTraceAsJson,
+} from './utils/download';
 
 interface Props {
   isLoading: boolean;
@@ -92,6 +98,16 @@ export const InspectDataTab = memo(function InspectDataTab({
     const dataFrame = dataFrames[dataFrameIndex];
 
     downloadDataFrameAsCsv(dataFrame, dataName, {}, transformId, excelCompatibilityMode);
+  };
+
+  const exportExcel = (dataFrames: DataFrame[], hasLogs: boolean) => {
+    const dataFrame = dataFrames[dataFrameIndex];
+
+    if (hasLogs) {
+      reportInteraction('grafana_logs_download_clicked', { app, format: 'xlsx' });
+    }
+
+    downloadDataFrameAsExcel(dataFrame, dataName ? dataName : 'Explore', transformId);
   };
 
   const onExportLogsAsTxt = () => {
@@ -187,6 +203,9 @@ export const InspectDataTab = memo(function InspectDataTab({
       <>
         <Button variant="primary" onClick={() => exportCsv(dataFrames)} size="sm">
           <Trans i18nKey="dashboard.inspect-data.download-csv">Download CSV</Trans>
+        </Button>
+        <Button variant="primary" onClick={() => exportExcel(dataFrames, hasLogs)} size="sm">
+          <Trans i18nKey="dashboard.inspect-data.download-excel">Download Excel</Trans>
         </Button>
         {hasLogs && !config.exploreHideLogsDownload && (
           <Button variant="primary" onClick={onExportLogsAsTxt} size="sm">
