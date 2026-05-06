@@ -80,7 +80,7 @@ export class QueryGroup extends PureComponent<Props, State> {
   async componentDidMount() {
     const { options, queryRunner } = this.props;
 
-    this.querySubscription = queryRunner.getData({ withTransforms: false, withFieldConfig: false }).subscribe({
+    this.querySubscription = queryRunner.getData({ withTransforms: true, withFieldConfig: false }).subscribe({
       next: (data: PanelData) => this.onPanelDataUpdate(data),
     });
 
