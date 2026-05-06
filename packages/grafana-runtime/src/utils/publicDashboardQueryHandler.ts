@@ -1,6 +1,6 @@
 import { catchError, type Observable, of, switchMap } from 'rxjs';
 
-import { type DataQuery, type DataQueryRequest, type DataQueryResponse } from '@grafana/data';
+import { type DataQuery, type DataQueryRequest, type DataQueryResponse, rangeUtil } from '@grafana/data';
 
 import { config } from '../config';
 import { getBackendSrv } from '../services/backendSrv';
@@ -31,7 +31,7 @@ export function publicDashboardQueryHandler(request: DataQueryRequest<DataQuery>
     queryCachingTTL,
     timeRange: {
       from: fromRange.valueOf().toString(),
-      to: toRange.valueOf().toString(),
+      to: rangeUtil.adjustDateTimeToMaxMillis(toRange),
       timezone: request.timezone,
     },
   };

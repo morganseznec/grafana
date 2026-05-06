@@ -163,7 +163,7 @@ describe('DataSourceWithBackend', () => {
               "refId": "B",
             },
           ],
-          "to": "1697155200000",
+          "to": "1697155200999",
         },
         "headers": {
           "X-Dashboard-Uid": "dashA",
@@ -308,7 +308,7 @@ describe('DataSourceWithBackend', () => {
               "refId": "B",
             },
           ],
-          "to": "1697155200000",
+          "to": "1697155200999",
         },
         "headers": {
           "X-Dashboard-Uid": "dashA",
@@ -363,7 +363,7 @@ describe('DataSourceWithBackend', () => {
               "refId": "A",
             },
           ],
-          "to": "1697155200000",
+          "to": "1697155200999",
         },
         "headers": {
           "X-Dashboard-Title": "My Test Dashboard",
@@ -425,7 +425,7 @@ describe('DataSourceWithBackend', () => {
               "refId": "B",
             },
           ],
-          "to": "1697155200000",
+          "to": "1697155200999",
         },
         "headers": {
           "X-Dashboard-Uid": "dashA",
@@ -506,7 +506,7 @@ describe('DataSourceWithBackend', () => {
               "refId": "B",
             },
           ],
-          "to": "1697155200000",
+          "to": "1697155200999",
         },
         "headers": {
           "X-Dashboard-Uid": "dashA",
@@ -788,7 +788,7 @@ describe('DataSourceWithBackend', () => {
               "refId": "A",
             },
           ],
-          "to": "1697155200000",
+          "to": "1697155200999",
         },
         "headers": {
           "X-Cache-Skip": "true",

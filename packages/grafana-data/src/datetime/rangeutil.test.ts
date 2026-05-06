@@ -2,6 +2,7 @@ import { type RawTimeRange, type TimeOption, type TimeRange } from '../types/tim
 
 import { dateTime } from './moment_wrapper';
 import {
+  adjustDateTimeToMaxMillis,
   convertRawToRange,
   describeInterval,
   describeTimeRange,
@@ -11,6 +12,23 @@ import {
   timeRangeToRelative,
   describeTextRange,
 } from './rangeutil';
+
+describe('adjustDateTimeToMaxMillis', () => {
+  it('pads xx:xx:xx.000 upper bound with 999 milliseconds', () => {
+    const dt = dateTime('2024-01-01T23:59:59.000Z');
+    expect(adjustDateTimeToMaxMillis(dt)).toBe((dt.valueOf() + 999).toString());
+  });
+
+  it('leaves a value with non-zero milliseconds untouched', () => {
+    const dt = dateTime('2024-01-01T23:59:59.500Z');
+    expect(adjustDateTimeToMaxMillis(dt)).toBe(dt.valueOf().toString());
+  });
+
+  it('does not double-pad an already-padded value', () => {
+    const dt = dateTime('2024-01-01T23:59:59.999Z');
+    expect(adjustDateTimeToMaxMillis(dt)).toBe(dt.valueOf().toString());
+  });
+});
 
 describe('Range Utils', () => {
   // These tests probably wrap the dateTimeParser tests to some extent
