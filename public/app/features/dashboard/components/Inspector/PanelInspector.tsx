@@ -32,7 +32,7 @@ const PanelInspectorUnconnected = ({ panel, dashboard, plugin }: Props) => {
   const location = useLocation();
   const defaultTab = new URLSearchParams(location.search).get('inspectTab') as InspectTab;
   const [dataOptions, setDataOptions] = useState<GetDataOptions>({
-    withTransforms: defaultTab === InspectTab.Error,
+    withTransforms: true,
     withFieldConfig: true,
   });
 

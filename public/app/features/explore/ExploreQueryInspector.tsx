@@ -33,7 +33,7 @@ type Props = DispatchProps & ConnectedProps<typeof connector>;
 export function ExploreQueryInspector(props: Props) {
   const { onClose, queryResponse, timeZone, isMixed, exploreId } = props;
   const [dataOptions, setDataOptions] = useState<GetDataOptions>({
-    withTransforms: false,
+    withTransforms: true,
     withFieldConfig: true,
   });
   const dataFrames = queryResponse?.series || [];
