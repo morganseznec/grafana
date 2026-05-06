@@ -5874,6 +5874,7 @@
       "dataframe-aria-label": "Select dataframe",
       "dataframe-label": "Show data frame",
       "download-csv": "Download CSV",
+      "download-excel": "Download Excel",
       "download-logs": "Download logs",
       "download-service": "Download service graph",
       "download-traces": "Download traces",
