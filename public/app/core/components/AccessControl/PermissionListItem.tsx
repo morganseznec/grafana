@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 
 import { type GrafanaTheme2 } from '@grafana/data';
 import { Trans, t } from '@grafana/i18n';
-import { Box, Button, Icon, Select, Tooltip, useStyles2 } from '@grafana/ui';
+import { Box, Button, Icon, Select, Tag, Tooltip, useStyles2 } from '@grafana/ui';
 
 import { type ResourcePermission } from './types';
 
@@ -111,7 +111,14 @@ const getName = (item: ResourcePermission) => {
 
 const getDescription = (item: ResourcePermission) => {
   if (item.userId) {
-    return <span key="name">{item.userLogin} </span>;
+    return (
+      <span key="name">
+        {item.userLogin}{' '}
+        {item.authLabels?.map((label) => (
+          <Tag key={label} name={label} colorIndex={9} />
+        ))}
+      </span>
+    );
   } else if (item.teamId) {
     return <span key="name">{item.team} </span>;
   } else if (item.builtInRole) {

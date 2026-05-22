@@ -38,6 +38,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/apiserver/endpoints/request"
 	"github.com/grafana/grafana/pkg/services/contexthandler"
 	"github.com/grafana/grafana/pkg/services/team"
+	"github.com/grafana/grafana/pkg/services/team/teamdelete"
 	"github.com/grafana/grafana/pkg/services/user"
 	"github.com/grafana/grafana/pkg/setting"
 	"github.com/grafana/grafana/pkg/util"
@@ -1204,3 +1205,17 @@ func (s *TeamK8sService) GetTeamMembers(ctx context.Context, query *team.GetTeam
 
 	return members, nil
 }
+
+func (s *TeamK8sService) AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission team.PermissionType) error {
+	return errors.New("not implemented")
+}
+
+func (s *TeamK8sService) RemoveTeamMember(ctx context.Context, cmd *team.RemoveTeamMemberCommand) error {
+	return errors.New("not implemented")
+}
+
+func (s *TeamK8sService) SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error {
+	return errors.New("not implemented")
+}
+
+func (s *TeamK8sService) RegisterDelete(renderer teamdelete.Renderer) {}

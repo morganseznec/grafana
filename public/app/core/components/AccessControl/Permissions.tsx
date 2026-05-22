@@ -58,6 +58,13 @@ export const Permissions = ({
 
   const [permissions, fetchPermissions] = useAsyncFn(async () => {
     let items = await getPermissions(resource, resourceId, queryParams);
+    if (resource === 'teams') {
+      // UBIQ: enrich team memberships with the auth-provider label so the
+      // member row shows a "Generic OAuth"/"LDAP"/… badge next to users
+      // synced from the IdP. The label lives on /api/teams/:id/members and
+      // isn't exposed by the generic resource-permissions endpoint.
+      items = await enrichTeamPermissionsWithAuthLabels(resourceId, items);
+    }
     if (getWarnings) {
       items = getWarnings(items);
     }
@@ -249,6 +256,38 @@ const getPermissions = (
   resourceId: ResourceId,
   queryParams?: Record<string, string>
 ): Promise<ResourcePermission[]> => getBackendSrv().get(`/api/access-control/${resource}/${resourceId}`, queryParams);
+
+// enrichTeamPermissionsWithAuthLabels fetches /api/teams/:id/members in
+// parallel with the resource-permissions response and merges the per-user
+// `labels` field (e.g. ["Generic OAuth"]) onto matching permission rows.
+// Best effort — if the call fails (e.g. the viewer doesn't have
+// org.users:read), permissions are returned unchanged so the UI still
+// renders the member list without the badge.
+const enrichTeamPermissionsWithAuthLabels = async (
+  teamId: ResourceId,
+  items: ResourcePermission[]
+): Promise<ResourcePermission[]> => {
+  try {
+    const members = await getBackendSrv().get<Array<{ userId: number; labels?: string[] }>>(
+      `/api/teams/${teamId}/members`
+    );
+    if (!members?.length) {
+      return items;
+    }
+    const labelsByUserId = new Map<number, string[]>();
+    for (const m of members) {
+      if (m.labels?.length) {
+        labelsByUserId.set(m.userId, m.labels);
+      }
+    }
+    return items.map((p) =>
+      p.userId && labelsByUserId.has(p.userId) ? { ...p, authLabels: labelsByUserId.get(p.userId) } : p
+    );
+  } catch (e) {
+    console.warn('failed to fetch team auth labels', e);
+    return items;
+  }
+};
 
 const setUserPermission = (
   resource: string,

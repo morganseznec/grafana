@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/grafana/grafana/pkg/services/team"
+	"github.com/grafana/grafana/pkg/services/team/teamdelete"
 )
 
 type FakeService struct {
@@ -66,6 +67,22 @@ func (s *FakeService) GetUserTeamMemberships(ctx context.Context, orgID, userID 
 func (s *FakeService) GetTeamMembers(ctx context.Context, query *team.GetTeamMembersQuery) ([]*team.TeamMemberDTO, error) {
 	return s.ExpectedMembers, s.ExpectedError
 }
+
+func (s *FakeService) AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission team.PermissionType) error {
+	return s.ExpectedError
+}
+
+func (s *FakeService) RemoveTeamMember(ctx context.Context, cmd *team.RemoveTeamMemberCommand) error {
+	return s.ExpectedError
+}
+
+func (s *FakeService) SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error {
+	return s.ExpectedError
+}
+
+func (s *FakeService) RegisterDelete(renderer teamdelete.Renderer) {
+}
+
 
 func (s *FakeService) GetTeamIDsByUser(ctx context.Context, query *team.GetTeamIDsByUserQuery) ([]int64, []string, error) {
 	ids := make([]int64, 0, len(s.ExpectedTeamsByUser))

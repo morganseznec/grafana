@@ -53,7 +53,10 @@ func (tapi *TeamAPI) getTeamMembers(c *contextmodel.ReqContext) response.Respons
 		member.AvatarURL = dtos.GetGravatarUrl(tapi.cfg, member.Email)
 		member.Labels = []string{}
 
-		if tapi.license.FeatureEnabled("teamgroupsync") && member.External {
+		// UBIQ: drop the "teamgroupsync" enterprise license gate so OSS team
+		// pages render the auth-provider badge ("OAuth", "LDAP"...) next to
+		// memberships synced from the IdP, matching the user listing page.
+		if member.External {
 			authProvider := login.GetAuthProviderLabel(member.AuthModule)
 			member.Labels = append(member.Labels, authProvider)
 		}
