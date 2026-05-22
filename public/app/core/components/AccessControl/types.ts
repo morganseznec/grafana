@@ -19,6 +19,10 @@ export type ResourcePermission = {
   permission: string;
   roleName?: string;
   warning?: string;
+  // UBIQ: populated client-side from /api/teams/:id/members when displaying
+  // a team's permissions, so the UI can show a "Generic OAuth"/"LDAP"/...
+  // badge next to memberships that came in via the IdP sync.
+  authLabels?: string[];
 };
 
 export type SetPermission = {

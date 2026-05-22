@@ -23,6 +23,9 @@ type Service interface {
 	RemoveUsersMemberships(tx context.Context, userID int64) error
 	GetUserTeamMemberships(ctx context.Context, orgID, userID int64, external bool, bypassCache bool) ([]*TeamMemberDTO, error)
 	GetTeamMembers(ctx context.Context, query *GetTeamMembersQuery) ([]*TeamMemberDTO, error)
+	AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission PermissionType) error
+	RemoveTeamMember(ctx context.Context, cmd *RemoveTeamMemberCommand) error
+	SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error
 	RegisterDelete(query string)
 }
 
