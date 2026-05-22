@@ -163,6 +163,37 @@ func (s *LegacyService) GetTeamMembers(ctx context.Context, query *team.GetTeamM
 	return s.store.GetMembers(ctx, query)
 }
 
+func (s *LegacyService) AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission team.PermissionType) error {
+	ctx, span := s.tracer.Start(ctx, "team.AddTeamMember", trace.WithAttributes(
+		attribute.Int64("orgID", orgID),
+		attribute.Int64("teamID", teamID),
+		attribute.Int64("userID", userID),
+	))
+	defer span.End()
+	return s.store.AddTeamMember(ctx, orgID, teamID, userID, isExternal, permission)
+}
+
+func (s *LegacyService) RemoveTeamMember(ctx context.Context, cmd *team.RemoveTeamMemberCommand) error {
+	ctx, span := s.tracer.Start(ctx, "team.RemoveTeamMember", trace.WithAttributes(
+		attribute.Int64("orgID", cmd.OrgID),
+		attribute.Int64("teamID", cmd.TeamID),
+		attribute.Int64("userID", cmd.UserID),
+	))
+	defer span.End()
+	return s.store.RemoveTeamMember(ctx, cmd)
+}
+
+func (s *LegacyService) SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error {
+	ctx, span := s.tracer.Start(ctx, "team.SetTeamMemberExternal", trace.WithAttributes(
+		attribute.Int64("orgID", orgID),
+		attribute.Int64("teamID", teamID),
+		attribute.Int64("userID", userID),
+		attribute.Bool("isExternal", isExternal),
+	))
+	defer span.End()
+	return s.store.SetTeamMemberExternal(ctx, orgID, teamID, userID, isExternal)
+}
+
 func (s *LegacyService) RegisterDelete(renderer teamdelete.Renderer) {
 	s.store.RegisterDelete(renderer)
 }

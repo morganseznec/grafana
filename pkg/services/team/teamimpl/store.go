@@ -30,6 +30,9 @@ type store interface {
 	IsMember(ctx context.Context, orgId int64, teamId int64, userId int64) (bool, error)
 	GetMemberships(ctx context.Context, orgID, userID int64, external bool) ([]*team.TeamMemberDTO, error)
 	GetMembers(ctx context.Context, query *team.GetTeamMembersQuery) ([]*team.TeamMemberDTO, error)
+	AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission team.PermissionType) error
+	RemoveTeamMember(ctx context.Context, cmd *team.RemoveTeamMemberCommand) error
+	SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error
 	RegisterDelete(renderer teamdelete.Renderer)
 }
 
@@ -716,6 +719,63 @@ func removeTeamMember(dbHelper *legacysql.LegacyDatabaseHelper, sess *db.Session
 	}
 
 	return err
+}
+
+// AddTeamMember is the write path used by the team-sync hook. It resolves the
+// LegacyDatabaseHelper for the current context (upstream refactored the store
+// away from a raw *sqlstore.SQLStore reference to a per-request helper
+// provider) and delegates to the internal addTeamMember helper that upstream
+// keeps for RBAC's TeamPermissionsService hook to reuse.
+func (ss *xormStore) AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission team.PermissionType) error {
+	dbHelper, err := ss.sql(ctx)
+	if err != nil {
+		return err
+	}
+	return dbHelper.DB.WithTransactionalDbSession(ctx, func(sess *db.Session) error {
+		return addTeamMember(dbHelper, sess, orgID, teamID, userID, isExternal, permission)
+	})
+}
+
+// SetTeamMemberExternal flips the external flag on an existing team_member
+// row. Used when the team-sync hook finds a row that was originally added
+// manually (external=false) but is now covered by an IdP group, and wants to
+// take ownership of its lifecycle. Errors with ErrTeamMemberNotFound if the
+// row is gone by the time the update runs.
+func (ss *xormStore) SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error {
+	dbHelper, err := ss.sql(ctx)
+	if err != nil {
+		return err
+	}
+	return dbHelper.DB.WithTransactionalDbSession(ctx, func(sess *db.Session) error {
+		res, err := sess.Exec(
+			"UPDATE "+dbHelper.Table("team_member")+" SET external=?, updated=? WHERE org_id=? AND team_id=? AND user_id=?",
+			dbHelper.DB.GetDialect().BooleanValue(isExternal), time.Now(), orgID, teamID, userID,
+		)
+		if err != nil {
+			return err
+		}
+		rows, err := res.RowsAffected()
+		if err != nil {
+			return err
+		}
+		if rows == 0 {
+			return team.ErrTeamMemberNotFound
+		}
+		return nil
+	})
+}
+
+// RemoveTeamMember mirrors AddTeamMember: resolve dbHelper for the context,
+// then delegate to the internal removeTeamMember helper (which is also used
+// by RemoveTeamMemberHook for RBAC-triggered removals).
+func (ss *xormStore) RemoveTeamMember(ctx context.Context, cmd *team.RemoveTeamMemberCommand) error {
+	dbHelper, err := ss.sql(ctx)
+	if err != nil {
+		return err
+	}
+	return dbHelper.DB.WithTransactionalDbSession(ctx, func(sess *db.Session) error {
+		return removeTeamMember(dbHelper, sess, cmd)
+	})
 }
 
 type removeUserMembershipsQuery struct {
