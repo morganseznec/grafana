@@ -137,6 +137,19 @@ func (s *Service) GetTeamMembers(ctx context.Context, query *team.GetTeamMembers
 	return s.legacyService.GetTeamMembers(ctx, query)
 }
 
+func (s *Service) AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission team.PermissionType) error {
+	// Always go through the legacy service: the team-sync hook needs the same backend that owns memberships.
+	return s.legacyService.AddTeamMember(ctx, orgID, teamID, userID, isExternal, permission)
+}
+
+func (s *Service) RemoveTeamMember(ctx context.Context, cmd *team.RemoveTeamMemberCommand) error {
+	return s.legacyService.RemoveTeamMember(ctx, cmd)
+}
+
+func (s *Service) SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error {
+	return s.legacyService.SetTeamMemberExternal(ctx, orgID, teamID, userID, isExternal)
+}
+
 func (s *Service) RegisterDelete(query string) {
 	// TODO enable Kubernetes team service for RegisterDelete once the implementation is complete.
 	// if s.isKubernetesTeamServiceEnabled(context.Background()) {

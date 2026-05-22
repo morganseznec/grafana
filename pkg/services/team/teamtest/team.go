@@ -67,6 +67,18 @@ func (s *FakeService) GetTeamMembers(ctx context.Context, query *team.GetTeamMem
 	return s.ExpectedMembers, s.ExpectedError
 }
 
+func (s *FakeService) AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission team.PermissionType) error {
+	return s.ExpectedError
+}
+
+func (s *FakeService) RemoveTeamMember(ctx context.Context, cmd *team.RemoveTeamMemberCommand) error {
+	return s.ExpectedError
+}
+
+func (s *FakeService) SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error {
+	return s.ExpectedError
+}
+
 func (s *FakeService) RegisterDelete(query string) {
 }
 

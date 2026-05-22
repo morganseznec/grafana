@@ -356,6 +356,18 @@ func (s *TeamK8sService) GetTeamMembers(ctx context.Context, query *team.GetTeam
 	return nil, errors.New("not implemented")
 }
 
+func (s *TeamK8sService) AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission team.PermissionType) error {
+	return errors.New("not implemented")
+}
+
+func (s *TeamK8sService) RemoveTeamMember(ctx context.Context, cmd *team.RemoveTeamMemberCommand) error {
+	return errors.New("not implemented")
+}
+
+func (s *TeamK8sService) SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error {
+	return errors.New("not implemented")
+}
+
 func (s *TeamK8sService) RegisterDelete(query string) {}
 
 func getTeamID(team *iamv0alpha1.Team) int64 {

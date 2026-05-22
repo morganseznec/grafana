@@ -23,6 +23,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/org"
 	"github.com/grafana/grafana/pkg/services/quota"
 	"github.com/grafana/grafana/pkg/services/rendering"
+	"github.com/grafana/grafana/pkg/services/team"
 	tempuser "github.com/grafana/grafana/pkg/services/temp_user"
 	"github.com/grafana/grafana/pkg/services/user"
 	"github.com/grafana/grafana/pkg/setting"
@@ -42,6 +43,7 @@ func ProvideRegistration(
 	socialService social.Service, cache *remotecache.RemoteCache,
 	ldapService service.LDAP, settingsProviderService setting.Provider,
 	tracer tracing.Tracer, tempUserService tempuser.Service, notificationService notifications.Service,
+	teamService team.Service, teamPermissionsService accesscontrol.TeamPermissionsService,
 ) Registration {
 	logger := log.New("authn.registration")
 
@@ -131,6 +133,10 @@ func ProvideRegistration(
 	authnSvc.RegisterPostAuthHook(rbacSync.SyncPermissionsHook, 120)
 	authnSvc.RegisterPostLoginHook(orgSync.SetDefaultOrgHook, 140)
 	authnSvc.RegisterPostLoginHook(userSync.CatalogLoginHook, 145)
+
+	teamSync := sync.ProvideTeamSync(teamService, teamPermissionsService, orgService, tracer)
+	authnSvc.RegisterPostLoginHook(teamSync.SyncTeamRolesHook, 150)
+
 	authnSvc.RegisterPostLoginHook(rbacSync.ClearUserPermissionCacheHook, 170)
 
 	nsSync := sync.ProvideNamespaceSync(cfg)

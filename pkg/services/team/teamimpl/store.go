@@ -29,6 +29,9 @@ type store interface {
 	IsMember(orgId int64, teamId int64, userId int64) (bool, error)
 	GetMemberships(ctx context.Context, orgID, userID int64, external bool) ([]*team.TeamMemberDTO, error)
 	GetMembers(ctx context.Context, query *team.GetTeamMembersQuery) ([]*team.TeamMemberDTO, error)
+	AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission team.PermissionType) error
+	RemoveTeamMember(ctx context.Context, cmd *team.RemoveTeamMemberCommand) error
+	SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error
 	RegisterDelete(query string)
 }
 
@@ -464,6 +467,38 @@ func updateTeamMember(sess *db.Session, orgID, teamID, userID int64, permission 
 // it removes a member from a team within the given transaction session
 func RemoveTeamMemberHook(sess *db.Session, cmd *team.RemoveTeamMemberCommand) error {
 	return removeTeamMember(sess, cmd)
+}
+
+func (ss *xormStore) AddTeamMember(ctx context.Context, orgID, teamID, userID int64, isExternal bool, permission team.PermissionType) error {
+	return ss.db.WithDbSession(ctx, func(sess *db.Session) error {
+		return addTeamMember(sess, orgID, teamID, userID, isExternal, permission)
+	})
+}
+
+func (ss *xormStore) SetTeamMemberExternal(ctx context.Context, orgID, teamID, userID int64, isExternal bool) error {
+	return ss.db.WithDbSession(ctx, func(sess *db.Session) error {
+		res, err := sess.Exec(
+			"UPDATE team_member SET external=?, updated=? WHERE org_id=? AND team_id=? AND user_id=?",
+			ss.db.GetDialect().BooleanValue(isExternal), time.Now(), orgID, teamID, userID,
+		)
+		if err != nil {
+			return err
+		}
+		rows, err := res.RowsAffected()
+		if err != nil {
+			return err
+		}
+		if rows == 0 {
+			return team.ErrTeamMemberNotFound
+		}
+		return nil
+	})
+}
+
+func (ss *xormStore) RemoveTeamMember(ctx context.Context, cmd *team.RemoveTeamMemberCommand) error {
+	return ss.db.WithDbSession(ctx, func(sess *db.Session) error {
+		return removeTeamMember(sess, cmd)
+	})
 }
 
 func removeTeamMember(sess *db.Session, cmd *team.RemoveTeamMemberCommand) error {
